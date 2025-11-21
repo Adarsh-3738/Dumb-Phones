@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/styles.css" />
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      width: 380px;
+      padding: 40px 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .input-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .input-group label {
+      font-size: 14px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .remember-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0 20px;
+      font-size: 14px;
+    }
+
+    .remember-row a {
+      text-decoration: none;
+      color: #2563eb;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 25px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .divider span {
+      margin: 0 12px;
+    }
+
+    .social-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .social-buttons button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .signup {
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .signup a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Log in to your account</h2>
+
+    <form action="/login" method="POST">
+
+      <div class="input-group">
+        <label>Email address</label>
+        <input type="email" name="email" required />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" required />
+      </div>
+
+      <div class="remember-row">
+        <label><input type="checkbox" name="remember" /> Remember me</label>
+        <a href="/forgot">Forgot your password?</a>
+      </div>
+
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+
+    <div class="divider"><span>Or continue with</span></div>
+
+    <div class="social-buttons">
+      <button><img src="/google.svg" width="18"> Google</button>
+      <button><img src="/github.svg" width="18"> GitHub</button>
+    </div>
+
+    <div class="signup">
+      Don't have an account? <a href="/signup">Sign up</a>
+    </div>
+  </div>
+
+</body>
+</html>
