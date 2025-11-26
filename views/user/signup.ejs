@@ -1,0 +1,275 @@
+
+  <title>Create Account</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #555;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .input-box {
+      width: 100%;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input-box input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 4px rgba(37, 99, 235, 0.4);
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #777;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .login-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .login-link a {
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+
+    }
+
+    .error-message {
+         color: red;
+         font-size : 0.75rem;
+         display:none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Create Account</h2>
+    <p>Sign up to get started with our service</p>
+<form id="signform" action="/user/signup" method="POST">
+
+  <!-- FULL NAME -->
+  <div class="input-box">
+    <input type="text" id="name" name="name" placeholder="Full Name" required />
+    <div id="error1" class="error-message"></div>
+  </div>
+
+  <!-- PHONE NUMBER -->
+  <div class="input-box">
+    <input type="tel" id="phone" name="phone" placeholder="Phone Number" required />
+    <div id="error2" class="error-message"></div>
+  </div>
+
+  <!-- EMAIL -->
+  <div class="input-box">
+    <input type="email" id="email" name="email" placeholder="Email Address" required />
+    <div id="error3" class="error-message"></div>
+  </div>
+
+  <!-- PASSWORD -->
+  <div class="input-box">
+    <input type="password" id="password" name="password" placeholder="Password" required />
+    <span class="eye-icon" onclick="togglePassword('password')">👁️</span>
+    <div id="error4" class="error-message"></div>
+  </div>
+
+  <!-- CONFIRM PASSWORD -->
+  <div class="input-box">
+    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+    <span class="eye-icon" onclick="togglePassword('confirmPassword')">👁️</span>
+    <div id="error5" class="error-message"></div>
+  </div>
+<%if(locals.message && message. length>0){%>
+    <div class="alert alert-danger text-center">
+   <%=messages%>
+</div>
+<%}%> 
+  <button type="submit">Create Account</button>
+
+</form>
+
+
+    <!-- GOOGLE SIGN-IN -->
+    <a href="/auth/google" style="text-decoration: none;">
+  <div style="
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #fff;
+      ">
+        <img src="https://developers.google.com/identity/images/g-logo.png" 
+             alt="Google Logo" width="20" />
+        <span style="font-size: 15px; color: #444; font-weight: 500;">
+          Continue with Google
+        </span>
+  </div>
+</a>
+
+<div class="login-link">
+    Already have an account?
+    <a href="/login">Log in</a>
+</div>
+
+  <script>
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function googleLogin() {
+  alert("Google login will be integrated soon!");
+}
+
+const nameid = document.getElementById("name");
+const phoneid = document.getElementById("phone");
+const emailid = document.getElementById("email");
+const passid = document.getElementById("password");
+const cpassid = document.getElementById("confirmPassword");
+
+const error1 = document.getElementById("error1");
+const error2 = document.getElementById("error2");
+const error3 = document.getElementById("error3");
+const error4 = document.getElementById("error4");
+const error5 = document.getElementById("error5");
+
+function clearErrors() {
+  error1.textContent = "";
+  error2.textContent = "";
+  error3.textContent = "";
+  error4.textContent = "";
+  error5.textContent = "";
+}
+
+function nameValidateChecking() {
+  const nameval = nameid.value.trim();
+  const namepattern = /^[A-Za-z\s]+$/;
+
+  if (!namepattern.test(nameval)) {
+    error1.textContent = "Enter a valid name (letters only)";
+    return false;
+  }
+  return true;
+}
+
+function emailValidateChecking() {
+  const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  if (!emailpattern.test(emailid.value.trim())) {
+    error3.textContent = "Invalid Email Format";
+    return false;
+  }
+  return true;
+}
+
+function phoneValidateChecking() {
+  const phone = phoneid.value.trim();
+
+  if (phone.length !== 10) {
+    error2.textContent = "Enter a valid 10-digit phone number";
+    return false;
+  }
+  return true;
+}
+
+function passValidateChecking() {
+  const passval = passid.value;
+  const cpassval = cpassid.value;
+  let valid = true;
+
+  if (passval.length < 8) {
+    error4.textContent = "Password must be at least 8 characters";
+    valid = false;
+  }
+
+  if (passval !== cpassval) {
+    error5.textContent = "Passwords do not match";
+    valid = false;
+  }
+
+  return valid;
+}
+
+document.getElementById("signform").addEventListener("submit", function (e) {
+  clearErrors();
+
+  const valid =
+    nameValidateChecking() &&
+    emailValidateChecking() &&
+    phoneValidateChecking() &&
+    passValidateChecking();
+
+  if (!valid) {
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+

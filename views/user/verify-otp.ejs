@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Dumb Phones - OTP Verification" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dumb Phones - Email Verification</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Nunito Sans", sans-serif;
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CARD */
+        .login_wrap {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px 30px 40px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.10);
+            text-align: center;
+        }
+
+        .heading_s1 h3 {
+            margin: 0 0 20px;
+            font-size: 26px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        /* INPUT */
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        input.form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        /* BUTTONS */
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            margin-top: 12px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary.enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        /* TIMER */
+        .otp-timer {
+            margin: 20px auto 10px;
+            width: 75px;
+            height: 75px;
+            background: #f7f7f7;
+            border-radius: 50%;
+            border: 3px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #timerValue {
+            font-size: 26px;
+            font-weight: 800;
+            color: #333;
+        }
+
+        #timerValue.expired {
+            font-size: 16px;
+            font-weight: 700;
+            color: red;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="login_wrap">
+
+    <div class="heading_s1">
+        <h3>Email Verification</h3>
+    </div>
+
+    <form id="otpForm" onsubmit="return validateOTPForm()">
+
+        <div class="form-group">
+            <label for="otp">Enter OTP</label>
+            <input type="text" id="otp" name="otp" class="form-control" maxlength="6"
+                   required pattern="\d*" />
+        </div>
+
+        <button type="submit" class="btn-primary">Verify Email</button>
+
+        <!-- TIMER (Centered) -->
+        <div class="otp-timer">
+            <span id="timerValue">60</span>
+        </div>
+
+        <!-- RESEND BUTTON (Centered + Enabled After Timeout) -->
+        <button type="button" id="resendOtpBtn" class="btn-secondary" disabled>
+            Resend OTP
+        </button>
+
+    </form>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById("otp").focus();
+
+    let timer = 60;
+    let timerInterval;
+    const resendBtn = document.getElementById("resendOtpBtn");
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timer--;
+            document.getElementById("timerValue").textContent = timer;
+
+            if (timer <= 0) {
+                clearInterval(timerInterval);
+
+                document.getElementById("timerValue").classList.add("expired");
+                document.getElementById("timerValue").textContent = "Expired";
+
+                document.getElementById("otp").disabled = true;
+
+                resendBtn.disabled = false;
+                resendBtn.classList.add("enabled");
+            }
+        }, 1000);
+    }
+
+    startTimer();
+
+    // Resend OTP Action
+    resendBtn.addEventListener("click", function () {
+        Swal.fire({
+            icon: "info",
+            title: "OTP Resent",
+            text: "A new OTP has been sent to your email.",
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        resendBtn.disabled = true;
+        resendBtn.classList.remove("enabled");
+
+        document.getElementById("otp").disabled = false;
+        timer = 60;
+
+        document.getElementById("timerValue").classList.remove("expired");
+        document.getElementById("timerValue").textContent = timer;
+
+        startTimer();
+    });
+
+
+    // Verify OTP AJAX
+    function validateOTPForm() {
+        const otpInput = document.getElementById("otp").value;
+
+        $.ajax({
+            type: "POST",
+            url: "verify-otp",
+            data: { otp: otpInput },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "OTP Verified Successfully",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    }).then(() => {
+                        window.location.href = response.redirectUrl;
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: response.message,
+                    });
+                }
+            }
+        });
+
+        return false;
+    }
+</script>
+
+</body>
+</html>
