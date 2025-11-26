@@ -1,0 +1,82 @@
+<!-- header -->
+<%-include("../../views/partials/admin/header")%> 
+  <!-- Main -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1>Dashboard</h1>
+
+      <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="search-box">
+          <input type="text" placeholder="Search...">
+        </div>
+
+        <button class="btn-export">Export Report</button>
+      </div>
+    </div>
+
+    <p>Welcome back, Admin! Here's what's happening today.</p>
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card">
+        <h4>Total Revenue</h4>
+        <h2>$1,250,450</h2>
+        <small>+5.2% vs last month</small>
+      </div>
+
+      <div class="card">
+        <h4>Sales this Month</h4>
+        <h2>$85,600</h2>
+        <small>+2.1% vs last month</small>
+      </div>
+
+      <div class="card">
+        <h4>New Orders</h4>
+        <h2>350</h2>
+        <small>+3.5% vs last month</small>
+      </div>
+
+      <div class="card">
+        <h4>New Customers</h4>
+        <h2>120</h2>
+        <small>+6.8% vs last month</small>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-box">
+      <div class="chart-header">
+        <h3>Sales Overview</h3>
+
+        <div class="chart-tabs">
+          <button class="active">30 Days</button>
+          <button>7 Days</button>
+          <button>24 Hours</button>
+        </div>
+      </div>
+
+      <canvas id="salesChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Optional Chart JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById("salesChart");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: ["", "", "", "", "", ""],
+        datasets: [{
+          data: [2500, 3500, 5000, 7500, 9000, 7000],
+          borderWidth: 3
+        }]
+      }
+    });
+  </script>
+
+</body>
+</html>
