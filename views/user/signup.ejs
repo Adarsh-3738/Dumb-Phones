@@ -101,16 +101,15 @@
          display:none;
     }
   </style>
-</head>
 
 <body>
   <div class="container">
     <h2>Create Account</h2>
     <p>Sign up to get started with our service</p>
-<form id="signform" action="/user/signup" method="POST">
+<form id="signform" action="/signup" method="POST">
 
   <!-- FULL NAME -->
-  <div class="input-box">
+   <div class="input-box">
     <input type="text" id="name" name="name" placeholder="Full Name" required />
     <div id="error1" class="error-message"></div>
   </div>
@@ -119,13 +118,13 @@
   <div class="input-box">
     <input type="tel" id="phone" name="phone" placeholder="Phone Number" required />
     <div id="error2" class="error-message"></div>
-  </div>
+  </div> 
 
   <!-- EMAIL -->
   <div class="input-box">
     <input type="email" id="email" name="email" placeholder="Email Address" required />
     <div id="error3" class="error-message"></div>
-  </div>
+  </div> 
 
   <!-- PASSWORD -->
   <div class="input-box">
@@ -151,7 +150,7 @@
 
 
     <!-- GOOGLE SIGN-IN -->
-    <a href="/auth/google" style="text-decoration: none;">
+     <a href="/auth/google" style="text-decoration: none;">
   <div style="
         margin-top: 16px;
         display: flex;
@@ -181,10 +180,6 @@
 function togglePassword(id) {
   const input = document.getElementById(id);
   input.type = input.type === "password" ? "text" : "password";
-}
-
-function googleLogin() {
-  alert("Google login will be integrated soon!");
 }
 
 const nameid = document.getElementById("name");
@@ -231,7 +226,7 @@ function emailValidateChecking() {
 function phoneValidateChecking() {
   const phone = phoneid.value.trim();
 
-  if (phone.length !== 10) {
+  if (phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
     error2.textContent = "Enter a valid 10-digit phone number";
     return false;
   }
@@ -270,6 +265,4 @@ document.getElementById("signform").addEventListener("submit", function (e) {
   }
 });
 </script>
-
-</body>
 

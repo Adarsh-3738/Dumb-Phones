@@ -4,7 +4,7 @@ const User = require("../models/userSchema");
 const userAuth = async (req, res, next) => {
   try {
     if (!req.session.user) {
-      return res.redirect("/login");
+      return res.redirect("/user/login");
     }
 
     const user = await User.findById(req.session.user.id);
@@ -12,7 +12,7 @@ const userAuth = async (req, res, next) => {
     if (user && !user.isBlocked) {
       return next();
     } else {
-      return res.redirect("/login");
+      return res.redirect("/user/login");
     }
   } catch (error) {
     console.log("Error in user auth middleware", error);
