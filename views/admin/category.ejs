@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Category Management</title>
+
+  <style>
+    body { background:#f5f7fb; font-family:Inter,sans-serif; }
+
+    .container {
+      margin-left:260px;
+      padding:25px;
+    }
+
+    .title-box {
+      display:flex;justify-content:space-between;
+      align-items:center;margin-bottom:25px;
+    }
+
+    .btn-add {
+      padding:10px 18px;background:#2a55ff;
+      color:#fff;border:none;border-radius:8px;
+      cursor:pointer;
+    }
+
+    table {
+      width:100%;background:#fff;border-radius:10px;
+      border:1px solid #ddd;border-collapse:collapse;
+    }
+
+    th,td {
+      padding:16px;border-bottom:1px solid #eee;
+      text-align:left;
+    }
+
+    .status-active { background:#d5ffd7;padding:5px 12px;border-radius:10px; }
+    .status-draft  { background:#ffeaa7;padding:5px 12px;border-radius:10px; }
+
+    .pagination { margin-top:15px;display:flex;justify-content:right;gap:10px; }
+    .page-btn { padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:white;cursor:pointer; }
+    .page-btn.active { background:#2a55ff;color:white; }
+    
+    .search-bar { margin-bottom:15px;display:flex;gap:10px; }
+    .search-bar input { padding:10px 15px;border:1px solid #ccc;border-radius:6px;width:220px; }
+    .clear-btn { background:#666;color:#fff;border:none;padding:10px 15px;border-radius:6px;cursor:pointer; }
+
+  </style>
+</head>
+
+<body>
+    <!-- for the sidebar -->
+<%- include("../../views/partials/admin/header") %> 
+<div class="container">
+  
+  <div class="title-box">
+    <div>
+      <h2>Category Management</h2>
+      <p>Create and manage product categories.</p>
+    </div>
+    <button class="btn-add" onclick="openAdd()">+ Add Category</button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <form method="GET" action="/admin/category">
+      <input type="text" name="search" placeholder="Search category..." value="<%= searchQuery %>">
+      <button class="btn-add" type="submit">Search</button>
+    </form>
+
+    <% if (searchQuery) { %>
+      <a href="/admin/category"><button class="clear-btn">Clear</button></a>
+    <% } %>
+  </div>
+
+  <!-- Categories Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% if(categories.length === 0) { %>
+        <tr><td colspan="4" style="text-align:center;padding:20px;">No categories found.</td></tr>
+      <% } %>
+
+      <% categories.forEach(cat => { %>
+      <tr>
+        <td><%= cat.name %></td>
+
+        <td>
+          <% if(cat.status === "Active") { %>
+            <span class="status-active">Active</span>
+          <% } else { %>
+            <span class="status-draft">Draft</span>
+          <% } %>
+        </td>
+
+        <td><%= cat.createdAt.toDateString() %></td>
+
+        <td>
+          <button onclick="openEdit('<%= cat._id %>', '<%= cat.name %>', '<%= cat.status %>')">Edit</button>
+          <button style="color:red;" onclick="deleteCategory('<%= cat._id %>')">Delete</button>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+
+    <% if (currentPage > 1) { %>
+      <a href="/admin/category?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">
+        <button class="page-btn">Prev</button>
+      </a>
+    <% } %>
+
+    <% for(let i = 1; i <= totalPages; i++) { %>
+      <a href="/admin/category?page=<%= i %>&search=<%= searchQuery %>">
+        <button class="page-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></button>
+      </a>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+      <a href="/admin/category?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">
+        <button class="page-btn">Next</button>
+      </a>
+    <% } %>
+
+  </div>
+
+</div>
+
+
+<script>
+  function openAdd() {
+    const name = prompt("Enter category name:");
+    if (!name) return;
+
+    fetch("/admin/category/add", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ name:name, status:"Active" })
+    }).then(()=>location.reload());
+  }
+
+  function openEdit(id, name, status) {
+    const newName = prompt("Edit Category Name:", name);
+    if (!newName) return;
+
+    const newStatus = prompt("Status (Active/Draft):", status);
+
+    fetch("/admin/category/edit", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ id, name:newName, status:newStatus })
+    }).then(()=>location.reload());
+  }
+
+  function deleteCategory(id) {
+    if (!confirm("Delete this category?")) return;
+
+    fetch("/admin/category/delete", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ id })
+    }).then(()=>location.reload());
+  }
+</script>
+
+</body>
+</html>

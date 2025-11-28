@@ -3,7 +3,7 @@ const router = express.Router();
 
 const adminController = require("../controller/admin/adminController");
 const customerController = require("../controller/admin/customerController");
-
+const categoryController = require("../controller/admin/categoryController.js");
 
 
 const { adminAuth } = require("../middlewares/auth");
@@ -30,6 +30,11 @@ router.get ("/logout", adminController.logout);
 router.get("/users", adminAuth, customerController.customerInfo);
 router.get("/blockCustomer", adminAuth, customerController.customerBlocked);
 router.get("/unblockCustomer", adminAuth, customerController.customerunBlocked);
+
+//category management
+
+router.get("/category",adminAuth,categoryController.categoryInfo);
+router.post("/category/add", adminAuth, categoryController.addCategory);
 
 
 
