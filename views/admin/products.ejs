@@ -1,0 +1,623 @@
+<%- include("../partials/admin/header.ejs") %>
+
+<!-- Cropper.js -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css"
+/>
+
+<style>
+  body {
+    background-color: #f4f8ff;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 260px;
+    margin-right: 15px;
+  }
+
+  .add-btn {
+    background: #1e88e5;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 15px 30px 260px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+
+/* Search Form Wrapper */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-left: 260px;
+}
+
+/* Search Input */
+.search-form input[type="text"] {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input Focus */
+.search-form input[type="text"]:focus {
+  border-color: #4f46e5; /* Indigo */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* Search Button */
+.search-form button {
+  padding: 8px 16px;
+  background-color: #3c66e3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+/* Button Hover */
+.search-form button:hover {
+  background-color: #4338ca;
+}
+
+/* Button Active */
+.search-form button:active {
+  transform: scale(0.97);
+}
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  /* MODAL */
+  .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow-y: auto;   /* allow full modal scroll */
+}
+
+.modal-content {
+  background: #fff;
+  width: 620px;
+  max-height: 85vh;   /* limit height */
+  overflow-y: auto;  /* inner scroll */
+  margin: 40px auto;
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+
+  .close {
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  #previewImage {
+  max-width: 100%;
+  display: none;
+  margin-bottom: 10px;
+}
+
+/* Product status buttons*/
+
+/* Action Buttons */
+.edit-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #e0e7ff;
+  color: #1e40af;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-right: 6px;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-right: 6px;
+}
+
+.restore-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Hover */
+.delete-btn:hover {
+  background: #1d4ed8;
+}
+
+.restore-btn:hover {
+  background: #eff6ff;
+}
+
+
+
+
+.status-active {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;            /* dark green */
+  background-color: #dcfce7; /* light green */
+  border-radius: 999px;
+}
+
+.status-inactive {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #991b1b;            /* dark red */
+  background-color: #fee2e2; /* light red */
+  border-radius: 999px;
+}
+
+
+  /* pagination */
+  /* Pagination Wrapper */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+/* Pagination Links */
+.pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151; /* Gray-700 */
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Hover Effect */
+.pagination a:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+/* Active Page */
+.pagination a.active {
+  background-color: #4f46e5; /* Indigo */
+  color: #ffffff;
+  border-color: #4f46e5;
+  cursor: default;
+}
+
+/* Disable hover on active */
+.pagination a.active:hover {
+  background-color: #4f46e5;
+}
+
+/* Prev / Next Buttons */
+.pagination a:first-child,
+.pagination a:last-child {
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .pagination {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pagination a {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+</style>
+
+<!-- HEADER -->
+<div class="card-header">
+  <h2>Products</h2>
+  <button class="add-btn" onclick="openModal()">+ Add Product</button>
+</div>
+<form action="/admin/products" method="get" class="search-form">
+  <input type="text"
+         name="search"
+         placeholder="Search products..."
+         value="<%= search %>">
+  <button type="submit">Search</button>
+</form>
+
+<!-- PRODUCT LIST -->
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% products.forEach(product => { %>
+        <tr>
+          <td>
+  <% if (product.productImage && product.productImage.length > 0) { %>
+    <img 
+      src="<%= product.productImage[0].url %>" 
+      alt="product image"
+      style="width:60px;height:60px;object-fit:cover;border-radius:6px;"
+    />
+  <% } else { %>
+    <span>No Image</span>
+  <% } %>
+</td>
+
+
+
+          <td><%= product.productName %></td>
+          <td><%= product.brand?.name %></td>
+          <td><%= product.category?.name %></td>
+          <!-- <td><%= product.isDeleted ? "Inactive" : "Active" %></td> -->
+      <td>
+      <span class="<%= product.isBlocked ? 'status-inactive' : 'status-active' %>">
+  <%= product.isBlocked ? "Inactive" : "Active" %>
+       </span>
+      </td>
+
+
+
+     <td>
+  <a href="/admin/products/edit/<%= product._id %>" class="edit-btn">
+    Edit
+  </a>
+
+  <% if (!product.isBlocked) { %>
+    <button
+      class="delete-btn"
+      onclick="openStatusModal('<%= product._id %>', 'deactivate')"
+    >
+      Deactivate
+    </button>
+  <% } else { %>
+    <button
+      class="restore-btn"
+      onclick="openStatusModal('<%= product._id %>', 'activate')"
+    >
+      Activate
+    </button>
+  <% } %>
+</td>
+
+
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- pagination -->
+
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+    <a href="?page=<%= currentPage - 1 %>&search=<%= search %>">Prev</a>
+  <% } %>
+
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>&search=<%= search %>"
+       class="<%= currentPage === i ? 'active' : '' %>">
+      <%= i %>
+    </a>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+  <% } %>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <div style="display:flex;justify-content:space-between;">
+      <h3>Add Product</h3>
+      <span class="close" onclick="closeModal()">&times;</span>
+    </div>
+
+    <form action="/admin/products/add-product" method="POST" enctype="multipart/form-data">
+      <label>Product Name</label>
+<input type="text" name="productName" required />
+
+<label>Regular Price</label>
+<input type="number" name="regularPrice" required />
+
+<label>Sales Price</label>
+<input type="number" name="salesPrice" required />
+
+<label>Color</label>
+<input type="text" name="color" required />
+
+<label>Stock Quantity</label>
+<input 
+  type="number" 
+  name="quantity" 
+  min="0" 
+  placeholder="Enter available stock"
+  required
+/>
+
+<label>Description</label>
+<textarea name="description" required></textarea>
+
+
+<label>Brand</label>
+<select name="brand" required>
+  <% brands.forEach(b => { %>
+    <option value="<%= b._id %>"><%= b.name %></option>
+  <% }) %>
+</select>
+
+<label>Category</label>
+<select name="category" required>
+  <% categories.forEach(c => { %>
+    <option value="<%= c._id %>"><%= c.name %></option>
+  <% }) %>
+
+</select>
+
+
+
+      <label>Images (Min 3)</label>
+      <input
+        type="file"
+        id="imageInput"
+        name="images"
+        accept="image/*"
+        multiple
+        required
+      />
+
+      <!-- Crop Preview -->
+      <img id="previewImage" />
+      <button type="button" id="cropNextBtn" class="submit-btn">
+  Crop & Next
+</button>
+
+
+      <button type="submit" class="submit-btn">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<!-- Cropper.js JS (MUST be before </body>) -->
+<script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+<script>
+  let cropper;
+  let selectedFiles = [];
+  let croppedFiles = [];
+  let currentIndex = 0;
+
+  const imageInput = document.getElementById("imageInput");
+  const previewImage = document.getElementById("previewImage");
+  const cropNextBtn = document.getElementById("cropNextBtn");
+
+  imageInput.addEventListener("change", (e) => {
+    selectedFiles = Array.from(e.target.files);
+
+    if (selectedFiles.length < 3) {
+      alert("Minimum 3 images required");
+      imageInput.value = "";
+      return;
+    }
+
+    currentIndex = 0;
+    croppedFiles = [];
+    loadImage(selectedFiles[currentIndex]);
+  });
+
+  function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      previewImage.src = reader.result;
+      previewImage.style.display = "block";
+
+      if (cropper) cropper.destroy();
+
+      cropper = new Cropper(previewImage, {
+        aspectRatio: 1,
+        viewMode: 2,
+        autoCropArea: 1,
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cropNextBtn.addEventListener("click", () => {
+    if (!cropper) return;
+
+    cropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob((blob) => {
+      const file = new File(
+        [blob],
+        selectedFiles[currentIndex].name,
+        { type: "image/jpeg" }
+      );
+
+      croppedFiles.push(file);
+      currentIndex++;
+
+      cropper.destroy();
+
+      if (currentIndex < selectedFiles.length) {
+        loadImage(selectedFiles[currentIndex]);
+      } else {
+        finalizeFiles();
+        alert("All images cropped successfully");
+      }
+    });
+  });
+
+  function finalizeFiles() {
+    const dataTransfer = new DataTransfer();
+    croppedFiles.forEach(file => dataTransfer.items.add(file));
+    imageInput.files = dataTransfer.files;
+  }
+
+  function openModal() {
+    document.getElementById("productModal").style.display = "block";
+  }
+
+  function closeModal() {
+    document.getElementById("productModal").style.display = "none";
+    if (cropper) cropper.destroy();
+    previewImage.style.display = "none";
+  }
+</script>
+
+
+
+
+
+
+
+
+
+<!-- STATUS CONFIRM MODAL -->
+<div id="statusModal" class="modal">
+  <div class="modal-content" style="max-width:420px;">
+    <h3 id="statusTitle" style="color:#1e40af;">Confirm Action</h3>
+    <p id="statusMessage" style="margin:15px 0;color:#374151;">
+      Are you sure?
+    </p>
+
+    <div style="display:flex;gap:10px;">
+      <button
+        id="confirmStatusBtn"
+        class="submit-btn"
+        style="background:#2563eb;"
+      >
+        Yes, Confirm
+      </button>
+
+      <button
+        onclick="closeStatusModal()"
+        class="submit-btn"
+        style="background:#ffffff;color:#2563eb;border:1px solid #2563eb;"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<script> //active deactive modal
+
+let selectedProductId = null;
+
+function openStatusModal(productId, action) {
+  selectedProductId = productId;
+
+  const title = document.getElementById("statusTitle");
+  const message = document.getElementById("statusMessage");
+  const confirmBtn = document.getElementById("confirmStatusBtn");
+
+  if (action === "deactivate") {
+    title.innerText = "Deactivate Product";
+    message.innerText = "This product will be hidden from users.";
+  } else {
+    title.innerText = "Activate Product";
+    message.innerText = "This product will be visible to users.";
+  }
+
+  confirmBtn.onclick = () => {
+    window.location.href = `/admin/products/delete/${productId}`;
+  };
+
+  document.getElementById("statusModal").style.display = "block";
+}
+
+function closeStatusModal() {
+  document.getElementById("statusModal").style.display = "none";
+  selectedProductId = null;
+}
+
+
+
+</script>
+
+
+<%- include("../partials/admin/footer.ejs") %>

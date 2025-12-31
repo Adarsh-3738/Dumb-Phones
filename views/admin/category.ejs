@@ -6,32 +6,13 @@
 
   <style>
     body { background:#f5f7fb; font-family:Inter,sans-serif; }
+    .container { margin-left:260px;padding:25px; }
 
-    .container {
-      margin-left:260px;
-      padding:25px;
-    }
+    .title-box { display:flex;justify-content:space-between;align-items:center;margin-bottom:25px; }
+    .btn-add { padding:10px 18px;background:#2a55ff;color:#fff;border:none;border-radius:8px;cursor:pointer; }
 
-    .title-box {
-      display:flex;justify-content:space-between;
-      align-items:center;margin-bottom:25px;
-    }
-
-    .btn-add {
-      padding:10px 18px;background:#2a55ff;
-      color:#fff;border:none;border-radius:8px;
-      cursor:pointer;
-    }
-
-    table {
-      width:100%;background:#fff;border-radius:10px;
-      border:1px solid #ddd;border-collapse:collapse;
-    }
-
-    th,td {
-      padding:16px;border-bottom:1px solid #eee;
-      text-align:left;
-    }
+    table { width:100%;background:#fff;border-radius:10px;border:1px solid #ddd;border-collapse:collapse; }
+    th,td { padding:16px;border-bottom:1px solid #eee;text-align:left; }
 
     .status-active { background:#d5ffd7;padding:5px 12px;border-radius:10px; }
     .status-draft  { background:#ffeaa7;padding:5px 12px;border-radius:10px; }
@@ -44,12 +25,67 @@
     .search-bar input { padding:10px 15px;border:1px solid #ccc;border-radius:6px;width:220px; }
     .clear-btn { background:#666;color:#fff;border:none;padding:10px 15px;border-radius:6px;cursor:pointer; }
 
+    /* MODALS */
+    .modal-bg {
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.4);display:none;justify-content:center;align-items:center;
+    }
+    .modal-box {
+      width:380px;background:white;padding:25px;border-radius:10px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.15);text-align:center;
+    }
+    .modal-btns { display:flex;justify-content:center;gap:15px;margin-top:20px; }
+    .btn { padding:10px 18px;border:none;border-radius:8px;cursor:pointer; }
+    .btn-blue { background:#2a55ff;color:white; }
+    .btn-red { background:#e74c3c;color:white; }
+    .btn-gray { background:#bdc3c7;color:white; }
+    input,select {
+      width:100%;padding:10px;margin-top:10px;border:1px solid #ccc;border-radius:6px;
+    }
+
+
+    /* Action buttons */
+.action-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.96);
+}
+
+/* Edit = Blue */
+.btn-edit {
+  background: #2a55ff;
+  color: #ffffff;
+}
+
+.btn-edit:hover {
+  background: #1f45e6;
+}
+
+/* Delete = Red */
+.btn-delete {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+.btn-delete:hover {
+  background: #cf3e2e;
+}
+
   </style>
 </head>
 
 <body>
-    <!-- for the sidebar -->
+
 <%- include("../../views/partials/admin/header") %> 
+
 <div class="container">
   
   <div class="title-box">
@@ -57,7 +93,7 @@
       <h2>Category Management</h2>
       <p>Create and manage product categories.</p>
     </div>
-    <button class="btn-add" onclick="openAdd()">+ Add Category</button>
+    <button class="btn-add" onclick="openAddModal()">+ Add Category</button>
   </div>
 
   <!-- Search -->
@@ -103,8 +139,20 @@
         <td><%= cat.createdAt.toDateString() %></td>
 
         <td>
-          <button onclick="openEdit('<%= cat._id %>', '<%= cat.name %>', '<%= cat.status %>')">Edit</button>
-          <button style="color:red;" onclick="deleteCategory('<%= cat._id %>')">Delete</button>
+          <button
+  class="action-btn btn-edit"
+  onclick="openEditModal('<%= cat._id %>', '<%= cat.name %>', '<%= cat.status %>')"
+>
+  Edit
+</button>
+
+<button
+  class="action-btn btn-delete"
+  onclick="openDeleteModal('<%= cat._id %>')"
+>
+  Delete
+</button>
+
         </td>
       </tr>
       <% }) %>
@@ -113,7 +161,6 @@
 
   <!-- Pagination -->
   <div class="pagination">
-
     <% if (currentPage > 1) { %>
       <a href="/admin/category?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">
         <button class="page-btn">Prev</button>
@@ -131,46 +178,135 @@
         <button class="page-btn">Next</button>
       </a>
     <% } %>
-
   </div>
+</div>
 
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal-box">
+    <h3>Add Category</h3>
+    <input id="addName" placeholder="Category Name">
+    <select id="addStatus">
+      <option value="Active">Active</option>
+      <option value="Draft">Draft</option>
+    </select>
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitAdd()">Add</button>
+      <button class="btn btn-gray" onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CATEGORY MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <h3>Edit Category</h3>
+
+    <input id="editName">
+    <select id="editStatus">
+      <option value="Active">Active</option>
+      <option value="Draft">Draft</option>
+    </select>
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitEdit()">Save</button>
+      <button class="btn btn-gray" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="deleteModal">
+  <div class="modal-box">
+    <h3>Delete Category?</h3>
+    <p>This action cannot be undone.</p>
+
+    <div class="modal-btns">
+      <button class="btn btn-red" onclick="submitDelete()">Delete</button>
+      <button class="btn btn-gray" onclick="closeDeleteModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 
 <script>
-  function openAdd() {
-    const name = prompt("Enter category name:");
-    if (!name) return;
+  let editId = null;
+  let deleteId = null;
 
-    fetch("/admin/category/add", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ name:name, status:"Active" })
-    }).then(()=>location.reload());
+  /* ADD CATEGORY */
+  function openAddModal() {
+    document.getElementById("addModal").style.display = "flex";
   }
-
-  function openEdit(id, name, status) {
-    const newName = prompt("Edit Category Name:", name);
-    if (!newName) return;
-
-    const newStatus = prompt("Status (Active/Draft):", status);
-
-    fetch("/admin/category/edit", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ id, name:newName, status:newStatus })
-    }).then(()=>location.reload());
+  function closeAddModal() {
+    document.getElementById("addModal").style.display = "none";
   }
+  function submitAdd() {
+  const name = document.getElementById("addName").value;
+  const status = document.getElementById("addStatus").value;
 
-  function deleteCategory(id) {
-    if (!confirm("Delete this category?")) return;
+  fetch("/admin/category/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, status })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) location.reload();
+      else alert(data.msg);
+    });
+}
 
-    fetch("/admin/category/delete", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ id })
-    }).then(()=>location.reload());
+
+  /* EDIT CATEGORY */
+  function openEditModal(id, name, status) {
+    editId = id;
+    document.getElementById("editName").value = name;
+    document.getElementById("editStatus").value = status;
+    document.getElementById("editModal").style.display = "flex";
   }
+  function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+  }
+  function submitEdit() {
+  const name = document.getElementById("editName").value;
+  const status = document.getElementById("editStatus").value;
+
+  fetch("/admin/category/edit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: editId, name, status })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) location.reload();
+      else alert(data.msg);
+    });
+}
+
+
+  /* DELETE CATEGORY */
+  function openDeleteModal(id) {
+    deleteId = id;
+    document.getElementById("deleteModal").style.display = "flex";
+  }
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").style.display = "none";
+  }
+  function submitDelete() {
+  fetch("/admin/category/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: deleteId })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) location.reload();
+      else alert("Delete failed");
+    });
+}
+
 </script>
 
 </body>

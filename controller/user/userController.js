@@ -73,51 +73,46 @@ async function sendVerificationEmail(email, otp) {
   }
 }
 
-// SIGNUP HANDLER
+
+
+// SIGNUP (SEND OTP)
 const signup = async (req, res) => {
-  try {
-    const { name, phone, email, password, confirmPassword } = req.body;
+    try {
+        const { name, phone, email, password, cPassword } = req.body;
 
-    // ✔ FIX 1: Matching signup field names
-    if (password !== confirmPassword) {
-      return res.render("user/signup", { message: "Passwords do not match" });
+        if (password !== cPassword) {
+            return res.render("user/signup", { message: "Passwords do not match" });
+        }
+
+        const findUser = await User.findOne({ email });
+        if (findUser) {
+            return res.render("user/signup", { message: "User already exists with this email" });
+        }
+
+        const otp = generateOtp();
+        const emailSent = await sendVerificationEmail(email, otp);
+
+        if (!emailSent) {
+            return res.json("email-error");
+        }
+
+        req.session.userOtp = otp;
+        req.session.userData = { name, phone, email, password };
+
+        console.log("OTP sent:", otp);
+
+        return res.render("user/verify-otp");
+    } catch (error) {
+        console.error("Signup error", error);
+        res.redirect("/user/page-404");
     }
-
-    const findUser = await User.findOne({ email });
-    if (findUser) {
-      return res.render("user/signup", {
-        message: "User with this email already exists",
-      });
-    }
-
-    const otp = generateOtp();
-    const emailSent = await sendVerificationEmail(email, otp);
-
-    if (!emailSent) {
-      return res.render("user/signup", { message: "Email sending failed" });
-    }
-
-    // store in session
-    req.session.userOtp = otp;
-    req.session.userData = { name, phone, email, password };
-
-    console.log("OTP Sent:", otp);
-
-    // ✔ FIX 2: Render verify-otp page
-    return res.render("user/verify-otp", { message: "" });
-  } catch (error) {
-    console.error("signup error", error);
-    res.redirect("/pageNotFound");
-  }
 };
 
 // HASH PASSWORD
-// PASSWORD HASH FUNCTION
 const securePassword = async (password) => {
     try {
-        const passwordHash = await bcrypt.hash(password, 10);
-        return passwordHash;
-    } catch (error) {
+        return await bcrypt.hash(password, 10);
+    } catch {
         throw new Error("Password hashing failed");
     }
 };
@@ -126,9 +121,6 @@ const securePassword = async (password) => {
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
-
-        console.log("Entered OTP:", otp);
-        console.log("Stored OTP:", req.session.userOtp);
 
         if (!req.session.userOtp) {
             return res.json({
@@ -144,9 +136,7 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        // OTP MATCHED
         const user = req.session.userData;
-
         const passwordHash = await securePassword(user.password);
 
         const saveUserData = new User({
@@ -158,7 +148,6 @@ const verifyOtp = async (req, res) => {
 
         await saveUserData.save();
 
-        // Clear sensitive session data
         delete req.session.userOtp;
         delete req.session.userData;
 
@@ -177,47 +166,148 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-// //Resend OTP
-// const resendOtp = async (req, res) => {
-//     try {
-//         if (!req.session.userData || !req.session.userData.email) {
-//             return res.json({
-//                 success: false,
-//                 message: "Session expired. Please signup again."
-//             });
-//         }
+// RESEND OTP
+const resendOtp = async (req, res) => {
+    try {
+        if (!req.session.userData || !req.session.userData.email) {
+            return res.json({
+                success: false,
+                message: "Session expired. Please signup again.",
+            });
+        }
 
-//         // Generate new OTP
-//         const newOtp = generateOtp();
-//         req.session.userOtp = newOtp;
+        const newOtp = generateOtp();
+        req.session.userOtp = newOtp;
 
-//         // Send email again
-//         const emailSent = await sendVerificationEmail(req.session.userData.email, newOtp);
+        const emailSent = await sendVerificationEmail(req.session.userData.email, newOtp);
 
-//         if (!emailSent) {
-//             return res.json({
-//                 success: false,
-//                 message: "Failed to resend OTP. Try again."
-//             });
-//         }
+        if (!emailSent) {
+            return res.json({
+                success: false,
+                message: "Failed to resend OTP. Try again.",
+            });
+        }
 
-//         console.log("New OTP Sent:", newOtp);
+        console.log("New OTP Sent:", newOtp);
 
-//         return res.json({
-//             success: true,
-//             message: "New OTP sent successfully!"
-//         });
+        return res.json({
+            success: true,
+            message: "New OTP sent successfully!",
+        });
+    } catch (error) {
+        console.log("Resend OTP error:", error);
+        return res.json({
+            success: false,
+            message: "Something went wrong",
+        });
+    }
+};
 
-//     } catch (error) {
-//         console.log("Resend OTP error:", error);
-//         return res.json({
-//             success: false,
-//             message: "Something went wrong"
-//         });
+
+
+
+// const signup = async (req, res) => {
+//   try {
+//     const { name, phone, email, password, confirmPassword } = req.body;
+// console.log(req.body)
+//     //Matching signup field names
+//     if (password !== confirmPassword) {
+//       return res.render("user/signup", { message: "Passwords do not match" });
 //     }
+
+//     const findUser = await User.findOne({ email });
+//     if (findUser) {
+//       return res.render("user/signup", {
+//         message: "User with this email already exists",
+//       });
+//     }
+
+//     const otp = generateOtp();
+//     const emailSent = await sendVerificationEmail(email, otp);
+
+//     if (!emailSent) {
+//       return res.render("user/signup", { message: "Email sending failed" });
+//     }
+
+//     // store in session
+//     req.session.userOtp = otp;
+//     req.session.userData = { name, phone, email, password };
+
+//     console.log("OTP Sent:", otp);
+
+//     //Render verify-otp page
+//     return res.render("user/verify-otp", { message: "" });
+//   } catch (error) {
+//     console.error("signup error", error);
+//     res.redirect("/pageNotFound");
+//   }
 // };
 
 
+// PASSWORD HASH FUNCTION
+// const securePassword = async (password) => {
+//     try {
+//         const passwordHash = await bcrypt.hash(password, 10);
+//         return passwordHash;
+//     } catch (error) {
+//         throw new Error("Password hashing failed");
+//     }
+// };
+
+// VERIFY OTP
+// const verifyOtp = async (req, res) => {
+//     try {
+//         const { otp } = req.body;
+
+//         console.log("Entered OTP:", otp);
+//         console.log("Stored OTP:", req.session.userOtp);
+
+//         if (!req.session.userOtp) {
+//             return res.json({
+//                 success: false,
+//                 message: "OTP expired. Please request a new one.",
+//             });
+//         }
+
+//         if (otp !== req.session.userOtp.toString()) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Invalid OTP. Please try again",
+//             });
+//         }
+
+        // OTP MATCHED
+//         const user = req.session.userData;
+
+//         const passwordHash = await securePassword(user.password);
+
+//         const saveUserData = new User({
+//             name: user.name,
+//             email: user.email,
+//             phone: user.phone,
+//             password: passwordHash,
+//         });
+
+//         await saveUserData.save();
+
+//         // Clear session data
+//         delete req.session.userOtp;
+//         delete req.session.userData;
+
+//         req.session.user = saveUserData._id;
+
+//         return res.json({
+//             success: true,
+//             redirectUrl: "/login",
+//         });
+//     } catch (error) {
+//         console.error("Error verifying OTP", error);
+//         res.status(500).json({
+//             success: false,
+//             message: "An error occurred while verifying OTP",
+//         });
+//     }
+// };
 
 const loadLogin = async (req,res)=>{
     try{
@@ -238,7 +328,7 @@ const loadLogin = async (req,res)=>{
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+console.log(req.body)
     const findUser = await User.findOne({ isAdmin: false, email });
 
     if (!findUser) {
@@ -254,9 +344,9 @@ const login = async (req, res) => {
       return res.render("user/login", { message: "Incorrect Password" });
     }
 
-    // STORE SESSION PROPERLY
+    // STORE SESSION
     req.session.user = { _id: findUser._id };
-
+console.log(req.session.user)
     return res.redirect("/");
   } catch (error) {
     console.error("login error", error);
@@ -265,20 +355,20 @@ const login = async (req, res) => {
 };
 
 
-const logout = async (req, res)=>{
+const logout = async (req,res)=>{
 try {
-req.session.destroy ((err)=>{
+req.session.destroy(err =>{
 if(err){
-console.log("Session destruction error", err.message) ;
-return res.redirect("/pageNotFound");
+console.log ("Error destroying session",err);
+return res.redirect ("/pageerror");
 }
-return res.redirect ("/login" )
+res.redirect ("/login");
 })
-}catch (error) {
-console.log ("Logout error", error);
-res.redirect("/pageNotFound" )
-}
-}
+}catch(error) {
+console.log (("unexpected error during logout",error))
+
+res. redirect ("/pageerror")
+}}
 
 module.exports = {
   loadHomepage,

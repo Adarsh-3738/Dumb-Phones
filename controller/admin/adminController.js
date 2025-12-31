@@ -70,12 +70,12 @@ if(err){
 console.log ("Error destroying session",err);
 return res. redirect ("/pageerror");
 }
-res. redirect ("/admin/login");
+res.redirect ("/admin/login");
 })
 }catch(error) {
 console.log (("unexpected error during logout",error))
 
-res. redirect ("/pageerror")
+res.redirect ("/pageerror")
 }}
 
 module.exports = {

@@ -1,63 +1,344 @@
 <%- include("../../views/partials/admin/header") %>
 
-<div class="content-header row">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2 class="content-title card-title">Customers</h2>
-    </div>
-</div>
+<div class="page-wrapper">
 
-<header class="card-header text-center mb-20">
-    <form action="/admin/users/" method="get" class="d-inline">
-        <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px;">
-            <input type="text" class="form-control border-0 rounded-pill" placeholder="Search customers..." name="search">
-            <button class="btn border-0" type="submit">Search</button>
-        </div>
-    </form>
-</header>
+    <h2 class="page-title">User Management</h2>
 
-<div class="right mt-5">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th><b>Name</b></th>
-                <th><b>Email</b></th>
-                <th><b>Phone No</b></th>
-                <th><b>Action</b></th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for (let i = 0; i < data.length; i++) { %>
-                <tr>
-                    <td><%= data[i].name %></td>
-                    <td><%= data[i].email %></td>
-                    <td><%= data[i].phone %></td>
-                    <td>
-                        <% if (data[i].isBlocked === false) { %>
-                            <button class="btn btn-danger" style="width: 80px;">
-                                <a href="/admin/blockCustomer?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Block</a>
-                            </button>
-                        <% } else { %>
-                            <button class="btn btn-success" style="width: 80px;">
-                                <a href="/admin/blockCustomer?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Unblock</a>
-                            </button>
-                        <% } %>
-                    </td>
-                </tr>
+    <!-- Search -->
+    <div class="search-bar-wrapper">
+        <form action="/admin/users" method="get" class="input-group input-group-sm search-form">
+            <input type="text" name="search"
+                   class="form-control search-input"
+                   placeholder="Search customers..." value="<%= searchQuery || '' %>">
+            <button class="btn search-btn">Search</button>
+            <% if (searchQuery) { %>
+                <a href="/admin/users" class="clear-search">Clear</a>
             <% } %>
-        </tbody>
-    </table>
-</div>
+        </form>
+    </div>
 
-<div class="container mt-3">
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+    <!-- Card -->
+    <div class="users-card">
+
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th><b>Name</b></th>
+                    <th><b>Email</b></th>
+                    <th><b>Phone No</b></th>
+                    <th><b>Status</b></th>
+                    <th><b>Action</b></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% data.forEach(user => { %>
+                    <tr>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.phone %></td>
+
+                        <td>
+                            <% if (user.isBlocked) { %>
+                                <span class="status blocked">Blocked</span>
+                            <% } else { %>
+                                <span class="status active">Active</span>
+                            <% } %>
+                        </td>
+
+                        <td>
+                            <td>
+    <button class="btn <%= user.isBlocked ? 'btn-unblock' : 'btn-block' %>" 
+            data-id="<%= user._id %>"
+            data-name="<%= user.name %>"
+            data-status="<%= user.isBlocked ? 'unblock' : 'block' %>">
+        <%= user.isBlocked ? 'Unblock' : 'Block' %>
+    </button>
+</td>
+
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
             <% for (let i = 1; i <= totalPages; i++) { %>
                 <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    <a class="page-link" href="?page=<%= i %>&search=<%= searchQuery || '' %>">
+                        <%= i %>
+                    </a>
                 </li>
             <% } %>
         </ul>
     </nav>
+
 </div>
 
 <%- include("../../views/partials/admin/footer") %>
+
+<style>
+
+/* --- Main Wrapper --- */
+.page-wrapper {
+    margin-left: 260px;
+    padding: 35px;
+    background: #f3f6fb;
+    min-height: 100vh;
+}
+
+/* Title */
+.page-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e3a8a;
+    letter-spacing: 0.5px;
+    margin-bottom: 25px;
+}
+
+/* Search Section */
+.search-bar-wrapper {
+    width: 520px;
+    margin: 0 auto 30px auto;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    border-radius: 50px 0 0 50px;
+    padding-left: 20px;
+    border: 1px solid #c7d2fe;
+    height: 42px;
+}
+
+.search-btn {
+    background: #3b82f6;
+    color: white;
+    border-radius: 0 50px 50px 0;
+    padding: 8px 22px;
+    height: 42px;
+    font-weight: 600;
+}
+
+.search-btn:hover {
+    background: #2563eb;
+}
+
+.clear-search {
+    margin-left: 10px;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.clear-search:hover {
+    text-decoration: underline;
+}
+
+/* Card Container */
+.users-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.06);
+}
+
+/* Table */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.custom-table thead {
+    background: #e7efff;
+}
+
+.custom-table thead th {
+    padding: 14px;
+    color: #1e40af;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody tr {
+    background: #f9fbff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+}
+
+.custom-table tbody tr td {
+    padding: 14px;
+    vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+    background: #eef4ff;
+    transition: 0.25s ease-in-out;
+}
+
+/* Status Badges */
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status.blocked {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Buttons */
+.btn-block {
+    width: 90px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: white !important;
+    padding: 6px 0;
+    font-weight: 600;
+}
+
+.btn-block:hover {
+    background: #d62828;
+}
+
+.btn-unblock {
+    width: 90px;
+    border-radius: 8px;
+    background: #10b981;
+    color: white !important;
+    padding: 6px 0;
+    font-weight: 600;
+}
+
+.btn-unblock:hover {
+    background: #059669;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #1e40af;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: 600;
+}
+
+.pagination .active .page-link {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+
+
+
+</style>
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:400px; margin:100px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+        <p id="modal-message" style="font-size:16px; margin-bottom:20px;"></p>
+        <div style="text-align:right;">
+            <button id="modalCancel" style="margin-right:10px; padding:6px 12px;">Cancel</button>
+            <button id="modalConfirm" style="background:#3b82f6; color:#fff; padding:6px 12px;">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+</style>
+
+
+
+<!-- ajax for modal -->
+
+<script>
+let selectedButton = null;
+
+document.querySelectorAll('.btn-block, .btn-unblock').forEach(button => {
+    button.addEventListener('click', (e) => {
+        selectedButton = e.target;
+        const userName = selectedButton.dataset.name;
+        const action = selectedButton.dataset.status;
+
+        // Show modal
+        document.getElementById('modal-message').textContent = `Are you sure you want to ${action} ${userName}?`;
+        document.getElementById('confirmationModal').style.display = 'block';
+    });
+});
+
+// Cancel button
+document.getElementById('modalCancel').addEventListener('click', () => {
+    document.getElementById('confirmationModal').style.display = 'none';
+    selectedButton = null;
+});
+
+// Confirm button
+document.getElementById('modalConfirm').addEventListener('click', async () => {
+    if (!selectedButton) return;
+
+    const userId = selectedButton.dataset.id;
+
+    try {
+        const res = await fetch('/admin/blockCustomer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: userId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            const row = selectedButton.closest('tr');
+            const statusCell = row.querySelector('.status');
+
+            if (selectedButton.classList.contains('btn-block')) {
+                selectedButton.classList.remove('btn-block');
+                selectedButton.classList.add('btn-unblock');
+                selectedButton.textContent = 'Unblock';
+                selectedButton.dataset.status = 'unblock';
+                statusCell.textContent = 'Blocked';
+                statusCell.className = 'status blocked';
+            } else {
+                selectedButton.classList.remove('btn-unblock');
+                selectedButton.classList.add('btn-block');
+                selectedButton.textContent = 'Block';
+                selectedButton.dataset.status = 'block';
+                statusCell.textContent = 'Active';
+                statusCell.className = 'status active';
+            }
+        } else {
+            alert('Failed to update user status.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Something went wrong!');
+    } finally {
+        document.getElementById('confirmationModal').style.display = 'none';
+        selectedButton = null;
+    }
+});
+</script>

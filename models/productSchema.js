@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const {schema} = mongoose;
+const { Schema } = mongoose;
 
-const ProductSchema = new schema({
+const ProductSchema = new Schema({
     productName:{
         type:String,
         required:true,
@@ -10,10 +10,11 @@ const ProductSchema = new schema({
         type:String,
         required:true,
     },
-    brand:{
-        type:String,
-        required:true,
-    },
+    brand: { 
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Brand",
+         required: true },
+    
     category:{
         type:Schema.Types.ObjectId,
         ref:"Category",
@@ -33,16 +34,19 @@ const ProductSchema = new schema({
     },
     quantity:{
         type:Number,
-        default:true,
+        default:0,
     },
     color:{
         type:String,
         required:true
     },
-    productImage:{
-        type:[String],
-        required:true
-    },
+    productImage: [
+  {
+    url: String,
+    public_id: String //for removing images from cloudinary
+  }
+]
+,
     isBlocked:{
         type:Boolean,
         default:false
@@ -51,7 +55,7 @@ const ProductSchema = new schema({
         type:String,
         enum:["Available","out of stock","Discontinued"],
         required:true,
-        dafault:"Available"
+        default:"Available"
     },   
     },{timestamps:true});
 

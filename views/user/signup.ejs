@@ -135,21 +135,23 @@
 
   <!-- CONFIRM PASSWORD -->
   <div class="input-box">
-    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
-    <span class="eye-icon" onclick="togglePassword('confirmPassword')">👁️</span>
+    <input type="password" id="cPassword" name="cPassword" placeholder="Confirm Password" required />
+    <span class="eye-icon" onclick="togglePassword('cPassword')">👁️</span>
     <div id="error5" class="error-message"></div>
   </div>
-<%if(locals.message && message. length>0){%>
-    <div class="alert alert-danger text-center">
-   <%=messages%>
-</div>
-<%}%> 
+<% if (locals.message && message.length > 0) { %>
+  <div class="alert alert-danger text-center">
+    <%= message %>
+  </div>
+<% } %>
+
+
   <button type="submit">Create Account</button>
 
 </form>
 
 
-    <!-- GOOGLE SIGN-IN -->
+    <!-- GOOGLE SIGN IN -->
      <a href="/auth/google" style="text-decoration: none;">
   <div style="
         margin-top: 16px;

@@ -14,6 +14,7 @@ const customerInfo = async (req, res) => {
                 { email: { $regex: search, $options: "i" } },
             ],
         })
+            .sort({ _id: -1 }) 
             .limit(limit)
             .skip((page - 1) * limit);
 
@@ -31,6 +32,7 @@ const customerInfo = async (req, res) => {
             data: userData,
             currentPage: page,
             totalPages: totalPages,
+             searchQuery: search,
         });
 
     } catch (error) {
@@ -41,12 +43,15 @@ const customerInfo = async (req, res) => {
 
 const customerBlocked = async (req, res) => {
     try {
-        const id = req.query.id;
-        await User.findByIdAndUpdate(id, { isBlocked: true });
-        res.redirect("/admin/users");
-    } catch (error) {
-        console.log("Error in block customer", error);
-        res.redirect("/pageNotFound");
+        const userId = req.body.id;
+        const user = await User.findById(userId);
+
+        user.isBlocked = !user.isBlocked;
+        await user.save();
+
+        return res.json({ success: true });
+    } catch (err) {
+        return res.json({ success: false });
     }
 };
 
@@ -61,8 +66,25 @@ const customerunBlocked = async (req, res) => {
     }
 };
 
+
+
+ const blockCustomer = async (req, res) => {
+    try {
+        const userId = req.body.id;
+        const user = await User.findById(userId);
+
+        user.isBlocked = !user.isBlocked;
+        await user.save();
+
+        return res.json({ success: true });
+    } catch (err) {
+        return res.json({ success: false });
+    }
+};
+
 module.exports = {
     customerInfo,
     customerBlocked,
-    customerunBlocked
+    customerunBlocked,
+    blockCustomer,
 };

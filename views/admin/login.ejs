@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
     body {
@@ -72,37 +73,25 @@
       color: #111;
     }
 
-    .password-wrapper {
-      position: relative;
-    }
+   .password-wrapper {
+  position: relative;
+}
 
-    .password-wrapper img {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 22px;
-      cursor: pointer;
-      opacity: 0.6;
-    }
+.password-wrapper i {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+  opacity: 0.9;
+ 
+}
 
-    .remember {
-      display: flex;
-      align-items: center;
-      margin-bottom: 22px;
-    }
 
-    .remember input {
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
-    }
 
-    .remember label {
-      margin: 0;
-      font-weight: normal;
-      color: #374151;
-    }
+    
 
     button {
       width: 100%;
@@ -141,18 +130,33 @@
 
       <label>Password</label>
       <div class="password-wrapper">
-        <input type="password" name="password" placeholder="Enter your password" required />
-        <img src="/images/eye.png" alt="toggle">
-      </div>
+        <input type="password" id="password" name="password" required placeholder="Enter your password" />
+<i class="fa-solid fa-eye" id="toggleEye"></i>
 
-      <div class="remember">
-        <input type="checkbox" id="remember">
-        <label for="remember">Remember me</label>
       </div>
 
       <button type="submit">Log In</button>
     </form>
   </div>
+
+  <!-- Show/Hide Password -->
+  <script>
+    const input = document.getElementById("password");
+const icon = document.getElementById("toggleEye");
+
+icon.addEventListener("click", () => {
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+});
+
+  </script>
 
 </body>
 </html>
