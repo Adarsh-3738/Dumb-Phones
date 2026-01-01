@@ -13,11 +13,12 @@ const adminRouter = require("./routes/adminRouter");
 const db = require("./config/db");
 db();
 
-// ----- Middlewares -----
+
+// Middlewares 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ----- Session -----
+// Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -31,19 +32,24 @@ app.use(
   })
 );
 
-// ----- Passport -----
+
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ----- View Engine -----
+// Make logged-in user available in all EJS views
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
+// View Engine 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ----- Static -----
+//  Static
 app.use(express.static(path.join(__dirname, "public")));
 
-// -------------------- ROUTES -------------------------
-
+// ROUTES
 // USER SIDE
 app.use("/", userRouter);
 
@@ -52,7 +58,7 @@ app.use("/admin", adminRouter);
 
 
 
-// ------------------------------------------------------
+
 
 // SERVER
 app.listen(process.env.PORT, () => {

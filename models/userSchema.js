@@ -78,7 +78,10 @@ const userSchema = new Schema({
            type: Date,
            default: Date.now
        }
-   }]
+   }],
+   resetPasswordToken: String,//for the forgot password
+   resetPasswordExpires: Date
+
  
 })
 

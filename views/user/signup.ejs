@@ -96,10 +96,12 @@
     }
 
     .error-message {
-         color: red;
-         font-size : 0.75rem;
-         display:none;
-    }
+  color: red;
+  font-size: 0.75rem;
+  display: block;   
+}
+
+    
   </style>
 
 <body>
@@ -178,18 +180,21 @@
     <a href="/login">Log in</a>
 </div>
 
-  <script>
+  <script>//for validation
+
 function togglePassword(id) {
   const input = document.getElementById(id);
   input.type = input.type === "password" ? "text" : "password";
 }
 
-const nameid = document.getElementById("name");
-const phoneid = document.getElementById("phone");
-const emailid = document.getElementById("email");
-const passid = document.getElementById("password");
-const cpassid = document.getElementById("confirmPassword");
+// Input fields
+const nameField = document.getElementById("name");
+const phoneField = document.getElementById("phone");
+const emailField = document.getElementById("email");
+const passwordField = document.getElementById("password");
+const cPasswordField = document.getElementById("cPassword");
 
+// Error elements
 const error1 = document.getElementById("error1");
 const error2 = document.getElementById("error2");
 const error3 = document.getElementById("error3");
@@ -204,48 +209,52 @@ function clearErrors() {
   error5.textContent = "";
 }
 
-function nameValidateChecking() {
-  const nameval = nameid.value.trim();
-  const namepattern = /^[A-Za-z\s]+$/;
-
-  if (!namepattern.test(nameval)) {
-    error1.textContent = "Enter a valid name (letters only)";
+// NAME VALIDATION
+function validateName() {
+  const value = nameField.value.trim();
+  const pattern = /^[A-Za-z\s]{3,}$/; // Only letters and spaces, min 3 chars
+  if (!pattern.test(value)) {
+    error1.textContent = "Enter a valid name (at least 3 letters, letters only)";
     return false;
   }
   return true;
 }
 
-function emailValidateChecking() {
-  const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
-
-  if (!emailpattern.test(emailid.value.trim())) {
-    error3.textContent = "Invalid Email Format";
-    return false;
-  }
-  return true;
-}
-
-function phoneValidateChecking() {
-  const phone = phoneid.value.trim();
-
-  if (phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
+// PHONE VALIDATION
+function validatePhone() {
+  const value = phoneField.value.trim();
+  if (!/^\d{10}$/.test(value)) {
     error2.textContent = "Enter a valid 10-digit phone number";
     return false;
   }
   return true;
 }
 
-function passValidateChecking() {
-  const passval = passid.value;
-  const cpassval = cpassid.value;
+// EMAIL VALIDATION
+function validateEmail() {
+  const value = emailField.value.trim();
+  const pattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[A-Za-z]{2,}$/;
+  if (!pattern.test(value)) {
+    error3.textContent = "Enter a valid email address";
+    return false;
+  }
+  return true;
+}
+
+// PASSWORD VALIDATION
+function validatePassword() {
+  const password = passwordField.value;
+  const cPassword = cPasswordField.value;
+  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
   let valid = true;
 
-  if (passval.length < 8) {
-    error4.textContent = "Password must be at least 8 characters";
+  if (!pattern.test(password)) {
+    error4.textContent = "Password must be 8+ chars, include uppercase, lowercase, number & special char";
     valid = false;
   }
 
-  if (passval !== cpassval) {
+  if (password !== cPassword) {
     error5.textContent = "Passwords do not match";
     valid = false;
   }
@@ -253,18 +262,27 @@ function passValidateChecking() {
   return valid;
 }
 
+// REAL-TIME VALIDATION 
+nameField.addEventListener("input", () => { error1.textContent = ""; });
+phoneField.addEventListener("input", () => { error2.textContent = ""; });
+emailField.addEventListener("input", () => { error3.textContent = ""; });
+passwordField.addEventListener("input", () => { error4.textContent = ""; });
+cPasswordField.addEventListener("input", () => { error5.textContent = ""; });
+
+// FORM SUBMISSION
 document.getElementById("signform").addEventListener("submit", function (e) {
   clearErrors();
 
-  const valid =
-    nameValidateChecking() &&
-    emailValidateChecking() &&
-    phoneValidateChecking() &&
-    passValidateChecking();
+  const isValid =
+    validateName() &&
+    validatePhone() &&
+    validateEmail() &&
+    validatePassword();
 
-  if (!valid) {
+  if (!isValid) {
     e.preventDefault();
   }
 });
 </script>
+
 
