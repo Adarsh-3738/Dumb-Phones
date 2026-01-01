@@ -45,11 +45,65 @@
       position: relative;
       z-index: 500;
     }
+/* SEARCH FORM CONTAINER */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* SEARCH INPUT */
+.search-form input {
+  width: 260px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-form input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* SEARCH BUTTON */
+.search-form button {
+  padding: 10px 18px;
+  background: #2563eb; /* Blue */
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.search-form button:hover {
+  background: #1e40af;
+}
+
+/* CLEAR BUTTON */
+.clear-btn {
+  padding: 10px 16px;
+  background: #e0e7ff;
+  color: #1e3a8a;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #c7d2fe;
+}
 
 
-    /* =======================================================================
-       LOGOUT CONFIRMATION MODAL (BLUE & WHITE THEME)
-       ======================================================================= */
+    /*    LOGOUT CONFIRMATION MODAL  */
 
     /* Modal Overlay */
     .logout-modal {
@@ -143,18 +197,37 @@
       <img src="/images/logo.png" alt="Dumb Phones Logo" />
       <span>Dumb Phones</span>
     </div>
+<!-- search button -->
+   <form action="/" method="GET" class="search-form">
+  <input
+    type="text"
+    name="search"
+    placeholder="Search products..."
+    value="<%= search || '' %>"
+  />
 
-    <div class="search-box">
-      <input type="text" placeholder="Search for mobiles..." />
-    </div>
+  <button type="submit">Search</button>
+
+  <% if (search) { %>
+    <a href="/" class="clear-btn">Clear</a>
+  <% } %>
+
+  <!-- Preserve filters when searching -->
+  <input type="hidden" name="sort" value="<%= sort || '' %>">
+  <input type="hidden" name="brand" value="<%= brand || '' %>">
+  <input type="hidden" name="category" value="<%= category || '' %>">
+  <input type="hidden" name="price" value="<%= price || '' %>">
+</form>
+
+
 
     <div class="nav-icons">
       <a href="#" title="Wishlist">❤</a>
       <a href="#" title="Cart">🛒</a>
 
-      <% if (locals.user) { %>
+      <% if (user) { %>
       <div class="dropdown">
-        <a href="#" class="sign-in-link"><%= locals.user.name %></a>
+        <a href="#" class="sign-in-link"><%= user.name %></a>
         <div class="dropdown-content">
           <a href="/user/userProfile">Profile</a>
 

@@ -115,6 +115,46 @@
       background: #ddd;
     }
 
+.input-box {
+      width: 100%;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input-box input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 4px rgba(37, 99, 235, 0.4);
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #777;
+    }
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+}
+
+
+
+
     /* GOOGLE BUTTON */
     .google-btn {
       width: 100%;
@@ -165,16 +205,20 @@
     <form action="/login" method="POST">
 
       <label>Email address</label>
-      <input type="email" name="email" placeholder="Enter email" required>
+      <input type="email"id="email" name="email" placeholder="Enter email" required>
 
-      <label>Password</label>
-      <input type="password" name="password" placeholder="Enter password" required>
+      <div class="input-box">
+    <input type="password" id="password" name="password" placeholder="Password" required />
+    <span class="eye-icon" onclick="togglePassword('password')">👁️</span>
+    <div id="error4" class="error-message"></div>
+  </div>
       <!-- for user not found -->
-      <%if(locals.message && message. length>0){%>
-    <div class="alert alert-danger text-center">
-   <%=messages%>
-</div>
-<%}%> 
+    <% if (message) { %>
+  <div class="alert alert-danger text-center">
+    <%= message %>
+  </div>
+<% } %>
+
       <div class="remember-forgot">
         <div class="remember-left">
           <input type="checkbox" id="remember">
@@ -188,18 +232,75 @@
 
     <div class="divider">Or continue with</div>
 
-    <!-- GOOGLE BUTTON (WITH LOGO) -->
-    <button class="google-btn">
-      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
-      Google
-    </button>
-
-    <p class="signup-link">
-      Don't have an account? <a href="/signup">Sign up</a>
-    </p>
-
+    <!-- GOOGLE SIGN IN -->
+     <a href="/auth/google" style="text-decoration: none;">
+  <div style="
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #fff;
+      ">
+        <img src="https://developers.google.com/identity/images/g-logo.png" 
+             alt="Google Logo" width="20" />
+        <span style="font-size: 15px; color: #444; font-weight: 500;">
+          Continue with Google
+        </span>
   </div>
+</a>
+  </div>
+<script>
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+}
 
+// for validation
+document.querySelector("form").addEventListener("submit", function (e) {
+  let valid = true;
+
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+
+  // Clear previous errors
+  document.querySelectorAll(".error-text").forEach(el => el.remove());
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email.value.trim()) {
+    showError(email, "Email is required");
+    valid = false;
+  } else if (!emailRegex.test(email.value)) {
+    showError(email, "Enter a valid email");
+    valid = false;
+  }
+
+  // Password validation
+  if (!password.value.trim()) {
+    showError(password, "Password is required");
+    valid = false;
+  } else if (password.value.length < 6) {
+    showError(password, "Password must be at least 6 characters");
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+
+function showError(input, message) {
+  const error = document.createElement("div");
+  error.className = "error-text";
+  error.innerText = message;
+  input.parentElement.appendChild(error);
+}
+
+
+</script>
 </body>
 </html>
 
