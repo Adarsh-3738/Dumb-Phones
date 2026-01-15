@@ -1,89 +1,113 @@
-const Brand = require("../../models/brandSchema");
+import {
+  fetchBrands,
+  createBrand,
+  getBrandById,
+  removeBrandById,
+} from "../../services/admin/brandService.js";
+import logger from "../../utils/logger.js";
 
-// ---------------------------------
 // LOAD BRAND LIST PAGE
-// ---------------------------------
-exports.getBrands = async (req, res) => {
+export const getBrands = async (req, res) => {
   try {
-    const brands = await Brand.find().lean();
-    res.render("admin/brandList", {
-      brands,
-      totalBrands: brands.length
+    const { brands, totalBrands } = await fetchBrands();
+
+    logger.info("Brand list loaded", {
+      totalBrands,
     });
 
+    res.render("admin/brandList", { brands, totalBrands });
   } catch (error) {
-    console.log("Error loading brand list:", error);
+    logger.error("Error loading brand list", {
+      message: error.message,
+      stack: error.stack,
+    });
     res.redirect("/admin/pageNotFound");
   }
 };
 
-// ---------------------------------
 // LOAD ADD BRAND PAGE
-// ---------------------------------
-exports.getAddBrand = async (req, res) => {
+export const getAddBrand = async (req, res) => {
   try {
+    logger.info("Add brand page loaded");
     res.render("admin/addBrand");
   } catch (error) {
-    console.log("Error loading add brand page:", error);
+    logger.error("Error loading add brand page", {
+      message: error.message,
+      stack: error.stack,
+    });
     res.redirect("/admin/pageNotFound");
   }
 };
 
-// ---------------------------------
 // ADD NEW BRAND
-// ---------------------------------
-exports.postAddBrand = async (req, res) => {
+export const postAddBrand = async (req, res) => {
   try {
     const { name, country, founded, website } = req.body;
+    let logo = req.file ? "/uploads/brands/" + req.file.filename : null;
 
-    let logo = null;
-
-    if (req.file) {
-      logo = "/uploads/brands/" + req.file.filename;   // multer upload path
-    }
-
-    const newBrand = new Brand({
+    logger.info("Creating new brand", {
       name,
       country,
       founded,
-      website,
-      logo
     });
 
-    await newBrand.save();
-    res.redirect("/admin/brands");
+    await createBrand({ name, country, founded, website, logo });
 
+    logger.info("Brand created successfully", { name });
+
+    res.redirect("/admin/brands");
   } catch (error) {
-    console.log("Error adding brand:", error);
+    logger.error("Error adding brand", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body,
+    });
     res.redirect("/admin/add-brand");
   }
 };
 
-// ---------------------------------
 // VIEW SINGLE BRAND
-// ---------------------------------
-exports.viewBrand = async (req, res) => {
+export const viewBrand = async (req, res) => {
   try {
-    const brand = await Brand.findById(req.params.id).lean();
-    if (!brand) return res.redirect("/admin/brands");
+    const brandId = req.params.id;
+
+    logger.info("Viewing brand", { brandId });
+
+    const brand = await getBrandById(brandId);
+    if (!brand) {
+      logger.warn("Brand not found", { brandId });
+      return res.redirect("/admin/brands");
+    }
 
     res.render("admin/viewBrand", { brand });
   } catch (error) {
-    console.log("Error viewing brand:", error);
+    logger.error("Error viewing brand", {
+      message: error.message,
+      stack: error.stack,
+      brandId: req.params.id,
+    });
     res.redirect("/admin/brands");
   }
 };
 
-// ---------------------------------
 // DELETE BRAND
-// ---------------------------------
-exports.deleteBrand = async (req, res) => {
+export const deleteBrand = async (req, res) => {
   try {
-    await Brand.findByIdAndDelete(req.params.id);
-    res.redirect("/admin/brands");
+    const brandId = req.params.id;
 
+    logger.warn("Deleting brand", { brandId });
+
+    await removeBrandById(brandId);
+
+    logger.info("Brand deleted successfully", { brandId });
+
+    res.redirect("/admin/brands");
   } catch (error) {
-    console.log("Error deleting brand:", error);
+    logger.error("Error deleting brand", {
+      message: error.message,
+      stack: error.stack,
+      brandId: req.params.id,
+    });
     res.redirect("/admin/brands");
   }
 };

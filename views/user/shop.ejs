@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shop Products</title>
+
+  <!-- SHOP CSS -->
+  <link rel="stylesheet" href="/css/user/shop.css">
+</head>
+
+<body>
+
+  <!-- header -->
+  <%- include("../../views/partials/user/header") %>
+
+  <h2>Shop Products</h2>
+
+  <!-- SORT -->
+  <form method="GET" action="/shop">
+    <label for="sort">Sort by:</label>
+    <select name="sort" id="sort" onchange="this.form.submit()">
+      <option value="">Default</option>
+      <option value="priceLowHigh" <%= sort === 'priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
+      <option value="priceHighLow" <%= sort === 'priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
+      <option value="nameAZ" <%= sort === 'nameAZ' ? 'selected' : '' %>>Name: A → Z</option>
+      <option value="nameZA" <%= sort === 'nameZA' ? 'selected' : '' %>>Name: Z → A</option>
+    </select>
+  </form>
+
+  <!-- FILTER -->
+  <form method="GET" action="/shop" class="filter-form">
+
+    <!-- CATEGORY -->
+    <select name="category">
+      <option value="">All Categories</option>
+      <% categories.forEach(c => { %>
+        <option value="<%= c._id %>" <%= category == c._id.toString() ? 'selected' : '' %>>
+          <%= c.name %>
+        </option>
+      <% }) %>
+    </select>
+
+    <!-- BRAND -->
+    <select name="brand">
+      <option value="">All Brands</option>
+      <% brands.forEach(b => { %>
+        <option value="<%= b._id %>" <%= brand == b._id.toString() ? 'selected' : '' %>>
+          <%= b.name %>
+        </option>
+      <% }) %>
+    </select>
+
+    <!-- PRICE -->
+    <select name="price">
+      <option value="">All Prices</option>
+      <option value="0-1000" <%= price === '0-1000' ? 'selected' : '' %>>Below ₹1000</option>
+      <option value="1000-5000" <%= price === '1000-5000' ? 'selected' : '' %>>₹1000 - ₹5000</option>
+      <option value="5000-10000" <%= price === '5000-10000' ? 'selected' : '' %>>₹5000 - ₹10000</option>
+      <option value="10000-999999" <%= price === '10000-999999' ? 'selected' : '' %>>Above ₹10000</option>
+    </select>
+
+    <!-- PRESERVE STATE -->
+    <input type="hidden" name="sort" value="<%= sort || '' %>">
+    <input type="hidden" name="search" value="<%= search || '' %>">
+
+    <button type="submit">Apply Filters</button>
+  </form>
+
+  <!-- PRODUCTS -->
+  <div class="product-grid">
+    <% products.forEach(product => { %>
+      <a href="/product/<%= product._id %>" class="product-link">
+        <div class="product-card">
+
+          <% if (product.productImage?.length) { %>
+            <img src="<%= product.productImage[0].url %>" alt="<%= product.productName %>">
+          <% } else { %>
+            <img src="/images/no-image.png" alt="No image">
+          <% } %>
+
+          <h4><%= product.productName %></h4>
+
+          <p class="brand">Brand: <%= product.brand?.name || "N/A" %></p>
+          <p class="category">Category: <%= product.category?.name || "N/A" %></p>
+          <p class="price">₹ <%= product.salesPrice %></p>
+
+        </div>
+      </a>
+    <% }) %>
+  </div>
+
+  <!-- PAGINATION -->
+  <% if (totalPages > 1) { %>
+    <div class="pagination">
+
+      <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>">&laquo; Prev</a>
+      <% } else { %>
+        <span class="disabled">&laquo; Prev</span>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <% if (i === currentPage) { %>
+          <span class="current"><%= i %></span>
+        <% } else { %>
+          <a href="?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>"><%= i %></a>
+        <% } %>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>">Next &raquo;</a>
+      <% } else { %>
+        <span class="disabled">Next &raquo;</span>
+      <% } %>
+
+    </div>
+  <% } %>
+
+  <!-- footer -->
+  <%- include("../../views/partials/user/footer") %>
+
+</body>
+</html>

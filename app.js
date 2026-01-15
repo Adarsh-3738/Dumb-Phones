@@ -1,20 +1,35 @@
-const express = require("express");
-const app = express();
-const env = require("dotenv").config();
-const path = require("path");
-const session = require("express-session");
-const passport = require("./config/passport");
+import express from "express";
+import dotenv from "dotenv";
+import path from "path";
+import session from "express-session";
+import passport from "./config/passport.js";
+import userRouter from "./routes/userRouter.js";
+import adminRouter from "./routes/adminRouter.js";
+import db from "./config/db.js";
+import { fileURLToPath } from "url";
 
-// Routers
-const userRouter = require("./routes/userRouter");
-const adminRouter = require("./routes/adminRouter");
+dotenv.config();
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
 
 // DB
-const db = require("./config/db");
 db();
 
+// Header search defaults
+app.use((req, res, next) => {
+  res.locals.search = "";
+  res.locals.sort = "";
+  res.locals.brand = "";
+  res.locals.category = "";
+  res.locals.price = "";
+  next();
+});
 
-// Middlewares 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -32,7 +47,6 @@ app.use(
   })
 );
 
-
 // Passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -42,27 +56,32 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
-// View Engine 
+
+// View Engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-//  Static
+// Static
 app.use(express.static(path.join(__dirname, "public")));
 
-// ROUTES
-// USER SIDE
-app.use("/", userRouter);
-
-// ADMIN MAIN ROUTES (Dashboard, Login, Categories, Brands, etc.)
-app.use("/admin", adminRouter);
-
-
-
-
-
-// SERVER
-app.listen(process.env.PORT, () => {
-  console.log("server is running on port", process.env.PORT);
+// Cache control
+app.use((req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, private"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
 });
 
-module.exports = app;
+// Routes
+app.use("/", userRouter);
+app.use("/admin", adminRouter);
+
+// Server
+app.listen(process.env.PORT, () => {
+  console.log("Server running on port", process.env.PORT);
+});
+
+export default app;

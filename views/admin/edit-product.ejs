@@ -1,156 +1,11 @@
 <%- include("../partials/admin/header") %>
-
+<link rel="stylesheet" href="/css/admin/edit-product.css">
 <!-- Cropper.js -->
 <link
   rel="stylesheet"
   href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css"
 />
 
-<style>
-  body {
-    background: #f4f8ff;
-  }
-
-  .card {
-    max-width: 900px;
-    margin: 30px auto 50px 260px;
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 30px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  }
-
-  h2 {
-    color: #1e40af;
-    margin-bottom: 20px;
-  }
-
-  label {
-    display: block;
-    margin: 14px 0 6px;
-    font-weight: 500;
-    color: #374151;
-  }
-
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    outline: none;
-    font-size: 14px;
-    background: #ffffff;
-  }
-
-  input:focus,
-  textarea:focus,
-  select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 90px;
-  }
-
-  .submit-btn {
-    margin-top: 25px;
-    width: 100%;
-    padding: 12px;
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .submit-btn:hover {
-    background: #1d4ed8;
-  }
-
-  .cancel-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 12px;
-    background: #ffffff;
-    color: #2563eb;
-    border: 1px solid #2563eb;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .cancel-btn:hover {
-    background: #eff6ff;
-  }
-
-  /* IMAGE GRID */
-  .image-grid {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-
-  .image-box {
-    position: relative;
-  }
-
-  .image-box img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-  }
-
-  .remove-img-btn {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #ef4444;
-    color: #ffffff;
-    border: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 22px;
-    text-align: center;
-  }
-
-  .remove-img-btn:hover {
-    background: #dc2626;
-  }
-
-  /* Toast Notification */
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    background: #2563eb;
-    color: #ffffff;
-    font-weight: 500;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.4s ease;
-    z-index: 10000;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-</style>
 
 <div class="card">
   <h2>Edit Product</h2>
@@ -164,18 +19,19 @@
     <label>Product Name</label>
     <input type="text" name="productName" value="<%= product.productName %>" required />
 
-    <label>Regular Price</label>
-    <input type="number" name="regularPrice" value="<%= product.regularPrice %>" required />
+   <label>Regular Price</label>
+<input type="number" name="regularPrice" value="<%= product.regularPrice %>" min="1" required />
 
-    <label>Sales Price</label>
-    <input type="number" name="salesPrice" value="<%= product.salesPrice %>" required />
+<label>Sales Price</label>
+<input type="number" name="salesPrice" value="<%= product.salesPrice %>" min="1" required />
+
+<label>Stock</label>
+<input type="number" name="quantity" value="<%= product.quantity %>" min="1" required />
 
     <label>Color</label>
     <input type="text" name="color" value="<%= product.color %>" />
 
-    <label>Stock</label>
-    <input type="number" name="quantity" value="<%= product.quantity %>" required />
-
+    
     <label>Description</label>
     <textarea name="description"><%= product.description %></textarea>
 
@@ -230,100 +86,7 @@
 
 <!-- Cropper.js JS -->
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
-<script>
-  // --- IMAGE CROPPER ---
-  let cropper;
-  let selectedFiles = [];
-  let croppedFiles = [];
-  let currentIndex = 0;
 
-  const imageInput = document.getElementById("imageInput");
-
-  imageInput.addEventListener("change", (e) => {
-    selectedFiles = Array.from(e.target.files);
-
-    if (selectedFiles.length < 1) {
-      alert("Select at least 1 image");
-      imageInput.value = "";
-      return;
-    }
-
-    currentIndex = 0;
-    croppedFiles = [];
-    cropImage(selectedFiles[currentIndex]);
-  });
-
-  function cropImage(file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = document.createElement("img");
-      img.src = reader.result;
-      img.style.display = "none";
-      document.body.appendChild(img);
-
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(img, {
-        aspectRatio: 1,
-        viewMode: 2,
-        autoCropArea: 1,
-        ready() {
-          const blob = cropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob((b) => {
-            const f = new File([b], file.name, { type: "image/jpeg" });
-            croppedFiles.push(f);
-            currentIndex++;
-            cropper.destroy();
-            img.remove();
-
-            if (currentIndex < selectedFiles.length) cropImage(selectedFiles[currentIndex]);
-            else finalizeFiles();
-          });
-        }
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function finalizeFiles() {
-    const dt = new DataTransfer();
-    croppedFiles.forEach(f => dt.items.add(f));
-    imageInput.files = dt.files;
-    showToast("Images ready for upload!");
-  }
-
-  // --- REMOVE IMAGE ---
-  async function removeImage(productId, publicId, btn) {
-    const existingImages = document.querySelectorAll(".image-box");
-    if (existingImages.length <= 1) {
-      alert("Cannot remove the last image!");
-      return;
-    }
-
-    if (!confirm("Remove this image?")) return;
-
-    const res = await fetch("/admin/products/remove-image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, publicId })
-    });
-
-   const data = await res.json();
-
-if (data.success) {
-  btn.parentElement.remove();
-  showToast("Image removed");
-} else {
-  alert("Failed to remove image");
-}
-
-  }
-
-  // --- TOAST NOTIFICATION ---
-  function showToast(msg) {
-    const toast = document.getElementById("toast");
-    toast.innerText = msg;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 3000);
-  }
-</script>
+<script src="/js/admin/edit-product.js"></script>
 
 <%- include("../partials/admin/footer") %>

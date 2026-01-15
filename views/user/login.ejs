@@ -5,196 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
-    body {
-      background: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .login-container {
-      width: 380px;
-      background: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.06);
-      text-align: center;
-    }
-
-    h2 {
-      margin-bottom: 25px;
-      font-size: 26px;
-      font-weight: 600;
-      color: #111;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      margin-bottom: 5px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #333;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-
-    /* FIXED REMEMBER SECTION */
-    .remember-forgot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      font-size: 13px;
-    }
-
-    .remember-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .remember-forgot a {
-      color: #0d5cf5;
-      text-decoration: none;
-      font-size: 13px;
-    }
-
-    .remember-forgot a:hover {
-      text-decoration: underline;
-    }
-
-    .btn-primary {
-      width: 100%;
-      padding: 12px;
-      background: #0d5cf5;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    .btn-primary:hover {
-      background: #0843b8;
-    }
-
-    .divider {
-      margin: 25px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #777;
-      font-size: 13px;
-    }
-
-    .divider:before,
-    .divider:after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #ddd;
-    }
-
-.input-box {
-      width: 100%;
-      margin-bottom: 15px;
-      position: relative;
-    }
-
-    .input-box input {
-      width: 100%;
-      padding: 14px 18px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    .input-box input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 4px rgba(37, 99, 235, 0.4);
-    }
-
-    .eye-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 18px;
-      color: #777;
-    }
-.error-text {
-  color: #dc2626;
-  font-size: 12px;
-  margin-top: 4px;
-  text-align: left;
-}
-
-
-
-
-    /* GOOGLE BUTTON */
-    .google-btn {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .google-btn img {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-    }
-
-    .signup-link {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .signup-link a {
-      color: #0d5cf5;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .signup-link a:hover {
-      text-decoration: underline;
-    }
-  </style>
-
+  <link rel="stylesheet" href="/css/user/login.css">
 </head>
 <body>
 
@@ -204,20 +15,23 @@
     <!-- LOGIN FORM -->
     <form action="/login" method="POST">
 
-      <label>Email address</label>
-      <input type="email"id="email" name="email" placeholder="Enter email" required>
-
+     <label>Email address</label>
+<div class="input-box">
+  <input type="email" id="email" name="email" placeholder="Enter email">
+ <!-- for user not found -->
+  <% if (typeof message !== "undefined" && message) { %>
+    <div class="error-text">
+      <%= message %>
+    </div>
+  <% } %>
+</div>
       <div class="input-box">
-    <input type="password" id="password" name="password" placeholder="Password" required />
+    <input type="password" id="password" name="password" placeholder="Password"  >
     <span class="eye-icon" onclick="togglePassword('password')">👁️</span>
     <div id="error4" class="error-message"></div>
   </div>
-      <!-- for user not found -->
-    <% if (message) { %>
-  <div class="alert alert-danger text-center">
-    <%= message %>
-  </div>
-<% } %>
+     
+   
 
       <div class="remember-forgot">
         <div class="remember-left">
@@ -253,54 +67,10 @@
         </span>
   </div>
 </a>
+
   </div>
-<script>
-function togglePassword(id) {
-  const input = document.getElementById(id);
-  input.type = input.type === "password" ? "text" : "password";
-}
 
-// for validation
-document.querySelector("form").addEventListener("submit", function (e) {
-  let valid = true;
-
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-
-  // Clear previous errors
-  document.querySelectorAll(".error-text").forEach(el => el.remove());
-
-  // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email.value.trim()) {
-    showError(email, "Email is required");
-    valid = false;
-  } else if (!emailRegex.test(email.value)) {
-    showError(email, "Enter a valid email");
-    valid = false;
-  }
-
-  // Password validation
-  if (!password.value.trim()) {
-    showError(password, "Password is required");
-    valid = false;
-  } else if (password.value.length < 6) {
-    showError(password, "Password must be at least 6 characters");
-    valid = false;
-  }
-
-  if (!valid) e.preventDefault();
-});
-
-function showError(input, message) {
-  const error = document.createElement("div");
-  error.className = "error-text";
-  error.innerText = message;
-  input.parentElement.appendChild(error);
-}
-
-
-</script>
+<script src="/js/user/login.js"></script>
 </body>
 </html>
 

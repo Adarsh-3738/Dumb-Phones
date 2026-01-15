@@ -1,110 +1,63 @@
-const Product = require("../../models/productSchema");
-const Brand = require("../../models/brandSchema");
-const Category = require("../../models/categorySchema");
+import productService from "../../services/user/productService.js";
+import logger from "../../utils/logger.js";
 
-exports.getProducts = async (req, res) => {
+// GET PRODUCTS (LISTING)
+export const getProducts = async (req, res) => {
   try {
-    const {
-      search,
-      sort,
-      brand,
-      category,
-      price,
-      page = 1
-    } = req.query;
+    logger.info("Loading user products listing", {
+      query: req.query,
+    });
 
-    const limit = 9;
-    const skip = (page - 1) * limit;
+    const data = await productService.getProductsService(req.query);
 
-    
-    // FILTER OBJECT
-     let filter = {
-      isBlocked: false
-    };
-
-    //  SEARCH 
-    if (search) {
-      filter.productName = { $regex: search, $options: "i" };
-    }
-
-    //  BRAND FILTER
-    if (brand) {
-      filter.brand = brand;
-    }
-
-    //  CATEGORY FILTER
-    if (category) {
-      filter.category = category;
-    }
-
-    // PRICE RANGE FILTER
-    if (price) {
-      const [min, max] = price.split("-").map(Number);
-      filter.salesPrice = { $gte: min, $lte: max };
-    }
-
-    
-    // SORT LOGIC
-    
-    let sortOption = {};
-
-    switch (sort) {
-      case "priceLowHigh":
-        sortOption.salesPrice = 1;
-        break;
-
-      case "priceHighLow":
-        sortOption.salesPrice = -1;
-        break;
-
-      case "nameAZ":
-        sortOption.productName = 1;
-        break;
-
-      case "nameZA":
-        sortOption.productName = -1;
-        break;
-
-      default:
-        sortOption.createdAt = -1; 
-    }
-
-    
-    // FETCH DATA
-    
-    const products = await Product.find(filter)
-      .populate("brand")
-      .populate("category")
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit);
-
-    const totalProducts = await Product.countDocuments(filter);
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    const brands = await Brand.find({ isBlocked: false });
-    const categories = await Category.find({ isBlocked: false });
-
-    
-    // RENDER
-    
     res.render("user/products", {
-      products,
-      brands,
-      categories,
-      currentPage: Number(page),
-      totalPages,
-      search,
-      sort,
-      brand,
-      category,
-      price
+      ...data,
+      search: req.query.search,
+      sort: req.query.sort,
+      brand: req.query.brand,
+      category: req.query.category,
+      price: req.query.price,
+    });
+  } catch (error) {
+    logger.error("Error fetching user products", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
     });
 
-  } catch (error) {
-    console.error("Product fetch error:", error);
     res.status(500).render("user/error", {
-      message: "Failed to load products"
+      message: "Failed to load products",
     });
+  }
+};
+
+// PRODUCT DETAILS PAGE
+export const loadProductDetails = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    logger.info("Loading product details page", {
+      productId,
+    });
+
+    const { product, similarProducts } =
+      await productService.getProductDetailsService(productId);
+
+    res.render("user/productDetails", { product, similarProducts });
+  } catch (error) {
+    logger.error("Error loading product details", {
+      message: error.message,
+      stack: error.stack,
+      productId: req.params.id,
+    });
+
+    if (error.message === "PRODUCT_NOT_FOUND") {
+      logger.warn("Product not found", {
+        productId: req.params.id,
+      });
+      return res.status(404).render("user/404");
+    }
+
+    res.status(500).render("user/error");
   }
 };

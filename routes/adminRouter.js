@@ -1,15 +1,15 @@
-const express = require("express");
+import express from "express";
+
+import * as adminController from "../controller/admin/adminController.js";
+import * as customerController from "../controller/admin/customerController.js";
+import * as categoryController from "../controller/admin/categoryController.js";
+import * as productController from "../controller/admin/productController.js";
+import * as brandController from "../controller/admin/brandController.js";
+
+import upload from "../middlewares/multer.js";
+import { adminAuth } from "../middlewares/auth.js";
+
 const router = express.Router();
-
-const adminController = require("../controller/admin/adminController");
-const customerController = require("../controller/admin/customerController");
-const categoryController = require("../controller/admin/categoryController");
-const productController = require("../controller/admin/productController"); 
-const upload = require("../middlewares/multer");
-const brandController = require("../controller/admin/brandController");
-
-
-const { adminAuth } = require("../middlewares/auth");
 
 // Redirect to login
 router.get("/", (req, res) => {
@@ -36,32 +36,36 @@ router.post("/category/add", adminAuth, categoryController.addCategory);
 router.post("/category/edit", categoryController.editCategory);
 router.post("/category/delete", categoryController.deleteCategory);
 
-
 // Product Management
-
-
 router.get("/products", adminAuth, productController.getProducts);
-// router.get("/products/add", adminAuth, productController.getAddPage);
-router.post("/products/add-product", upload.array("images", 5), productController.addProduct);
+
+router.post(
+  "/products/add-product",
+  upload.array("images", 5),
+  productController.addProduct
+);
 
 router.get("/products/edit/:id", adminAuth, productController.getEditPage);
-router.post("/products/edit/:id", upload.array("images", 5), productController.editProduct);
+
+router.post(
+  "/products/edit/:id",
+  upload.array("images", 5),
+  productController.editProduct
+);
+
 router.post(
   "/products/remove-image",
   adminAuth,
   productController.removeProductImage
 );
 
-router.get("/products/delete/:id", adminAuth, productController.softDeleteProduct);
+router.get(
+  "/products/delete/:id",
+  adminAuth,
+  productController.softDeleteProduct
+);
 
-
-
-//brand management
-
-
-
-// ---------- BRAND ROUTES ----------
-// ---------- BRAND ROUTES ----------
+// Brand Management
 router.get("/brands", brandController.getBrands);
 router.get("/brands/add", brandController.getAddBrand);
 router.post("/brands/add", upload.single("logo"), brandController.postAddBrand);
@@ -69,8 +73,4 @@ router.post("/brands/add", upload.single("logo"), brandController.postAddBrand);
 router.get("/brands/view/:id", brandController.viewBrand);
 router.get("/brands/delete/:id", brandController.deleteBrand);
 
-module.exports = router;
-
-
-
-module.exports = router;
+export default router;

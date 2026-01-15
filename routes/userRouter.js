@@ -1,50 +1,55 @@
-const express = require("express");
+import express from "express";
+import passport from "passport";
+
+import * as userController from "../controller/user/userController.js";
+import * as productController from "../controller/user/productController.js";
+
+import alreadyLoggedIn from "../middlewares/alreadyLoggedin.js";
+import { userAuth } from "../middlewares/auth.js";
+
 const router = express.Router();
-const userController = require("../controller/user/userController");
-const passport = require("passport");
 
-router.get("/pageNotFound",userController.pageNotFound) 
-router.get("/",userController.loadHomepage);
-router.get("/logout",userController.logout);
-router.get("/signup",userController.loadSignup);
+// Pages
+router.get("/pageNotFound", userController.pageNotFound);
+router.get("/", userController.loadHomepage);
+router.get("/logout", userController.logout);
+router.get("/signup", userController.loadSignup);
+
+// Auth
 router.post("/signup", userController.signup);
-router.get("/login", userController.loadLogin);
-router.post("/login",userController.login);
-router.post("/verify-otp",userController.verifyOtp);
+router.get("/login", alreadyLoggedIn, userController.loadLogin);
+router.post("/login", userController.login);
+router.post("/verify-otp", userController.verifyOtp);
 
-//forgot password
+// Forgot / Reset password
 router.get("/forgot-password", userController.loadForgotPassword);
 router.post("/forgot-password", userController.forgotPassword);
-//reset password
 router.get("/reset-password/:token", userController.loadResetPassword);
 router.post("/reset-password/:token", userController.resetPassword);
-
 
 // Google Login
 router.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account"
+  })
 );
 
-// Callback route
+// Google callback
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login", // redirect if login fails
+    failureRedirect: "/login"
   }),
   (req, res) => {
-    // Successful login
-    res.redirect("/"); // redirect to homepage
+    res.redirect("/");
   }
 );
 
-
-const productController = require("../controller/user/productController");
-
-// Product listing page 
+// Products
 router.get("/products", productController.getProducts);
+router.get("/shop", userController.loadShopPage);
+router.get("/product/:id", productController.loadProductDetails);
 
-
-
-
-module.exports = router;
+export default router;

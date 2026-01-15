@@ -1,0 +1,188 @@
+
+
+<!-- header -->
+ <%-include("../../views/partials/user/header")%>
+
+
+ <link rel="stylesheet" href="/css/user/product-details.css">
+ 
+<!-- BREADCRUMBS -->
+<nav class="breadcrumbs" style="margin: 20px 40px; font-size: 14px; color:#64748b;">
+  <a href="/" style="color:#2563eb; text-decoration:none;">Home</a> &raquo;
+  <a href="/shop?category=<%= product.category?._id %>" style="color:#2563eb; text-decoration:none;">
+    <%= product.category?.name || "Category" %>
+  </a> &raquo;
+  <span><%= product.productName %></span>
+</nav>
+
+
+<div class="product-detail-container">
+
+ <div class="image-section">
+  <% if (product.productImage && product.productImage.length > 0) { %>
+
+    <!-- Main Image with Zoom -->
+<div class="image-zoom-container">
+  <img 
+    id="mainImage"
+    class="main-image" 
+    src="<%= product.productImage[0].url %>" 
+    alt="<%= product.productName %>">
+</div>
+
+    <!-- Thumbnails -->
+    <div class="thumbnail-row">
+      <% product.productImage.forEach(image => { %>
+        <img 
+          src="<%= image.url %>" 
+          class="thumbnail">
+      <% }) %>
+    </div>
+
+  <% } else { %>
+    <img 
+      class="main-image" 
+      src="/images/no-image.png" 
+      alt="No image available">
+  <% } %>
+</div>
+
+
+  <!-- INFO SECTION -->
+  <div class="info-section">
+    <h2><%= product.productName %></h2>
+    <h3>₹ <%= product.salesPrice %></h3>
+
+  <% 
+  let stockText = product.quantity > 0 ? `In Stock: ${product.quantity}` : 'Out of Stock';
+  let stockClass = product.quantity > 0 ? 'in-stock' : 'out-of-stock';
+%>
+
+<p class="<%= stockClass %>"><%= stockText %></p>
+
+<!-- Quantity Selector -->
+<% if (product.quantity > 0) { %>
+  <div class="quantity-selector">
+    <button type="button" class="qty-btn" id="decreaseQty">-</button>
+    <input 
+      type="number" 
+      id="qtyInput" 
+      value="1" 
+      min="1" 
+      max="<%= product.quantity %>" 
+      readonly
+    >
+    <button type="button" class="qty-btn" id="increaseQty">+</button>
+  </div>
+<% } %>
+
+
+
+
+
+  <h4>Description</h4>  
+    <p><%= product.description %></p>
+
+    <button class="add-to-cart-btn">
+      Add to Cart
+    </button>
+  </div>
+
+</div>
+
+<!-- REVIEWS & RATINGS -->
+<div class="reviews-section">
+
+  <h2>Customer Reviews</h2>
+
+  <!-- RATING SUMMARY -->
+  <div class="rating-summary">
+    <div class="rating-score">4.5</div>
+    <div>
+      <div class="stars">★★★★★</div>
+      <div class="review-count">Based on 124 reviews</div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="review">
+    <div class="review-header">
+      <span class="review-name">Rahul Verma</span>
+      <span class="review-stars">★★★★★</span>
+    </div>
+    <p class="review-text">
+      Amazing phone! Battery lasts long and the build quality is excellent.
+      Totally worth the price.
+    </p>
+  </div>
+
+  <div class="review">
+    <div class="review-header">
+      <span class="review-name">Ananya Sharma</span>
+      <span class="review-stars">★★★★☆</span>
+    </div>
+    <p class="review-text">
+      Simple, clean, and distraction‑free. Perfect for reducing screen time.
+    </p>
+  </div>
+
+  <div class="review">
+    <div class="review-header">
+      <span class="review-name">Karthik S</span>
+      <span class="review-stars">★★★★★</span>
+    </div>
+    <p class="review-text">
+      Great value for money. Sound quality is good and call clarity is excellent.
+    </p>
+  </div>
+
+  <div class="review">
+    <div class="review-header">
+      <span class="review-name">Meera Patel</span>
+      <span class="review-stars">★★★★☆</span>
+    </div>
+    <p class="review-text">
+      Love the minimalist design. Camera is basic but that’s expected.
+    </p>
+  </div>
+
+</div>
+
+
+
+<!-- SIMILAR PRODUCTS -->
+<% if (similarProducts && similarProducts.length > 0) { %>
+  <h2 class="section-title">Similar Products</h2>
+
+  <div class="similar-products-wrapper">
+    <% similarProducts.forEach(sim => { %>
+      <a href="/product/<%= sim._id %>" class="product-link">
+        <div class="similar-product-card">
+
+          <% if (sim.productImage && sim.productImage.length > 0) { %>
+            <img src="<%= sim.productImage[0].url %>" alt="<%= sim.productName %>">
+          <% } else { %>
+            <img src="/images/no-image.png" alt="No image">
+          <% } %>
+
+          <h4><%= sim.productName %></h4>
+          <p class="brand"><%= sim.brand?.name || "N/A" %></p>
+          <p class="price">₹ <%= sim.salesPrice %></p>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+
+
+
+
+
+
+<script src="/js/user/product-details.js"></script>
+
+
+<!-- footer -->
+ <%-include("../../views/partials/user/footer")%>
+  

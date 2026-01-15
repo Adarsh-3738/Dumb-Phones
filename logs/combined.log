@@ -1,0 +1,25 @@
+{"level":"info","message":"Logger is working","timestamp":"2026-01-15 14:42:58"}
+{"level":"error","message":"Test error log","timestamp":"2026-01-15 14:42:58"}
+{"level":"info","message":"Logger is working","timestamp":"2026-01-15 14:42:58"}
+{"level":"error","message":"Test error log","timestamp":"2026-01-15 14:42:58"}
+{"level":"info","message":"Logger is working","timestamp":"2026-01-15 14:43:05"}
+{"level":"error","message":"Test error log","timestamp":"2026-01-15 14:43:05"}
+{"level":"info","message":"Admin login page loaded","timestamp":"2026-01-15 15:09:32"}
+{"level":"info","message":"Admin login page loaded","timestamp":"2026-01-15 15:09:34"}
+{"level":"info","message":"Admin login page loaded","timestamp":"2026-01-15 15:09:34"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-01-15 15:09:44"}
+{"email":"admin@gmail.com","level":"warn","message":"Admin login failed: incorrect password","timestamp":"2026-01-15 15:09:44"}
+{"level":"info","message":"Admin login page loaded","timestamp":"2026-01-15 15:09:44"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-01-15 15:10:06"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-01-15 15:10:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-01-15 15:10:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-01-15 15:10:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/products","timestamp":"2026-01-15 15:10:20"}
+{"level":"info","message":"Loading admin products list","page":1,"search":"","timestamp":"2026-01-15 15:10:20"}
+{"level":"info","message":"Brand list loaded","timestamp":"2026-01-15 15:10:27","totalBrands":4}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-01-15 15:10:32"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-01-15 15:10:32"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category?search=touch","timestamp":"2026-01-15 15:10:37"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"touch","timestamp":"2026-01-15 15:10:37"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-01-15 15:10:38"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-01-15 15:10:38"}
