@@ -1,0 +1,175 @@
+
+/* --- Main Wrapper --- */
+.page-wrapper {
+    margin-left: 260px;
+    padding: 35px;
+    background: #f3f6fb;
+    min-height: 100vh;
+}
+
+/* Title */
+.page-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e3a8a;
+    letter-spacing: 0.5px;
+    margin-bottom: 25px;
+}
+
+/* Search Section */
+.search-bar-wrapper {
+    width: 520px;
+    margin: 0 auto 30px auto;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    border-radius: 50px 0 0 50px;
+    padding-left: 20px;
+    border: 1px solid #c7d2fe;
+    height: 42px;
+}
+
+.search-btn {
+    background: #3b82f6;
+    color: white;
+    border-radius: 0 50px 50px 0;
+    padding: 8px 22px;
+    height: 42px;
+    font-weight: 600;
+}
+
+.search-btn:hover {
+    background: #2563eb;
+}
+
+.clear-search {
+    margin-left: 10px;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.clear-search:hover {
+    text-decoration: underline;
+}
+
+/* Card Container */
+.users-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.06);
+}
+
+/* Table */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.custom-table thead {
+    background: #e7efff;
+}
+
+.custom-table thead th {
+    padding: 14px;
+    color: #1e40af;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody tr {
+    background: #f9fbff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+}
+
+.custom-table tbody tr td {
+    padding: 14px;
+    vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+    background: #eef4ff;
+    transition: 0.25s ease-in-out;
+}
+
+/* Status Badges */
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status.blocked {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Buttons */
+.btn-block {
+    width: 90px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: white !important;
+    padding: 6px 0;
+    font-weight: 600;
+}
+
+.btn-block:hover {
+    background: #d62828;
+}
+
+.btn-unblock {
+    width: 90px;
+    border-radius: 8px;
+    background: #10b981;
+    color: white !important;
+    padding: 6px 0;
+    font-weight: 600;
+}
+
+.btn-unblock:hover {
+    background: #059669;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #1e40af;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: 600;
+}
+
+.pagination .active .page-link {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+.modal {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+
+

@@ -1,6 +1,7 @@
-// signup
-exports.validateSignup = ({ name, phone, email, password, cPassword }) => {
+import { body } from "express-validator";
 
+// Signup validation
+export const validateSignup = ({ name, phone, email, password, cPassword }) => {
   name = name?.trim();
   phone = phone?.trim();
   email = email?.trim();
@@ -31,15 +32,11 @@ exports.validateSignup = ({ name, phone, email, password, cPassword }) => {
     return "Passwords do not match";
   }
 
-  return null; //validation passed
+  return null; // validation passed
 };
 
-
-
-// login
-const { body } = require("express-validator");
-
-exports.loginValidation = [
+// Login validation
+export const loginValidation = [
   body("email")
     .trim()
     .notEmpty().withMessage("Email is required")

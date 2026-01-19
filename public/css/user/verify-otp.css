@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #f7f7f7;
+}
+
+.container {
+  max-width: 450px;
+  margin: 120px auto;
+  text-align: center;
+  padding: 30px;
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #646f75;
+  margin-bottom: 25px;
+}
+
+.otp-box {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.otp-box input {
+  width: 50px;
+  height: 55px;
+  font-size: 22px;
+  text-align: center;
+  border: 2px solid #dcdcdc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.otp-box input:focus {
+  border-color: #215acb;
+}
+
+button {
+  width: 100%;
+  background: #153ed0;
+  color: #fff;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2d5978;
+}
+
+.resend {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.resend a {
+  font-weight: 600;
+  color: #2166a2;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.disabled {
+  pointer-events: none;
+  color: #8d8d8d !important;
+}
+
+.return-login {
+  margin-top: 25px;
+}
+
+.return-login a {
+  color: #1e5bb7;
+  font-weight: 600;
+  text-decoration: none;
+}

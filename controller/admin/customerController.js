@@ -1,90 +1,82 @@
-const User = require("../../models/userSchema");
+import {
+  getCustomers,
+  toggleBlockCustomer,
+  unblockCustomerById,
+} from "../../services/admin/customerService.js";
+import logger from "../../utils/logger.js";
 
-const customerInfo = async (req, res) => {
-    try {
-        let search = req.query.search || "";
-        let page = parseInt(req.query.page) || 1;
+// GET CUSTOMERS / SEARCH
+export const customerInfo = async (req, res) => {
+  try {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
 
-        const limit = 3;
+    logger.info("Loading customers list", {
+      search,
+      page,
+    });
 
-        const userData = await User.find({
-            isAdmin: false,
-            $or: [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-            ],
-        })
-            .sort({ _id: -1 }) 
-            .limit(limit)
-            .skip((page - 1) * limit);
+    const { users, totalPages } = await getCustomers(search, page);
 
-        const count = await User.countDocuments({
-            isAdmin: false,
-            $or: [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-            ],
-        });
-
-        const totalPages = Math.ceil(count / limit);
-
-        res.render("admin/customers", {
-            data: userData,
-            currentPage: page,
-            totalPages: totalPages,
-             searchQuery: search,
-        });
-
-    } catch (error) {
-        console.log("Error in customerInfo", error);
-        res.redirect("/pageNotFound");
-    }
+    res.render("admin/customers", {
+      data: users,
+      currentPage: page,
+      totalPages,
+      searchQuery: search,
+    });
+  } catch (error) {
+    logger.error("Error loading customers", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
+    });
+    res.redirect("/pageNotFound");
+  }
 };
 
-const customerBlocked = async (req, res) => {
-    try {
-        const userId = req.body.id;
-        const user = await User.findById(userId);
+// BLOCK / UNBLOCK CUSTOMER
+export const customerBlocked = async (req, res) => {
+  try {
+    const userId = req.body.id;
 
-        user.isBlocked = !user.isBlocked;
-        await user.save();
+    logger.warn("Toggling customer block status", { userId });
 
-        return res.json({ success: true });
-    } catch (err) {
-        return res.json({ success: false });
-    }
+    await toggleBlockCustomer(userId);
+
+    logger.info("Customer block status updated", { userId });
+
+    res.json({ success: true });
+  } catch (error) {
+    logger.error("Error toggling customer block", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body,
+    });
+    res.json({ success: false });
+  }
 };
 
-const customerunBlocked = async (req, res) => {
-    try {
-        const id = req.query.id;
-        await User.findByIdAndUpdate(id, { isBlocked: false });
-        res.redirect("/admin/users");
-    } catch (error) {
-        console.log("Error in unblock customer", error);
-        res.redirect("/pageNotFound");
-    }
+// UNBLOCK CUSTOMER (via query param)
+export const customerunBlocked = async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    logger.warn("Unblocking customer", { userId });
+
+    await unblockCustomerById(userId);
+
+    logger.info("Customer unblocked successfully", { userId });
+
+    res.redirect("/admin/users");
+  } catch (error) {
+    logger.error("Error unblocking customer", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
+    });
+    res.redirect("/pageNotFound");
+  }
 };
 
-
-
- const blockCustomer = async (req, res) => {
-    try {
-        const userId = req.body.id;
-        const user = await User.findById(userId);
-
-        user.isBlocked = !user.isBlocked;
-        await user.save();
-
-        return res.json({ success: true });
-    } catch (err) {
-        return res.json({ success: false });
-    }
-};
-
-module.exports = {
-    customerInfo,
-    customerBlocked,
-    customerunBlocked,
-    blockCustomer,
-};
+// ALIAS: blockCustomer
+export const blockCustomer = customerBlocked;

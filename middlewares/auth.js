@@ -1,22 +1,26 @@
-const User = require("../models/userSchema");
+// middlewares/authMiddleware.js
+import User from "../models/userSchema.js";
+import logger from "../utils/logger.js";
 
 // USER AUTH
-const userAuth = async (req, res, next) => {
+const userAuth = (req, res, next) => {
   try {
-    if (!req.session.user) {
-      return res.redirect("/user/login");
-    }
-
-    const user = await User.findById(req.session.user.id);
-
-    if (user && !user.isBlocked) {
+    if (req.isAuthenticated?.() && req.user && !req.user.isBlocked) {
       return next();
-    } else {
-      return res.redirect("/user/login");
     }
+
+    logger.warn("Unauthorized user access attempt", {
+      path: req.originalUrl,
+      user: req.user?._id || null
+    });
+
+    return res.redirect("/login");
   } catch (error) {
-    console.log("Error in user auth middleware", error);
-    return res.status(500).send("Internal Server Error");
+    logger.error("Error in userAuth middleware", {
+      message: error.message,
+      stack: error.stack
+    });
+    return res.redirect("/login");
   }
 };
 
@@ -24,25 +28,34 @@ const userAuth = async (req, res, next) => {
 const adminAuth = async (req, res, next) => {
   try {
     if (!req.session.admin) {
-      console.log("No admin session found");
+      logger.warn("Admin access denied - no session", {
+        path: req.originalUrl
+      });
       return res.redirect("/admin/login");
     }
 
-    console.log("Session admin:", req.session.admin);
     const admin = await User.findById(req.session.admin.id);
-    console.log("DB admin:", admin);
 
     if (admin && admin.isAdmin) {
-      console.log("Admin authenticated");
+      logger.info("Admin authenticated", {
+        adminId: admin._id,
+        path: req.originalUrl
+      });
       return next();
-    } else {
-      console.log("Admin not found or not isAdmin");
-      return res.redirect("/admin/login");
     }
+
+    logger.warn("Admin access denied - not admin", {
+      adminId: req.session.admin.id
+    });
+
+    return res.redirect("/admin/login");
   } catch (error) {
-    console.log("Error in admin auth middleware", error);
+    logger.error("Error in adminAuth middleware", {
+      message: error.message,
+      stack: error.stack
+    });
     return res.status(500).send("Internal Server Error");
   }
 };
 
-module.exports = { userAuth, adminAuth };
+export { userAuth, adminAuth };

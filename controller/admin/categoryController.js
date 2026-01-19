@@ -1,110 +1,109 @@
-const Category = require("../../models/categorySchema");
+import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  softDeleteCategory,
+} from "../../services/admin/categoryService.js";
+import logger from "../../utils/logger.js";
 
-
-const categoryInfo = async (req, res) => {
+// LIST / SEARCH CATEGORIES
+export const categoryInfo = async (req, res) => {
   try {
     const searchQuery = req.query.search || "";
     const page = parseInt(req.query.page) || 1;
-    const limit = 5;
 
-    const filter = {
-      isDeleted: false,
-      name: { $regex: searchQuery, $options: "i" }
-    };
+    logger.info("Loading category list", {
+      searchQuery,
+      page,
+    });
 
-    const totalCategories = await Category.countDocuments(filter);
-    const totalPages = Math.ceil(totalCategories / limit);
-
-    const categories = await Category.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const { categories, totalPages, totalCategories } =
+      await getCategories(searchQuery, page);
 
     res.render("admin/category", {
       categories,
       currentPage: page,
       totalPages,
       searchQuery,
-      totalCategories
+      totalCategories,
     });
   } catch (error) {
-    console.log("Category loading error:", error);
+    logger.error("Category loading error", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
+    });
     res.redirect("/admin/page-error");
   }
 };
 
-
-const addCategory = async (req, res) => {
+// ADD CATEGORY
+export const addCategory = async (req, res) => {
   try {
     const { name, status } = req.body;
 
-    if (!name || !status)
-      return res.json({ success: false, msg: "Name & status are required" });
-
-    const exists = await Category.findOne({ name, isDeleted: false });
-    if (exists)
-      return res.json({ success: false, msg: "Category already exists" });
-
-    await Category.create({
+    logger.info("Creating category", {
       name,
       status,
-      isDeleted: false,
-      categoryOffer: 0
     });
+
+    await createCategory({ name, status });
+
+    logger.info("Category created successfully", { name });
 
     return res.json({ success: true });
   } catch (error) {
-    console.log("ADD CATEGORY ERROR:", error);
-    return res.json({ success: false });
+    logger.warn("Add category failed", {
+      message: error.message,
+      body: req.body,
+    });
+    return res.json({ success: false, msg: error.message });
   }
 };
 
-
-const editCategory = async (req, res) => {
+// EDIT CATEGORY
+export const editCategory = async (req, res) => {
   try {
     const { id, name, status } = req.body;
 
-    if (!id || !name)
-      return res.json({ success: false, msg: "Invalid data" });
-
-    const exists = await Category.findOne({
-      _id: { $ne: id },
-      name: { $regex: "^" + name + "$", $options: "i" },
-      isDeleted: false
+    logger.info("Updating category", {
+      id,
+      name,
+      status,
     });
 
-    if (exists)
-      return res.json({ success: false, msg: "Category name already exists" });
+    await updateCategory({ id, name, status });
 
-    await Category.findByIdAndUpdate(id, {
-      name: name.trim(),
-      status
-    });
+    logger.info("Category updated successfully", { id });
 
     return res.json({ success: true });
   } catch (error) {
-    console.log("EDIT CATEGORY ERROR:", error);
-    return res.json({ success: false });
+    logger.warn("Edit category failed", {
+      message: error.message,
+      body: req.body,
+    });
+    return res.json({ success: false, msg: error.message });
   }
 };
 
-// soft delete 
-
-const deleteCategory = async (req, res) => {
+// SOFT DELETE CATEGORY
+export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.body;
 
-    await Category.findByIdAndUpdate(id, { isDeleted: true });
+    logger.warn("Soft deleting category", { id });
+
+    await softDeleteCategory(id);
+
+    logger.info("Category soft deleted successfully", { id });
+
     return res.json({ success: true });
   } catch (error) {
-    console.log("DELETE CATEGORY ERROR:", error);
+    logger.error("Delete category error", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body,
+    });
     return res.json({ success: false });
   }
-};
-
-module.exports = {
-  categoryInfo,
-  addCategory,
-  editCategory,
-  deleteCategory
 };

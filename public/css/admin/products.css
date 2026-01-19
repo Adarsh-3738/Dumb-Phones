@@ -1,0 +1,414 @@
+
+  body {
+    background-color: #f4f8ff;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 260px;
+    margin-right: 15px;
+  }
+
+  .add-btn {
+    background: #1e88e5;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 15px 30px 260px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+
+/* Search Form Wrapper */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-left: 260px;
+}
+
+/* Search Input */
+.search-form input[type="text"] {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input Focus */
+.search-form input[type="text"]:focus {
+  border-color: #4f46e5; /* Indigo */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* Search Button */
+.search-form button {
+  padding: 8px 16px;
+  background-color: #3c66e3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+/* Button Hover */
+.search-form button:hover {
+  background-color: #4338ca;
+}
+
+/* Button Active */
+.search-form button:active {
+  transform: scale(0.97);
+}
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  /* MODAL */
+  .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow-y: auto;   /* allow full modal scroll */
+}
+
+.modal-content {
+  background: #fff;
+  width: 620px;
+  max-height: 85vh;   /* limit height */
+  overflow-y: auto;  /* inner scroll */
+  margin: 40px auto;
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+
+  .close {
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  #previewImage {
+  max-width: 100%;
+  display: none;
+  margin-bottom: 10px;
+}
+
+/* Product status buttons*/
+
+/* Action Buttons */
+.edit-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #e0e7ff;
+  color: #1e40af;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-right: 6px;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-right: 6px;
+}
+
+.restore-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Hover */
+.delete-btn:hover {
+  background: #1d4ed8;
+}
+
+.restore-btn:hover {
+  background: #eff6ff;
+}
+
+
+
+
+.status-active {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;            /* dark green */
+  background-color: #dcfce7; /* light green */
+  border-radius: 999px;
+}
+
+.status-inactive {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #991b1b;            /* dark red */
+  background-color: #fee2e2; /* light red */
+  border-radius: 999px;
+}
+
+
+  /* pagination */
+  /* Pagination Wrapper */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+/* Pagination Links */
+.pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151; /* Gray-700 */
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Hover Effect */
+.pagination a:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+/* Active Page */
+.pagination a.active {
+  background-color: #4f46e5; /* Indigo */
+  color: #ffffff;
+  border-color: #4f46e5;
+  cursor: default;
+}
+
+/* Disable hover on active */
+.pagination a.active:hover {
+  background-color: #4f46e5;
+}
+
+/* Prev / Next Buttons */
+.pagination a:first-child,
+.pagination a:last-child {
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .pagination {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pagination a {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+
+
+
+.preview-thumb {
+  position: relative;
+}
+
+.preview-thumb img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+  /* Modal form labels */
+  #productModal label {
+    display: block;
+    font-weight: 600;
+    color: #1e40af; /* Dark blue for labels */
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  /* Modal form inputs and select */
+  #productModal input[type="text"],
+  #productModal input[type="number"],
+  #productModal textarea,
+  #productModal select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #cbd5e1; /* light gray border */
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    background-color: #ffffff;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Hover effect for inputs */
+  #productModal input[type="text"]:hover,
+  #productModal input[type="number"]:hover,
+  #productModal textarea:hover,
+  #productModal select:hover {
+    border-color: #2563eb;
+  }
+
+  /* Focus effect for inputs */
+  #productModal input[type="text"]:focus,
+  #productModal input[type="number"]:focus,
+  #productModal textarea:focus,
+  #productModal select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); /* soft blue glow */
+  }
+
+  /* Textarea specific styles */
+  #productModal textarea {
+    min-height: 100px;
+    resize: vertical;
+    padding-top: 8px;
+  }
+
+  /* Image input */
+  #productModal input[type="file"] {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    background-color: #f9fafb;
+  }
+
+  #productModal input[type="file"]:hover {
+    border-color: #2563eb;
+  }
+
+  /* Save button */
+  #productModal .submit-btn {
+    margin-top: 10px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease;
+  }
+
+  #productModal .submit-btn:hover {
+    background-color: #1e40af;
+  }
+
+  /* Crop & Next button */
+  #cropNextBtn {
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  #cropNextBtn:hover {
+    background-color: #1d4ed8;
+  }
+
+  /* Cropped preview label */
+  #productModal #croppedPreviewGrid + label {
+    font-weight: 500;
+    color: #1e3a8a;
+    margin-top: 10px;
+    display: block;
+  }
+
+

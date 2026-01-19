@@ -1,225 +1,168 @@
-const Product = require("../../models/productSchema");
-const Brand = require("../../models/brandSchema");
-const Category = require("../../models/categorySchema");
-const cloudinary = require("../../config/cloudinary");
+import * as productService from "../../services/admin/productService.js";
+import logger from "../../utils/logger.js";
 
-//Resize & optimize images
-const { processProductImage } = require("../../helpers/imageProcessor");
-const { v4: uuidv4 } = require("uuid");//make unique id for images
+// GET PRODUCTS (ADMIN PAGE)
+export const getProducts = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const search = req.query.search || "";
 
-
-exports.getProducts = async (req, res) => {
-    let page = Number(req.query.page) || 1;
-    let limit = 10;
-    let search = req.query.search || "";
-
-    const filter = {
-  productName: { $regex: search, $options: "i" }
-};
-
-
-    const products = await Product.find(filter)
-        .populate("brand")
-        .populate("category")
-        .sort({ createdAt: -1 }) // DESCENDING
-        .skip((page - 1) * limit)
-        .limit(limit);
-
-
-    const categories = await Category.find({isDeleted:false});
-    const brands = await Brand.find({});
-    const count = await Product.countDocuments(filter);
-
-    res.render("admin/products", {
-        products,
-        categories,
-        brands,
-        search,
-        currentPage: page,
-        totalPages: Math.ceil(count / limit)
+    logger.info("Loading admin products list", {
+      search,
+      page,
     });
+
+    const data = await productService.fetchProducts({ search, page });
+
+    res.render("admin/products", { search, ...data });
+  } catch (error) {
+    logger.error("Error loading admin products", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query,
+    });
+    res.redirect("/admin/page-404");
+  }
 };
-
-
 
 // ADD PRODUCT
-
-exports.addProduct = async (req, res) => {
+export const addProduct = async (req, res) => {
   try {
-    const {
-  productName,
-  regularPrice,
-  salesPrice,
-  color,
-  quantity,
-  description,
-  category,
-  brand
-} = req.body;
+    logger.info("Adding new product", {
+      body: req.body,
+      fileCount: req.files?.length || 0,
+    });
 
+    await productService.createProduct({
+      body: req.body,
+      files: req.files,
+    });
 
-    //  Validate images
-    if (!req.files || req.files.length < 3) {
-      return res.render("admin/products", {
-        message: "Minimum 3 images required"
-      });
-    }
-
-  
-console.log("BODY:", req.body); //just for debuging
-console.log("FILES:", req.files);
-
-
-    //  Upload each image to Cloudinary
-   const productImages = [];
-
-for (const file of req.files) {
-  const result = await cloudinary.uploader.upload(file.path, {
-    folder: "products",
-  });
-
-  productImages.push({
-    url: result.secure_url,
-    public_id: result.public_id
-  });
-}
-
-const newProduct = new Product({
-  productName,
-  regularPrice,
-  salesPrice,
-  color,
-  quantity,
-  description,
-  category,
-  brand,
-  productImage: productImages 
-});
-
-
-
-    await newProduct.save();
+    logger.info("Product added successfully", {
+      productName: req.body?.productName,
+    });
 
     res.redirect("/admin/products");
   } catch (error) {
-    console.log("Add product error:", error);
-    res.redirect("/admin/page-404");
+    logger.error("Error adding product", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body,
+    });
+
+    res.render("admin/products", { message: error.message });
   }
-  
 };
 
-
-// LOAD EDIT PRODUCT PAGE
-exports.getEditPage = async (req, res) => {
+// LOAD EDIT PAGE
+export const getEditPage = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate("brand")
-      .populate("category");
+    const productId = req.params.id;
 
+    logger.info("Loading edit product page", { productId });
+
+    const product = await productService.getProductById(productId);
     if (!product) {
+      logger.warn("Product not found for edit", { productId });
       return res.redirect("/admin/products");
     }
 
-    const brands = await Brand.find();
-    const categories = await Category.find();
+    const { brands, categories } =
+      await productService.fetchBrandsAndCategories();
+
+    res.render("admin/edit-product", { product, brands, categories });
+  } catch (error) {
+    logger.error("Error loading edit product page", {
+      message: error.message,
+      stack: error.stack,
+      productId: req.params.id,
+    });
+    res.redirect("/admin/products");
+  }
+};
+
+// UPDATE PRODUCT
+export const editProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    logger.info("Updating product", {
+      productId,
+      body: req.body,
+      fileCount: req.files?.length || 0,
+    });
+
+    await productService.updateProduct({
+      id: productId,
+      body: req.body,
+      files: req.files,
+    });
+
+    logger.info("Product updated successfully", { productId });
+
+    res.redirect("/admin/products");
+  } catch (error) {
+    logger.error("Error updating product", {
+      message: error.message,
+      stack: error.stack,
+      productId: req.params.id,
+    });
+
+    const product = await productService.getProductById(req.params.id);
+    const { brands, categories } =
+      await productService.fetchBrandsAndCategories();
 
     res.render("admin/edit-product", {
       product,
       brands,
-      categories
+      categories,
+      message: error.message,
     });
-  } catch (error) {
-    console.error(error);
-    res.redirect("/admin/products");
   }
 };
 
-
-// UPDATE PRODUCT
-
-exports.editProduct = async (req, res) => {
+// REMOVE SINGLE IMAGE
+export const removeProductImage = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.redirect("/admin/products");
-
-    // Upload new images to cloudinary
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: "products",
-        });
-
-        product.productImage.push({
-          url: result.secure_url,
-          public_id: result.public_id
-        });
-      }
-    }
-
-    // Update fields
-    product.productName = req.body.productName;
-    product.regularPrice = req.body.regularPrice;
-    product.salesPrice = req.body.salesPrice;
-    product.quantity = req.body.quantity;
-    product.color = req.body.color;
-    product.description = req.body.description;
-    product.brand = req.body.brand;
-    product.category = req.body.category;
-
-    await product.save();
-    res.redirect("/admin/products");
-  } catch (error) {
-    console.error(error);
-    res.redirect("/admin/products");
-  }
-};
-
-
-
-
-// removing single image ajax
-exports.removeProductImage = async (req, res) => {
-  try {
-    const { productId, publicId } = req.body;
-
-    await cloudinary.uploader.destroy(publicId);
-
-    await Product.findByIdAndUpdate(productId, {
-      $pull: { productImage: { public_id: publicId } }
+    logger.warn("Removing product image", {
+      imageData: req.body,
     });
+
+    await productService.removeImage(req.body);
+
+    logger.info("Product image removed successfully");
 
     res.json({ success: true });
   } catch (error) {
+    logger.error("Error removing product image", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body,
+    });
     res.status(500).json({ success: false });
   }
 };
 
-
-
-// SOFT DELETE PRODUCT
-
-exports.softDeleteProduct =  async (req, res) => {
+// SOFT DELETE / TOGGLE BLOCK
+export const softDeleteProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).render("admin/error", {
-        message: "Product not found"
-      });
-    }
+    const productId = req.params.id;
 
-    product.isBlocked = !product.isBlocked;
-    await product.save();
+    logger.warn("Toggling product status (soft delete/block)", {
+      productId,
+    });
+
+    await productService.toggleProductStatus(productId);
+
+    logger.info("Product status toggled successfully", { productId });
 
     res.redirect("/admin/products");
-  } catch (err) {
-    console.error("Toggle Status Error:", err);
-    res.status(500).render("admin/error", {
-      message: "Could not update product status"
+  } catch (error) {
+    logger.error("Error toggling product status", {
+      message: error.message,
+      stack: error.stack,
+      productId: req.params.id,
     });
+    res.status(500).render("admin/error", { message: error.message });
   }
 };
-
-
-
-
-

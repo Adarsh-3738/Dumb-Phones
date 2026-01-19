@@ -1,0 +1,100 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 28px;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+p {
+  color: #555;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.input-box {
+  width: 100%;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-box input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 4px rgba(37, 99, 235, 0.4);
+}
+
+.eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #777;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.login-link {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.login-link a {
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.75rem;
+}
+
+.google-btn {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
