@@ -23,3 +23,15 @@
 {"level":"info","message":"Loading category list","page":1,"searchQuery":"touch","timestamp":"2026-01-15 15:10:37"}
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-01-15 15:10:38"}
 {"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-01-15 15:10:38"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-22 19:14:21"}
+{"level":"info","message":"Loading homepage","query":{"brand":"","category":"","page":"2","price":"","search":"","sort":""},"timestamp":"2026-01-22 19:14:26"}
+{"level":"info","message":"Loading homepage","query":{"brand":"","category":"","page":"1","price":"","search":"","sort":""},"timestamp":"2026-01-22 19:14:30"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-22 19:14:35"}
+{"email":"roshan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-22 19:14:47"}
+{"email":"roshan@gmail.com","level":"warn","message":"Blocked user login attempt","timestamp":"2026-01-22 19:14:47"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-22 19:15:05"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-22 19:15:05"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-22 19:15:20"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-22 19:15:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-22 19:15:20"}
+{"level":"info","message":"Loading product details page","productId":"695f1d4a02972734a99b3792","timestamp":"2026-01-22 19:15:41"}
