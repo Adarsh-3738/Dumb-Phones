@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="/css/user/profile.css">
+</head>
+<body>
+
+<%- include("../../views/partials/user/header") %>
+
+<div class="profile-wrapper">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="profile-sidebar">
+    <img
+      src="<%= (user && user.profileImage) ? user.profileImage : '/images/default-avatar.png' %>"
+      alt="Profile Image"
+      class="sidebar-avatar"
+    />
+
+    <h3><%= user.name %></h3>
+    <p class="email"><%= user.email %></p>
+
+    <ul class="profile-menu">
+  <li><a href="/profile">My Profile</a></li>
+  <li><a href="/orders">Orders</a></li>
+  <li><a href="/edit-profile">Edit Profile</a></li>
+  <li><a href="/change-email">Change Email</a></li>
+  <li><a href="/change-password">Change Password</a></li>
+  <li><a href="/address">Edit Address</a></li>
+  <li><a class="logout-btn" onclick="openLogoutModal()">Logout</a>
+</li>
+</ul>
+
+  </aside>
+
+  <!-- RIGHT CONTENT -->
+  <main class="profile-content">
+
+    <!-- USER DETAILS -->
+    <section class="content-card">
+      <h2>User Details</h2>
+      <p><strong>Name:</strong> <%= user.name %></p>
+      <p><strong>Email:</strong> <%= user.email %></p>
+      <p><strong>Phone:</strong> <%= user.phone || "Not added" %></p>
+    </section>
+
+    <!-- ADDRESS -->
+    <section class="content-card">
+  <h2>Address</h2>
+
+  <% if (addresses && addresses.length > 0) { %>
+    <% addresses.forEach(addr => { %>
+      <div class="address-box">
+        <p><strong><%= addr.addressType %></strong></p>
+        <p><%= addr.name %></p>
+        <p><%= addr.landmark %></p>
+        <p>
+          <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>
+        </p>
+        <p>Phone: <%= addr.phone %></p>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p>No address added</p>
+    <a href="/address" class="btn-link">Add Address</a>
+  <% } %>
+</section>
+
+  </main>
+
+</div>
+<!-- //confirm logout modal -->
+<div id="logoutModal" class="logout-modal">
+  <div class="logout-box">
+    <h3>Confirm Logout</h3>
+    <p>Are you sure you want to log out?</p>
+
+    <div class="logout-actions">
+      <form action="/logout" method="POST">
+        <button type="submit" class="confirm-btn">Yes, Logout</button>
+      </form>
+      <button class="cancel-btn" onclick="closeLogoutModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+<!-- js for confirm logout -->
+ <script>
+  function openLogoutModal() {
+    document.getElementById("logoutModal").style.display = "flex";
+  }
+
+  function closeLogoutModal() {
+    document.getElementById("logoutModal").style.display = "none";
+  }
+</script>
+
+
+
+<%- include("../../views/partials/user/footer") %>
+
+</body>
+</html>

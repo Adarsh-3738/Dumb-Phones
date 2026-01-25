@@ -1,0 +1,101 @@
+/* Container */
+.change-email-container,
+.verify-email-container {
+  max-width: 450px;
+  margin: 60px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+/* Headings */
+.change-email-container h2,
+.verify-email-container h2 {
+  text-align: center;
+  color: #0d6efd; /* Blue */
+  margin-bottom: 25px;
+}
+
+/* Error Messages */
+.error {
+  color: #dc3545; /* Red */
+  background-color: #f8d7da;
+  border: 1px solid #f5c2c7;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Labels */
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+/* Inputs */
+input[type="email"],
+input[type="text"] {
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+}
+
+/* Buttons */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #0d6efd;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #0b5ed7;
+}
+
+/* Back link */
+.back-btn {
+  display: inline-block;
+  margin-top: 15px;
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .change-email-container,
+  .verify-email-container {
+    margin: 30px 15px;
+    padding: 20px;
+  }
+}

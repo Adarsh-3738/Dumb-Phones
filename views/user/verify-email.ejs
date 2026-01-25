@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Email</title>
+  <link rel="stylesheet" href="/css/user/verify-email.css">
+</head>
+<body>
+
+<div class="verify-container">
+  <h2>Verify New Email</h2>
+
+  <% if (message) { %>
+    <p class="error"><%= message %></p>
+  <% } %>
+
+  <form action="/verify-email" method="POST">
+    <label>Enter OTP sent to your new email</label>
+    <input type="text" name="otp" placeholder="Enter OTP" required>
+    <button type="submit">Verify</button>
+  </form>
+</div>
+
+</body>
+</html>

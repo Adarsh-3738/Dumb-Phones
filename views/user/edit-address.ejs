@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Address</title>
+  <link rel="stylesheet" href="/css/user/add-address.css">
+</head>
+<body>
+
+<%- include("../partials/user/header") %>
+
+<div class="add-address-container">
+  <h2>Edit Address</h2>
+
+  <% if (message) { %>
+    <p class="error"><%= message %></p>
+  <% } %>
+
+  <form action="/address/edit/<%= address._id %>" method="POST" class="address-form">
+
+    <label>Address Type</label>
+    <input type="text" name="addressType" value="<%= address.addressType %>" required>
+
+    <label>Full Name</label>
+    <input type="text" name="name" value="<%= address.name %>" required>
+
+    <label>Phone</label>
+    <input type="text" name="phone" value="<%= address.phone %>" required>
+
+    <label>Alternate Phone</label>
+    <input type="text" name="altPhone" value="<%= address.altPhone %>">
+
+    <label>Landmark</label>
+    <input type="text" name="landmark" value="<%= address.landmark %>" required>
+
+    <label>City</label>
+    <input type="text" name="city" value="<%= address.city %>" required>
+
+    <label>State</label>
+    <input type="text" name="state" value="<%= address.state %>" required>
+
+    <label>Pincode</label>
+    <input type="text" name="pincode" value="<%= address.pincode %>" required>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">Update Address</button>
+      <a href="/address" class="btn-cancel">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+<%- include("../partials/user/footer") %>
+
+</body>
+</html>

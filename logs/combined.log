@@ -35,3 +35,244 @@
 {"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-22 19:15:20"}
 {"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-22 19:15:20"}
 {"level":"info","message":"Loading product details page","productId":"695f1d4a02972734a99b3792","timestamp":"2026-01-22 19:15:41"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:32:33"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-23 10:35:32"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 10:35:46"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-23 10:35:46"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 10:36:01"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-23 10:36:02"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:36:02"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:37:41"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:45:23"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-23 10:45:25"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 10:45:37"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-23 10:45:37"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:45:37"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:52:16"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-23 10:52:17"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 10:52:30"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-23 10:52:30"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:52:30"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 10:53:19"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:35:37"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-23 21:48:08"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-23 21:48:22"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 21:50:00"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-23 21:50:00"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-23 21:50:23"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-23 21:50:23"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:50:23"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:50:28"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:50:30"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:50:31"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-23 21:50:32"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 04:58:38"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 04:58:42"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 04:58:55"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 04:58:55"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 04:58:55"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 04:58:59"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 04:59:09"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:06:08"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:08:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:08:16"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 05:08:27"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 05:08:27"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:08:27"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:47:12"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:47:19"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:47:21"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 05:47:31"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 05:47:32"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:47:32"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:49:46"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:49:48"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:49:52"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 05:49:56"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 05:50:06"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 05:50:06"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 05:50:06"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:24:02"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:24:08"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:24:12"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 06:24:22"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 06:24:22"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:24:22"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:33:05"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:33:06"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:33:10"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:33:13"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 06:33:28"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 06:33:29"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:33:29"}
+{"level":"info","message":"User logged out","timestamp":"2026-01-24 06:35:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:35:20"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 06:35:31"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 06:35:43"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 06:35:43"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 06:35:43"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:20:36"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:20:40"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:20:42"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 14:20:55"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 14:20:55"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:20:55"}
+{"level":"info","message":"User logged out","timestamp":"2026-01-24 14:36:45"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:36:45"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:36:48"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 14:37:00"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 14:37:00"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:37:00"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:51:51"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:51:55"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:51:57"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 14:52:10"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 14:52:10"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:52:10"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:53:09"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 14:53:19"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 14:53:19"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:53:19"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 14:55:01"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 14:55:12"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 14:55:12"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:55:12"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 14:56:06"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 18:33:02"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 18:33:04"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 18:33:17"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 18:33:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 18:33:17"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 18:34:23"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 18:34:35"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 18:34:35"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 18:34:35"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 18:35:04"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 18:35:14"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 18:35:14"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 18:35:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 18:51:09"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 18:51:22"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 18:51:22"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 18:51:22"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:30:32"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:30:42"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:30:42"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:30:42"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:33:50"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:33:59"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-24 19:33:59"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:34:13"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:34:13"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:34:13"}
+{"level":"info","message":"User logged out","timestamp":"2026-01-24 19:34:55"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:34:55"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:34:57"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:35:14"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:35:14"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:35:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:41:48"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:42:00"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:42:00"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:42:00"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:44:15"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:44:25"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:44:26"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:44:26"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 19:55:34"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 19:55:51"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 19:55:51"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 19:55:51"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:05:22"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:05:33"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:05:33"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:05:33"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:17:03"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:17:14"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:17:14"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:17:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:31:39"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:31:49"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:31:49"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:31:49"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:32:25"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:32:34"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:32:34"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:32:34"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:39:06"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:39:16"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:39:16"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:39:16"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:42:31"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:42:43"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:42:43"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:42:43"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 20:56:20"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 20:56:30"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 20:56:30"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 20:56:30"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 21:03:39"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 21:03:51"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 21:03:51"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 21:03:51"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 21:21:52"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 21:26:12"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 21:26:13"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 21:26:13"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 21:30:08"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 21:30:18"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 21:30:18"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 21:30:18"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 21:54:52"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 21:54:53"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 21:55:06"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 21:55:06"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 21:55:06"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:04:02"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:04:07"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:04:17"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 22:04:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 22:04:17"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:07:31"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:07:45"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 22:07:45"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 22:07:45"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:20:37"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:20:49"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 22:20:49"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 22:20:49"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:31:21"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:31:36"}
+{"email":"geethu@gmail.com","level":"warn","message":"Login failed - user not found","timestamp":"2026-01-24 22:31:36"}
+{"email":"mmm@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:31:53"}
+{"email":"mmm@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 22:31:53"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 22:31:53"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-24 22:42:11"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:42:25"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-24 22:42:25"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-24 22:42:36"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-24 22:42:36"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-24 22:42:36"}
+{"level":"info","message":"User logged out","timestamp":"2026-01-25 08:41:52"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:41:52"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:42:44"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:42:44"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:42:44"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:42:44"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:42:44"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-25 08:42:46"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-25 08:43:01"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-25 08:43:01"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:43:01"}
+{"level":"info","message":"User logged out","timestamp":"2026-01-25 08:44:10"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:44:10"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-25 08:44:13"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-25 08:44:25"}
+{"email":"geethu@gmail.com","level":"warn","message":"Incorrect password attempt","timestamp":"2026-01-25 08:44:25"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-25 08:44:38"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-25 08:44:38"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 08:44:38"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-25 09:17:42"}
+{"email":"geethu@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-25 09:17:54"}
+{"email":"geethu@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-25 09:17:54"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-25 09:17:54"}

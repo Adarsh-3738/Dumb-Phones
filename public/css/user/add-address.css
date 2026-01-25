@@ -1,0 +1,88 @@
+/* ===== ADD ADDRESS PAGE - BLUE & WHITE THEME ===== */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f8ff;
+  margin: 0;
+  padding: 0;
+}
+
+.add-address-container {
+  max-width: 500px;
+  margin: 50px auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.add-address-container h2 {
+  text-align: center;
+  color: #1e3a8a; /* dark blue */
+  margin-bottom: 20px;
+}
+
+.address-form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.address-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.address-form input:focus {
+  border-color: #3b82f6; /* lighter blue */
+  outline: none;
+}
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-submit {
+  background-color: #3b82f6;
+  color: #ffffff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: #2563eb;
+}
+
+.btn-cancel {
+  background-color: #e0e7ff;
+  color: #1e3a8a;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #c7d2fe;
+}
+
+.error {
+  color: #dc2626;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: center;
+}

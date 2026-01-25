@@ -3,9 +3,11 @@ import passport from "passport";
 
 import * as userController from "../controller/user/userController.js";
 import * as productController from "../controller/user/productController.js";
-
+import * as profileController from "../controller/user/profileController.js"
 import alreadyLoggedIn from "../middlewares/alreadyLoggedin.js";
 import { userAuth } from "../middlewares/auth.js";
+import protect from "../middlewares/protect.js";
+import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
@@ -51,5 +53,50 @@ router.get(
 router.get("/products", productController.getProducts);
 router.get("/shop", userController.loadShopPage);
 router.get("/product/:id", productController.loadProductDetails);
+
+//user profile
+
+
+
+
+router.get("/profile", protect,profileController.renderProfilePage);
+
+//user profile edit
+
+router.get("/edit-profile", protect, profileController.getEditProfile);
+router.post(
+  "/edit-profile",
+  protect,
+  upload.single("profileImage"),
+  profileController.updateProfile
+);
+
+// EMAIL OTP VERIFICATION
+router.get("/change-email", protect, profileController.loadChangeEmail);
+router.post("/change-email", protect, profileController.sendEmailOtp);
+
+// Verify email
+router.get("/verify-email", protect,profileController.loadVerifyEmail);
+router.post("/verify-email", protect, profileController.verifyEmailOtp);
+
+// CHANGE PASSWORD
+router.get("/change-password", protect, profileController.loadChangePassword);
+router.post("/change-password", protect, profileController.changePassword);
+
+
+// ADDRESS MANAGEMENT
+router.get("/address",protect,profileController.loadAddresses);
+router.get("/add-address", protect, profileController.loadAddAddress);
+router.post("/add-address", protect, profileController.addAddress);
+
+router.get("/address/edit/:id", protect, profileController.loadEditAddress);
+router.post("/address/edit/:id", protect, profileController.updateAddress);
+router.post("/address/delete/:id", protect, profileController.deleteAddress);
+
+
+
+//logout
+
+router.post("/logout",protect,profileController.logoutUser);
 
 export default router;

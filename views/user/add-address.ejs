@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Address</title>
+  <link rel="stylesheet" href="/css/user/add-address.css">
+</head>
+<body>
+
+<%- include("../partials/user/header") %>
+
+<div class="add-address-container">
+  <h2>Add New Address</h2>
+
+  <% if (message) { %>
+    <p class="error"><%= message %></p>
+  <% } %>
+
+  <form action="/add-address" method="POST" class="address-form">
+    
+    <label for="addressType">Address Type</label>
+    <input type="text" name="addressType" id="addressType" placeholder="Home / Office" required>
+
+    <label for="name">Full Name</label>
+    <input type="text" name="name" id="name" placeholder="John Doe" required>
+
+    <label for="phone">Phone Number</label>
+    <input type="text" name="phone" id="phone" placeholder="1234567890" required>
+
+    <label for="altPhone">Alternate Phone</label>
+    <input type="text" name="altPhone" id="altPhone" placeholder="0987654321">
+
+    <label for="landmark">Landmark</label>
+    <input type="text" name="landmark" id="landmark" placeholder="Near Park / Mall" required>
+
+    <label for="city">City</label>
+    <input type="text" name="city" id="city" placeholder="City Name" required>
+
+    <label for="state">State</label>
+    <input type="text" name="state" id="state" placeholder="State Name" required>
+
+    <label for="pincode">Pincode</label>
+    <input type="number" name="pincode" id="pincode" placeholder="123456" required>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">Save Address</button>
+      <a href="/address" class="btn-cancel">Back</a>
+    </div>
+  </form>
+</div>
+
+<%- include("../partials/user/footer") %>
+
+</body>
+</html>

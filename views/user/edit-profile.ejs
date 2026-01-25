@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="/css/user/edit-profile.css">
+
+  <!-- Cropper CSS -->
+  <link
+    href="https://unpkg.com/cropperjs/dist/cropper.css"
+    rel="stylesheet"
+  />
+</head>
+<body>
+
+<%- include("../../views/partials/user/header") %>
+
+<div class="edit-profile-container">
+
+  <h2>Edit Profile</h2>
+
+  <% if (message) { %>
+    <p class="error"><%= message %></p>
+  <% } %>
+
+  <!-- IMPORTANT: enctype added -->
+  <form 
+    action="/edit-profile" 
+    method="POST" 
+    enctype="multipart/form-data"
+  >
+
+    <!-- PROFILE IMAGE -->
+    <label>Profile Image</label>
+
+    <div class="image-box">
+      <img
+        id="preview"
+        src="<%= user.profileImage %>"
+        alt="Profile Image"
+        class="preview-img"
+      />
+    </div>
+
+    <input 
+      type="file" 
+      id="imageInput" 
+      name="profileImage" 
+      accept="image/*"
+    >
+
+    <!-- USER INFO -->
+    <label>Name</label>
+    <input type="text" name="name" value="<%= user.name %>" required>
+
+    <label>Phone</label>
+    <input type="text" name="phone" value="<%= user.phone || '' %>">
+
+   
+
+   
+    <div class="form-actions">
+      <button type="submit">Save Changes</button>
+      <a href="/profile" class="cancel-btn">Cancel</a>
+    </div>
+
+  </form>
+
+</div>
+
+<!-- Cropper JS -->
+<script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+
+<script>
+  const input = document.getElementById("imageInput");
+  const preview = document.getElementById("preview");
+  let cropper;
+
+  input.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      preview.src = reader.result;
+
+      if (cropper) {
+        cropper.destroy();
+      }
+
+      cropper = new Cropper(preview, {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+        zoomable: true,
+      });
+    };
+
+    reader.readAsDataURL(file);
+  });
+</script>
+
+<%- include("../../views/partials/user/footer") %>
+
+</body>
+</html>

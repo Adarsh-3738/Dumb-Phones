@@ -7,6 +7,10 @@ import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import db from "./config/db.js";
 import { fileURLToPath } from "url";
+// user profile
+import cookieParser from "cookie-parser";
+
+
 
 dotenv.config();
 
@@ -15,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
+app.use(cookieParser());
 // DB
 db();
 
