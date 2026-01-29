@@ -1,5 +1,4 @@
 // for easy login for already logged in user
-// middlewares/alreadyLoggedin.js
 import logger from "../utils/logger.js";
 
 const alreadyLoggedin = (req, res, next) => {

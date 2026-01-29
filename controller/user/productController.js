@@ -17,6 +17,7 @@ export const getProducts = async (req, res) => {
       brand: req.query.brand,
       category: req.query.category,
       price: req.query.price,
+      user: req.user || null
     });
   } catch (error) {
     logger.error("Error fetching user products", {
@@ -43,7 +44,7 @@ export const loadProductDetails = async (req, res) => {
     const { product, similarProducts } =
       await productService.getProductDetailsService(productId);
 
-    res.render("user/productDetails", { product, similarProducts });
+    res.render("user/productDetails", { product, similarProducts,user:req.user || null });
   } catch (error) {
     logger.error("Error loading product details", {
       message: error.message,

@@ -12,6 +12,9 @@ import cookieParser from "cookie-parser";
 
 
 
+
+
+
 dotenv.config();
 
 
@@ -56,10 +59,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Make logged-in user available in all EJS views
-app.use((req, res, next) => {
-  res.locals.user = req.user || null;
-  next();
-});
+// app.use((req, res, next) => {
+//   res.locals.user = req.user || null;
+//   next();
+// });
 
 // View Engine
 app.set("view engine", "ejs");
@@ -79,9 +82,18 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.locals.user = req.session?.user || null;
+  next();
+});
+
+
 // Routes
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+
+
+
 
 // Server
 app.listen(process.env.PORT, () => {

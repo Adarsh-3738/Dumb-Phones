@@ -1,4 +1,3 @@
-// middlewares/authMiddleware.js
 import User from "../models/userSchema.js";
 import logger from "../utils/logger.js";
 

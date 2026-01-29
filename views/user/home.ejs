@@ -21,36 +21,45 @@
  <section class="featured">
   <h2>Featured Phones</h2>
 
-  <div class="products-grid">
-    <% if (products.length > 0) { %>
-      <% products.forEach(product => { %>
+  
+    <div class="products-grid">
+  <% if (products.length > 0) { %>
+    <% products.forEach(product => { %>
 
-        
-        <a href="/product/<%= product._id %>" class="product-link">
-          <div class="product-card">
-            <% if (product.productImage && product.productImage.length > 0) { %>
-              <img src="<%= product.productImage[0].url %>" alt="<%= product.productName %>">
-            <% } else { %>
-              <img src="/images/placeholder.png" alt="No image">
-            <% } %>
-            <div class="info">
-              <h4><%= product.brand?.name %></h4>
-              <h3><%= product.productName %></h3>
-              <p>₹<%= product.salesPrice %> 
-                 <span style="text-decoration:line-through;color:#999;">
-                   ₹<%= product.regularPrice %>
-                 </span>
-              </p>
-            </div>
-            <button class="cart-btn">Add to Cart</button>
-          </div>
-        </a>
+      <div class="product-card">
 
-      <% }) %>
-    <% } else { %>
-      <p>No products available</p>
+  <!-- PRODUCT LINK -->
+  <a href="/product/<%= product._id %>" class="product-link">
+    <% if (product.productImage?.length) { %>
+      <img src="<%= product.productImage[0].url %>" alt="">
     <% } %>
-  </div>
+
+    <div class="info">
+      <h4><%= product.brand?.name %></h4>
+      <h3><%= product.productName %></h3>
+      <p>
+        ₹<%= product.salesPrice %>
+        <span class="strike">₹<%= product.regularPrice %></span>
+      </p>
+    </div>
+  </a>
+
+  <!-- ADD TO CART (NOT INSIDE LINK) -->
+  <button
+  type="button"
+  class="cart-btn"
+  onclick="addToCart('<%= product._id %>')">
+  Add to Cart
+</button>
+
+</div>
+
+    <% }) %>
+  <% } else { %>
+    <p>No products available</p>
+  <% } %>
+</div>
+
 </section>
 
 
@@ -85,7 +94,11 @@
 
 <!-- footer -->
  <%-include("../../views/partials/user/footer")%>
-  
+  <script  src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/user/home.js"></script>
+
+
+
 
 </body>
 </html>

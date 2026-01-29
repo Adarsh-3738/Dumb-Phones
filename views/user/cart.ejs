@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Cart</title>
+  <link rel="stylesheet" href="/css/user/cart.css">
+</head>
+<body>
+
+<%- include("../partials/user/header") %>
+
+<div class="cart-container">
+  <h2>My Cart</h2>
+
+  <% if (cartItems.length === 0) { %>
+    <p class="empty">Your cart is empty</p>
+  <% } %>
+
+  <% cartItems.forEach(item => { 
+    const product = item.productId;
+    const disabled = product.quantity <= 0 || product.isBlocked;
+  %>
+
+  <div class="cart-card <%= disabled ? 'disabled' : '' %>">
+
+    <!-- PRODUCT IMAGE -->
+    <div class="cart-img">
+      <% if (product.productImage?.length) { %>
+        <img src="<%= product.productImage[0].url %>" alt="">
+      <% } %>
+    </div>
+
+    <!-- PRODUCT INFO -->
+    <div class="cart-info">
+      <h4><%= product.productName %></h4>
+      <p>₹ <%= product.salesPrice %></p>
+
+      <% if (product.quantity <= 0) { %>
+        <span class="out">Out of stock</span>
+      <% } %>
+    </div>
+
+    <!-- QTY CONTROLS -->
+    <div class="qty-controls">
+      <button onclick="updateQty('<%= product._id %>', 'decrement')" <%= disabled ? 'disabled' : '' %>>−</button>
+      <span><%= item.quantity %></span>
+      <button onclick="updateQty('<%= product._id %>', 'increment')" <%= disabled ? 'disabled' : '' %>>+</button>
+    </div>
+
+    <!-- REMOVE -->
+    <button class="remove-btn" onclick="removeItem('<%= product._id %>')">
+      Remove
+    </button>
+
+  </div>
+  <% }) %>
+
+  <% if (cartItems.length > 0) { %>
+    <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
+  <% } %>
+</div>
+
+<%- include("../partials/user/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="/js/user/cart.js"></script>
+
+</body>
+</html>

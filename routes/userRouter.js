@@ -4,6 +4,7 @@ import passport from "passport";
 import * as userController from "../controller/user/userController.js";
 import * as productController from "../controller/user/productController.js";
 import * as profileController from "../controller/user/profileController.js"
+import * as cartController from "../controller/user/cartController.js"
 import alreadyLoggedIn from "../middlewares/alreadyLoggedin.js";
 import { userAuth } from "../middlewares/auth.js";
 import protect from "../middlewares/protect.js";
@@ -93,10 +94,15 @@ router.get("/address/edit/:id", protect, profileController.loadEditAddress);
 router.post("/address/edit/:id", protect, profileController.updateAddress);
 router.post("/address/delete/:id", protect, profileController.deleteAddress);
 
-
-
 //logout
-
 router.post("/logout",protect,profileController.logoutUser);
+
+//cart
+router.get("/cart",protect,cartController.loadCart);
+router.post("/cart/add/:productId", protect, cartController.addToCart);
+router.post("/cart/increment/:productId", protect, cartController.incrementQty);
+router.post("/cart/decrement/:productId", protect, cartController.decrementQty);
+router.post("/cart/remove/:productId", protect, cartController.removeFromCart);
+
 
 export default router;

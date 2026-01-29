@@ -201,6 +201,33 @@
         margin-top: 10px;
       }
     }
+.product-card {
+  position: relative;
+}
+
+.product-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-form {
+  margin-top: 10px;
+}
+
+.cart-btn {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cart-btn:hover {
+  background: #1e40af;
+}
 
 
 
