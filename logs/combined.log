@@ -1002,3 +1002,58 @@
 {"level":"info","message":"Loading login page","timestamp":"2026-01-29 17:52:03"}
 {"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 17:52:06"}
 {"level":"info","message":"Loading product details page","productId":"6955ab331c9f8e8d54dbe826","timestamp":"2026-01-29 17:52:07"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:28:13"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:28:15"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 19:28:34"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 19:28:34"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:28:34"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:36:04"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 19:36:14"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 19:36:14"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:36:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:42:03"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 19:42:13"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 19:42:13"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:42:13"}
+{"level":"info","message":"Loading product details page","productId":"6968d4b8d22761c01041f905","timestamp":"2026-01-29 19:42:21"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:44:06"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:44:06"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 19:44:20"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 19:44:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:44:20"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 19:46:28"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 19:46:41"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 19:46:41"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 19:46:41"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 19:47:10"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 19:47:22"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 19:47:28"}
+{"level":"info","message":"Loading product details page","productId":"695533e9f137ddee61e62112","timestamp":"2026-01-29 19:51:05"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 20:17:10"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 20:17:11"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 20:17:29"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 20:17:29"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:17:29"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:18:59"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:19:00"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:19:00"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:19:00"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 20:22:05"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 20:22:17"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 20:22:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:22:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:24:52"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 20:25:17"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 20:25:21"}
+{"level":"info","message":"Loading product details page","productId":"6955ab331c9f8e8d54dbe826","timestamp":"2026-01-29 20:25:52"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 20:26:27"}
+{"level":"info","message":"Loading product details page","productId":"6955acd21c9f8e8d54dbe83c","timestamp":"2026-01-29 20:26:29"}
+{"level":"info","message":"Loading product details page","productId":"6955acd21c9f8e8d54dbe83c","timestamp":"2026-01-29 20:39:05"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-01-29 20:49:43"}
+{"level":"info","message":"Loading product details page","productId":"6955ab331c9f8e8d54dbe826","timestamp":"2026-01-29 20:49:44"}
+{"level":"info","message":"Loading login page","timestamp":"2026-01-29 20:49:46"}
+{"email":"geethika@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-01-29 20:49:56"}
+{"email":"geethika@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-01-29 20:49:56"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-01-29 20:49:56"}
+{"level":"info","message":"Loading product details page","productId":"695f1d4a02972734a99b3792","timestamp":"2026-01-29 20:50:01"}
+{"level":"info","message":"Loading product details page","productId":"695f1d4a02972734a99b3792","timestamp":"2026-01-29 20:50:43"}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Successful</title>
+  <link rel="stylesheet" href="/css/user/order-success.css">
+  
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <div class="order-success-container">
+   
+    <h2>Thank you for your order!</h2>
+    <p>Your order has been placed successfully.</p>
+
+    <a href="/orders/<%= order._id %>" class="btn btn-view-order">View Order Details</a>
+    <a href="/shop" class="btn btn-continue">Continue Shopping</a>
+  </div>
+
+  <%- include("../partials/user/footer") %>
+</body>
+</html>

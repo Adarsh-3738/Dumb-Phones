@@ -5,14 +5,14 @@ async function addToCart(productId) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json"   // 🔥 IMPORTANT
+        "Accept": "application/json"   
       },
       credentials: "same-origin"
     });
 
     const data = await res.json();
 
-    // 🔐 Not logged in
+    // Not logged in
     if (data.notLoggedIn) {
       Swal.fire({
         icon: 'warning',
@@ -25,7 +25,7 @@ async function addToCart(productId) {
       return;
     }
 
-    // ❌ Error
+    //  Error
     if (!data.success) {
       Swal.fire({
         icon: 'error',
@@ -35,7 +35,7 @@ async function addToCart(productId) {
       return;
     }
 
-    // ✅ Success
+    // Success
     Swal.fire({
       icon: 'success',
       title: 'Added to Cart!',

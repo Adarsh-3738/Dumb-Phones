@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const addressSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User",   //to match User model
+    ref: "User",
     required: true
   },
   address: [
@@ -41,11 +41,14 @@ const addressSchema = new Schema({
       altPhone: {
         type: String,
         required: true
+      },
+      isDefault: {
+        type: Boolean,
+        default: false
       }
     }
   ]
 });
 
 const Address = mongoose.model("Address", addressSchema);
-
 export default Address;

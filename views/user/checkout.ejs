@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/css/user/checkout.css">
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <div class="checkout-container">
+
+    <h2>Checkout</h2>
+
+    <!-- ADDRESS SELECTION -->
+    <div class="checkout-address">
+      <h3>Select Delivery Address</h3>
+      <form id="addressForm" action="/checkout/place-order" method="POST">
+
+        <% if (addresses && addresses.length > 0) { %>
+          <% addresses.forEach(addr => { %>
+            <div class="address-card <%= addr.isDefault ? 'default' : '' %>">
+              <input
+                type="radio"
+                name="addressId"
+                value="<%= addr._id %>"
+                <%= addr.isDefault ? 'checked' : '' %>
+                required
+              >
+              <p>
+                <strong><%= addr.addressType %></strong><br>
+                <%= addr.name %><br>
+                <%= addr.landmark %>, <%= addr.city %><br>
+                <%= addr.state %> - <%= addr.pincode %><br>
+                Phone: <%= addr.phone %>
+              </p>
+              <button
+                type="button"
+                class="btn-edit-address"
+                onclick="editAddress('<%= addr._id %>')">Edit</button>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No addresses found.</p>
+        <% } %>
+
+        <button type="button" class="btn-add-address" onclick="addNewAddress()">+ Add New Address</button>
+
+      </form>
+    </div>
+
+    <!-- CART ITEMS -->
+    <div class="checkout-items">
+      <h3>Your Items</h3>
+      <% cartItems.forEach(item => { %>
+        <div class="checkout-item">
+          <img src="<%= item.productId.productImage[0].url %>" alt="">
+          <div class="item-info">
+            <h4><%= item.productId.productName %></h4>
+            <p>Qty: <%= item.quantity %></p>
+            <p>Price: ₹<%= item.price %> × <%= item.quantity %> = ₹<%= item.price * item.quantity %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="checkout-summary">
+      <h3>Order Summary</h3>
+      <p>Subtotal: ₹<%= subtotal %></p>
+      <p>Tax (5%): ₹<%= tax %></p>
+      <p>Shipping: ₹<%= shipping %></p>
+      <p>Discount: ₹<%= discount %></p>
+      <h4>Total: ₹<%= total %></h4>
+
+      <button form="addressForm" type="submit" class="place-order-btn">Place Order (Cash on Delivery)</button>
+    </div>
+  </div>
+
+  <%- include("../partials/user/footer") %>
+
+  <script>
+    function addNewAddress() {
+      window.location.href = "/add-address"; 
+    }
+
+    function editAddress(id) {
+      window.location.href = `/address/edit/${id}`; 
+    }
+  </script>
+</body>
+</html>

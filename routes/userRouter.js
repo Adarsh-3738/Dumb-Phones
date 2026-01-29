@@ -9,6 +9,7 @@ import alreadyLoggedIn from "../middlewares/alreadyLoggedin.js";
 import { userAuth } from "../middlewares/auth.js";
 import protect from "../middlewares/protect.js";
 import upload from "../middlewares/upload.js";
+import * as checkoutController from "../controller/user/checkoutContoller.js";
 
 const router = express.Router();
 
@@ -103,6 +104,13 @@ router.post("/cart/add/:productId", protect, cartController.addToCart);
 router.post("/cart/increment/:productId", protect, cartController.incrementQty);
 router.post("/cart/decrement/:productId", protect, cartController.decrementQty);
 router.post("/cart/remove/:productId", protect, cartController.removeFromCart);
+
+// Checkout page
+router.get("/checkout", protect,checkoutController.loadCheckout);
+// Place order (Cash on Delivery)
+router.post("/checkout/place-order", protect, checkoutController.placeOrder);
+
+
 
 
 export default router;

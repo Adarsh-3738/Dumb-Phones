@@ -1,0 +1,108 @@
+   /* Center container */
+    .order-success-container {
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+      background-color: #f8f9fa; /* light white/gray background */
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .order-success-container img {
+      width: 150px;
+      margin-bottom: 20px;
+    }
+
+    .order-success-container h2 {
+      color: #007bff; /* main blue color */
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .order-success-container p {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    /* Buttons */
+    .order-success-container .btn {
+      display: inline-block;
+      margin: 10px 10px 0 10px;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-view-order {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-view-order:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-continue {
+      background-color: #ffffff;
+      color: #007bff;
+      border: 2px solid #007bff;
+    }
+
+    .btn-continue:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      .order-success-container {
+        margin: 30px 20px;
+        padding: 25px;
+      }
+
+      .order-success-container img {
+        width: 120px;
+        margin-bottom: 15px;
+      }
+
+      .order-success-container h2 {
+        font-size: 24px;
+      }
+
+      .order-success-container p {
+        font-size: 14px;
+      }
+
+      .order-success-container .btn {
+        width: 100%;
+        margin: 10px 0;
+        padding: 12px 0;
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .order-success-container {
+        padding: 20px;
+      }
+
+      .order-success-container h2 {
+        font-size: 20px;
+      }
+
+      .order-success-container p {
+        font-size: 13px;
+      }
+
+      .order-success-container img {
+        width: 100px;
+      }
+    }
+ 
