@@ -12,28 +12,8 @@
 <div class="profile-wrapper">
 
   <!-- LEFT SIDEBAR -->
-  <aside class="profile-sidebar">
-    <img
-      src="<%= (user && user.profileImage) ? user.profileImage : '/images/default-avatar.png' %>"
-      alt="Profile Image"
-      class="sidebar-avatar"
-    />
+  <%- include("../../views/partials/user/sidebar.ejs") %>
 
-    <h3><%= user.name %></h3>
-    <p class="email"><%= user.email %></p>
-
-    <ul class="profile-menu">
-  <li><a href="/profile">My Profile</a></li>
-  <li><a href="/orders">Orders</a></li>
-  <li><a href="/edit-profile">Edit Profile</a></li>
-  <li><a href="/change-email">Change Email</a></li>
-  <li><a href="/change-password">Change Password</a></li>
-  <li><a href="/address">Edit Address</a></li>
-  <li><a class="logout-btn" onclick="openLogoutModal()">Logout</a>
-</li>
-</ul>
-
-  </aside>
 
   <!-- RIGHT CONTENT -->
   <main class="profile-content">

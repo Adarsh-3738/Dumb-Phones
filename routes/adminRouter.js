@@ -5,7 +5,7 @@ import * as customerController from "../controller/admin/customerController.js";
 import * as categoryController from "../controller/admin/categoryController.js";
 import * as productController from "../controller/admin/productController.js";
 import * as brandController from "../controller/admin/brandController.js";
-
+import * as orderController from "../controller/admin/orderController.js"
 import upload from "../middlewares/multer.js";
 import { adminAuth } from "../middlewares/auth.js";
 
@@ -72,5 +72,18 @@ router.post("/brands/add", upload.single("logo"), brandController.postAddBrand);
 
 router.get("/brands/view/:id", brandController.viewBrand);
 router.get("/brands/delete/:id", brandController.deleteBrand);
+
+
+
+//order-management
+// List orders with pagination/search/filter
+router.get("/orders", adminAuth, orderController.loadOrders);
+// Order details
+router.get("/orders/:orderId",adminAuth, orderController.loadOrderDetails);
+// Update order status
+router.post("/orders/:orderId/status", adminAuth, orderController.updateOrderStatus);
+
+
+
 
 export default router;

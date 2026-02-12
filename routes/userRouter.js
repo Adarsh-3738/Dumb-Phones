@@ -10,7 +10,7 @@ import { userAuth } from "../middlewares/auth.js";
 import protect from "../middlewares/protect.js";
 import upload from "../middlewares/upload.js";
 import * as checkoutController from "../controller/user/checkoutContoller.js";
-
+import * as orderController from "../controller/user/orderController.js"
 const router = express.Router();
 
 // Pages
@@ -109,6 +109,23 @@ router.post("/cart/remove/:productId", protect, cartController.removeFromCart);
 router.get("/checkout", protect,checkoutController.loadCheckout);
 // Place order (Cash on Delivery)
 router.post("/checkout/place-order", protect, checkoutController.placeOrder);
+
+
+//order management;
+// List all orders
+// Search orders
+router.get("/orders/search", protect, orderController.searchOrders);
+// Orders list
+router.get("/orders", protect, orderController.loadOrders);
+// Order details page
+router.get("/orders/:orderId", protect, orderController.loadOrderDetails);
+// Cancel order or product
+router.post("/orders/:orderId/cancel", protect, orderController.cancelOrder);
+// Return order
+router.post("/orders/:orderId/return", protect, orderController.returnOrder);
+// Download invoice
+router.get("/orders/:orderId/invoice", protect, orderController.downloadInvoice);
+
 
 
 

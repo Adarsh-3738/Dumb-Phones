@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Orders</title>
+  <link rel="stylesheet" href="/css/admin/orders.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <%- include("../partials/admin/header") %>
+
+  <div class="container">
+    <h2>Order Management</h2>
+
+    <!-- Search, Filter, and Sort -->
+    <form method="GET" action="/admin/orders" class="search-form">
+      <input type="text" name="search" placeholder="Search by Order ID" value="<%= search %>">
+
+      <select name="status">
+        <option value="">All Status</option>
+        <option value="Pending" <%= status==='Pending'?'selected':'' %>>Pending</option>
+        <option value="Processing" <%= status==='Processing'?'selected':'' %>>Processing</option>
+        <option value="Shipped" <%= status==='Shipped'?'selected':'' %>>Shipped</option>
+        <option value="Out for Delivery" <%= status==='Out for Delivery'?'selected':'' %>>Out for Delivery</option>
+        <option value="Delivered" <%= status==='Delivered'?'selected':'' %>>Delivered</option>
+        <option value="Cancelled" <%= status==='Cancelled'?'selected':'' %>>Cancelled</option>
+      </select>
+
+      <select name="sort">
+        <option value="">Sort By</option>
+        <option value="date_desc" <%= sort==='date_desc'?'selected':'' %>>Date: Newest First</option>
+        <option value="date_asc" <%= sort==='date_asc'?'selected':'' %>>Date: Oldest First</option>
+        <option value="amount_desc" <%= sort==='amount_desc'?'selected':'' %>>Total: High to Low</option>
+        <option value="amount_asc" <%= sort==='amount_asc'?'selected':'' %>>Total: Low to High</option>
+      </select>
+
+      <button type="submit">Apply</button>
+      <a href="/admin/orders">Clear</a>
+    </form>
+
+    <!-- Orders Table -->
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>User</th>
+          <th>Email</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <tr>
+            <td><%= order.orderId %></td>
+            <td><%= order.userId ? order.userId.name : 'N/A' %></td>
+            <td><%= order.userId ? order.userId.email : 'N/A' %></td>
+            <td><%= order.createdOn.toDateString() %></td>
+            <td>
+              <select onchange="updateStatus('<%= order.orderId %>', this.value)">
+                <option value="Pending" <%= order.status==='Pending'?'selected':'' %>>Pending</option>
+                <option value="Processing" <%= order.status==='Processing'?'selected':'' %>>Processing</option>
+                <option value="Shipped" <%= order.status==='Shipped'?'selected':'' %>>Shipped</option>
+                <option value="Out for Delivery" <%= order.status==='Out for Delivery'?'selected':'' %>>Out for Delivery</option>
+                <option value="Delivered" <%= order.status==='Delivered'?'selected':'' %>>Delivered</option>
+                <option value="Cancelled" <%= order.status==='Cancelled'?'selected':'' %>>Cancelled</option>
+              </select>
+            </td>
+            <td>₹<%= order.finalAmount %></td>
+            <td>
+              <a href="/admin/orders/<%= order.orderId %>">View</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <% for(let i=1; i<=totalPages; i++){ %>
+        <a href="?page=<%= i %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>" class="<%= currentPage==i?'active':'' %>"><%= i %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    async function updateStatus(orderId, status) {
+      const { isConfirmed } = await Swal.fire({
+        title: 'Change Order Status?',
+        text: `Set order ${orderId} status to "${status}"`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, update',
+        cancelButtonText: 'Cancel'
+      });
+
+      if (!isConfirmed) return;
+
+      const res = await fetch(`/admin/orders/${orderId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+
+      if (res.ok) {
+        Swal.fire('Updated!', `Order ${orderId} status updated.`, 'success');
+        setTimeout(()=>location.reload(), 1000);
+      } else {
+        Swal.fire('Error', 'Could not update order status.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

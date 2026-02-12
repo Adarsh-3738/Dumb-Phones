@@ -1,0 +1,120 @@
+/* General page style */
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #1d4ed8;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Order info section */
+.order-info {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.order-info p {
+  margin: 5px 0;
+  color: #374151;
+}
+
+/* Items list */
+.items-list {
+  margin-top: 20px;
+}
+
+.item {
+  display: flex;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  align-items: center;
+}
+
+.item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+
+.item-info h4 {
+  margin: 0;
+  color: #1d4ed8;
+}
+
+.item-info p {
+  margin: 5px 0;
+}
+
+/* Action buttons */
+.buttons {
+  margin-top: 15px;
+}
+
+.buttons button,
+.buttons a {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+  text-decoration: none;
+  color: rgb(250, 250, 250);
+}
+
+.buttons .cancel-btn {
+  background-color: #e53935 ;
+  color: #fff;
+}
+
+
+.buttons .cancel-btn:hover {
+  background-color: #b71c1c;
+}
+
+
+
+.return-btn {
+  background: #f59e0b;
+}
+
+.return-btn:hover {
+  background: #d97706;
+}
+
+.invoice-btn {
+  background: #1d4ed8;
+}
+
+.invoice-btn:hover {
+  background: #2563eb;
+}
+
+/* Responsive */
+@media(max-width: 600px) {
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .item img {
+    margin-bottom: 10px;
+  }
+}

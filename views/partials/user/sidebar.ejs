@@ -1,3 +1,4 @@
+<style>
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -96,65 +97,26 @@ body {
 .btn-link:hover {
   text-decoration: underline;
 }
-/* Address Card Styling */
-.address-box {
-  background: #f9fbff;
-  border: 1px solid #dbe7ff;
-  border-radius: 8px;
-  padding: 15px 20px;
-  margin-bottom: 15px;
-  transition: 0.2s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
+</style>
+<aside class="profile-sidebar">
+  <img
+    src="<%= (user && user.profileImage) ? user.profileImage : '/images/default-avatar.png' %>"
+    alt="Profile Image"
+    class="sidebar-avatar"
+  />
 
-.address-box:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+  <h3><%= user.name %></h3>
+  <p class="email"><%= user.email %></p>
 
-.address-box p {
-  margin: 4px 0;
-  color: #1f2937; /* dark grey */
-  font-size: 14px;
-}
-
-.address-box strong {
-  color: #003366; /* blue for type */
-  font-weight: 600;
-}
-
-/* Add/Edit Address Link */
-.btn-link {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 8px 14px;
-  background: #e6f0ff;
-  color: #003366;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.btn-link:hover {
-  background: #d0e0ff;
-}
-
-/* Responsive */
-@media(max-width: 768px) {
-  .profile-wrapper {
-    flex-direction: column;
-  }
-
-  .profile-sidebar {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .profile-content {
-    padding: 20px;
-  }
-
-  .address-box {
-    padding: 15px;
-  }
-}
+  <ul class="profile-menu">
+    <li><a href="/profile">My Profile</a></li>
+    <li><a href="/orders">Orders</a></li>
+    <li><a href="/edit-profile">Edit Profile</a></li>
+    <li><a href="/change-email">Change Email</a></li>
+    <li><a href="/change-password">Change Password</a></li>
+    <li><a href="/address">Edit Address</a></li>
+    <li>
+      <a class="logout-btn" onclick="openLogoutModal()">Logout</a>
+    </li>
+  </ul>
+</aside>

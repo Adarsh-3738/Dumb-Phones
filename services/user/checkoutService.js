@@ -42,11 +42,22 @@ export const getCheckoutData = async (userId) => {
 };
 
 // Place order cod
+
 export const placeOrderService = async (userId, addressId) => {
   const cart = await Cart.findOne({ userId }).populate("items.productId");
-  if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
+  if (!cart || cart.items.length === 0) {
+    throw new Error("Cart is empty");
+  }
 
-  // Convert cart items → orderedItems
+  // 🔹 Find user's address document
+  const addressDoc = await Address.findOne({ userId });
+  if (!addressDoc) throw new Error("Address not found");
+
+  // 🔹 Find selected sub-address
+  const selectedAddress = addressDoc.address.id(addressId);
+  if (!selectedAddress) throw new Error("Invalid address");
+
+  // 🔹 Prepare ordered items
   let totalPrice = 0;
   const orderedItems = cart.items.map(item => {
     totalPrice += item.price * item.quantity;
@@ -61,18 +72,27 @@ export const placeOrderService = async (userId, addressId) => {
   const shipping = 50;
   const finalAmount = totalPrice + shipping - discount;
 
-  // CREATE ORDER
+  // ✅ CREATE ORDER WITH ADDRESS SNAPSHOT
   const order = await Order.create({
+    userId,
     orderedItems,
     totalPrice,
     discount,
     finalAmount,
-    address: addressId,
+    address: {
+      name: selectedAddress.name,
+      phone: selectedAddress.phone,
+      addressType: selectedAddress.addressType,
+      landmark: selectedAddress.landmark,
+      city: selectedAddress.city,
+      state: selectedAddress.state,
+      pincode: selectedAddress.pincode
+    },
     status: "Pending",
     invoiceDate: new Date()
   });
 
-  // CLEAR CART
+  // 🔹 Clear cart
   cart.items = [];
   await cart.save();
 

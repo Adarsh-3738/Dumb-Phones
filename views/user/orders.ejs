@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Orders</title>
+  <link rel="stylesheet" href="/css/user/orders.css">
+</head>
+<body>
+
+<%- include("../partials/user/header") %>
+
+
+<div class="profile-wrapper">
+<%- include("../../views/partials/user/sidebar.ejs") %>
+<div class="container">
+  <h2>My Orders</h2>
+
+  <div class="search-bar">
+    <form action="/orders/search" method="GET">
+  <input type="text" name="q" placeholder="Search by Order ID">
+  <button type="submit">Search</button>
+</form>
+
+
+  </div>
+
+  <div class="orders-list">
+    <% if (orders.length === 0) { %>
+      <p class="no-orders">You have no orders yet.</p>
+    <% } else { %>
+
+      <% orders.forEach(order => { %>
+        <div class="order-card"
+             onclick="goToOrder('<%= order.orderId %>')">
+
+          <h3>Order ID: <%= order.orderId %></h3>
+
+          <p>
+            Status:
+            <span class="status <%= order.status.toLowerCase() %>">
+              <%= order.status %>
+            </span>
+          </p>
+
+          <p>
+            Order Date:
+            <%= order.invoiceDate
+              ? order.invoiceDate.toDateString()
+              : order.createdOn.toDateString() %>
+          </p>
+
+          <p>Total: ₹<%= order.finalAmount %></p>
+
+          <button class="view-btn"
+            onclick="event.stopPropagation(); window.location.href='/orders/<%= order.orderId %>'">
+            View Details
+          </button>
+
+          <% if (order.status === 'Pending' || order.status === 'Processing') { %>
+            <button class="cancel-btn"
+              onclick="event.stopPropagation(); cancelOrder('<%= order.orderId %>')">
+              Cancel Order
+            </button>
+          <% } %>
+
+          <% if (order.status === 'Delivered') { %>
+            <button class="return-btn"
+              onclick="event.stopPropagation(); returnOrder('<%= order.orderId %>')">
+              Return Order
+            </button>
+          <% } %>
+
+        </div>
+      <% }) %>
+
+    <% } %>
+  </div>
+</div>
+</div>
+<%- include("../partials/user/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function goToOrder(orderId) {
+  window.location.href = `/orders/${orderId}`;
+}
+
+async function cancelOrder(orderId) {
+  const { value: reason } = await Swal.fire({
+    title: "Cancel Order?",
+    text: "You can provide a reason (optional)",
+    input: "text",
+    inputPlaceholder: "Reason (optional)",
+    showCancelButton: true,
+    confirmButtonText: "Cancel Order",
+    confirmButtonColor: "#1e40af",
+    cancelButtonColor: "#d33"
+  });
+
+  if (reason === undefined) return;
+
+  await fetch(`/orders/${orderId}/cancel`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reason })
+  });
+
+  Swal.fire({
+    icon: "success",
+    title: "Order Cancelled",
+    timer: 1500,
+    showConfirmButton: false
+  });
+
+  setTimeout(() => location.reload(), 1500);
+}
+
+async function returnOrder(orderId) {
+  const { value: reason } = await Swal.fire({
+    title: "Return Order",
+    input: "textarea",
+    inputLabel: "Reason for return",
+    inputPlaceholder: "Enter your reason here...",
+    showCancelButton: true,
+    confirmButtonText: "Submit",
+    confirmButtonColor: "#1e40af",
+    inputValidator: (value) => {
+      if (!value) return "Reason is required!";
+    }
+  });
+
+  if (!reason) return;
+
+  await fetch(`/orders/${orderId}/return`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reason })
+  });
+
+  Swal.fire({
+    icon: "success",
+    title: "Return Requested",
+    confirmButtonColor: "#1e40af"
+  });
+
+  location.reload();
+}
+</script>
+
+</body>
+</html>

@@ -20,7 +20,8 @@
 }
 
 /* Error Messages */
-.error {
+.change-email-container .error,
+.verify-email-container .error {
   color: #dc3545; /* Red */
   background-color: #f8d7da;
   border: 1px solid #f5c2c7;
@@ -31,21 +32,25 @@
 }
 
 /* Form */
-form {
+.change-email-container form,
+.verify-email-container form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
 /* Labels */
-label {
+.change-email-container label,
+.verify-email-container label {
   font-weight: 600;
   margin-bottom: 5px;
 }
 
 /* Inputs */
-input[type="email"],
-input[type="text"] {
+.change-email-container input[type="email"],
+.change-email-container input[type="text"],
+.verify-email-container input[type="email"],
+.verify-email-container input[type="text"] {
   padding: 10px 12px;
   border: 1px solid #ced4da;
   border-radius: 8px;
@@ -53,15 +58,18 @@ input[type="text"] {
   transition: 0.3s;
 }
 
-input[type="email"]:focus,
-input[type="text"]:focus {
+.change-email-container input:focus,
+.change-email-container input[type="text"]:focus,
+.verify-email-container input:focus,
+.verify-email-container input[type="text"]:focus {
   outline: none;
   border-color: #0d6efd;
   box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
 }
 
 /* Buttons */
-button {
+.change-email-container button,
+.verify-email-container button {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -73,12 +81,14 @@ button {
   transition: 0.3s;
 }
 
-button:hover {
+.change-email-container button:hover,
+.verify-email-container button:hover {
   background-color: #0b5ed7;
 }
 
 /* Back link */
-.back-btn {
+.change-email-container .back-btn,
+.verify-email-container .back-btn {
   display: inline-block;
   margin-top: 15px;
   color: #0d6efd;
@@ -87,7 +97,8 @@ button:hover {
   transition: 0.2s;
 }
 
-.back-btn:hover {
+.change-email-container .back-btn:hover,
+.verify-email-container .back-btn:hover {
   text-decoration: underline;
 }
 

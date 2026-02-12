@@ -7,9 +7,10 @@
 </head>
 <body>
 
-<%- include("../partials/user/header") %>
-
-<div class="change-email-container">
+<%- include("../../views/partials/user/header") %>
+<div class="profile-wrapper">
+<%- include("../../views/partials/user/sidebar.ejs") %>
+ <div class="change-email-container">
   <h2>Change Email</h2>
 
   <% if (message) { %>
@@ -24,6 +25,8 @@
   </form>
 
   <a href="/profile" class="back-btn">← Back to Profile</a>
+</div>
+
 </div>
 
 <%- include("../partials/user/footer") %>

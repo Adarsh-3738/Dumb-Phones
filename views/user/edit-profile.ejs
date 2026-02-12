@@ -14,7 +14,8 @@
 <body>
 
 <%- include("../../views/partials/user/header") %>
-
+<div class="profile-wrapper">
+<%- include("../../views/partials/user/sidebar.ejs") %>
 <div class="edit-profile-container">
 
   <h2>Edit Profile</h2>
@@ -67,7 +68,7 @@
   </form>
 
 </div>
-
+</div>
 <!-- Cropper JS -->
 <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
 

@@ -1,0 +1,72 @@
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #1d4ed8;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  color: #1e40af;
+  margin-bottom: 10px;
+}
+
+.status {
+  color: #1d4ed8;
+  font-weight: bold;
+}
+
+select {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #c7d2fe;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.items-table th {
+  background: #1d4ed8;
+  color: white;
+  padding: 10px;
+}
+
+.items-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 20px;
+  color: white;
+  background: #1d4ed8;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.back-btn:hover {
+  background: #2563eb;
+}

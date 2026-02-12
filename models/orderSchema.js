@@ -9,23 +9,40 @@ const orderSchema = new Schema({
     default: () => uuidv4(),
     unique: true
   },
+
+userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+
   orderedItems: [
-    {
-      product: {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-        required: true
-      },
-      quantity: {
-        type: Number,
-        required: true
-      },
-      price: {
-        type: Number,
-        default: 0
-      }
-    }
-  ],
+  {
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    },
+    price: {
+      type: Number,
+      default: 0
+    },
+    itemStatus: {
+      type: String,
+      enum: ["Active", "Cancelled"],
+      default: "Active"
+    },
+    cancelReason: {
+  type: String,
+  default: ""
+}
+
+  }
+],
   totalPrice: {
     type: Number,
     required: true
@@ -38,11 +55,17 @@ const orderSchema = new Schema({
     type: Number,
     required: true
   },
-  address: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true
-  },
+ address: {
+  name: { type: String, required: true },
+  phone: { type: String, required: true },
+  addressType: String,
+  landmark: String,
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  pincode: { type: String, required: true }
+}
+,
+
   invoiceDate: {
     type: Date
   },

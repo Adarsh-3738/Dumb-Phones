@@ -1,4 +1,5 @@
 import { getCheckoutData, placeOrderService } from "../../services/user/checkoutService.js";
+import Cart from "../../models/cartSchema.js";
 
 // Load checkout page
 export const loadCheckout = async (req, res) => {

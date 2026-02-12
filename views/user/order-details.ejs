@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Details</title>
+  <link rel="stylesheet" href="/css/user/order-details.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <div class="container">
+    <h2>Order Details - <%= order.orderId %></h2>
+
+    <!-- Order info -->
+    <div class="order-info">
+      <p>Status: <span class="status"><%= order.status %></span></p>
+      <p>Order Date: <%= order.invoiceDate.toDateString() %></p>
+      <p>Total: ₹<%= order.finalAmount %></p>
+      <p>Discount: ₹<%= order.discount %></p>
+      <p>Shipping: ₹50</p>
+    </div>
+
+    <!-- Items -->
+    <div class="items-list">
+      <% order.orderedItems.forEach(item => { %>
+        <div class="item">
+          <img src="<%= item.product.productImage[0].url %>" alt="">
+          <div class="item-info">
+            <h4><%= item.product.productName %></h4>
+            <p>Qty: <%= item.quantity %></p>
+            <p>Price: ₹<%= item.price %> × <%= item.quantity %> = ₹<%= item.price * item.quantity %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Actions -->
+    <div class="buttons">
+      <a href="/orders/<%= order._id %>/invoice" class="invoice-btn">Download Invoice</a>
+
+      <% if(order.status === 'Pending' || order.status === 'Processing') { %>
+        <button class="cancel-btn"
+              onclick="event.stopPropagation(); cancelOrder('<%= order.orderId %>')">
+              Cancel Order
+            </button>
+      <% } %>
+
+      <% if(order.status === 'Delivered') { %>
+        <button class="return-btn" onclick="returnOrder('<%= order._id %>')">Return Order</button>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include("../partials/user/footer") %>
+
+  <script>
+    
+async function cancelOrder(orderId) {
+  const { value: reason } = await Swal.fire({
+    title: "Cancel Order?",
+    text: "You can provide a reason (optional)",
+    input: "text",
+    inputPlaceholder: "Reason (optional)",
+    showCancelButton: true,
+    confirmButtonText: "Cancel Order",
+    confirmButtonColor: "#1e40af",
+    cancelButtonColor: "#d33"
+  });
+
+  if (reason === undefined) return;
+
+  await fetch(`/orders/${orderId}/cancel`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reason })
+  });
+
+  Swal.fire({
+    icon: "success",
+    title: "Order Cancelled",
+    timer: 1500,
+    showConfirmButton: false
+  });
+
+  setTimeout(() => location.reload(), 1500);
+}
+
+    async function returnOrder(orderId) {
+      const { value: reason } = await Swal.fire({
+        title: "Return Order",
+        input: "textarea",
+        inputLabel: "Reason for return",
+        inputPlaceholder: "Enter your reason here...",
+        inputAttributes: { maxlength: 200 },
+        showCancelButton: true,
+        confirmButtonText: "Submit",
+        confirmButtonColor: "#1d4ed8",
+        cancelButtonText: "Cancel",
+        inputValidator: (value) => {
+          if (!value) return "Reason is required!";
+        }
+      });
+
+      if (!reason) return;
+
+      try {
+        const res = await fetch(`/orders/${orderId}/return`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason })
+        });
+
+        if (res.ok) {
+          await Swal.fire({
+            icon: "success",
+            title: "Return Requested",
+            text: "Your return request has been submitted.",
+            confirmButtonColor: "#1d4ed8"
+          });
+          location.reload();
+        } else {
+          throw new Error("Return failed");
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Could not submit return request."
+        });
+      }
+    }
+  </script>
+</body>
+</html>
