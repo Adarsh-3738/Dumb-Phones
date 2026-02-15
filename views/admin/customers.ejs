@@ -32,34 +32,38 @@
             </thead>
 
             <tbody>
-                <% data.forEach(user => { %>
-                    <tr>
-                        <td><%= user.name %></td>
-                        <td><%= user.email %></td>
-                        <td><%= user.phone %></td>
+  <% data.forEach(user => { %>
+    <tr>
 
-                        <td>
-                            <% if (user.isBlocked) { %>
-                                <span class="status blocked">Blocked</span>
-                            <% } else { %>
-                                <span class="status active">Active</span>
-                            <% } %>
-                        </td>
+      <td data-label="Name"><%= user.name %></td>
 
-                        <td>
-                            <td>
-    <button class="btn <%= user.isBlocked ? 'btn-unblock' : 'btn-block' %>" 
-            data-id="<%= user._id %>"
-            data-name="<%= user.name %>"
-            data-status="<%= user.isBlocked ? 'unblock' : 'block' %>">
-        <%= user.isBlocked ? 'Unblock' : 'Block' %>
-    </button>
-</td>
+      <td data-label="Email"><%= user.email %></td>
 
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
+      <td data-label="Phone"><%= user.phone %></td>
+
+      <td data-label="Status">
+        <% if (user.isBlocked) { %>
+          <span class="status blocked">Blocked</span>
+        <% } else { %>
+          <span class="status active">Active</span>
+        <% } %>
+      </td>
+
+      <!-- ✅ ACTION COLUMN -->
+      <td data-label="Action" class="action-cell">
+        <button
+          class="btn <%= user.isBlocked ? 'btn-unblock' : 'btn-block' %>"
+          data-id="<%= user._id %>"
+          data-name="<%= user.name %>"
+          data-status="<%= user.isBlocked ? 'unblock' : 'block' %>">
+          <%= user.isBlocked ? 'Unblock' : 'Block' %>
+        </button>
+      </td>
+
+    </tr>
+  <% }) %>
+</tbody>
+
         </table>
 
     </div>

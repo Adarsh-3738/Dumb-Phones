@@ -90,36 +90,88 @@ export const getBrandsAndCategories = async () => {
 };
 
 //  SHOP PAGE
-export const getShopProducts = async ({ search = "", sort = "", brand = "", category = "", price = "", page = 1, limit = 5 }) => {
+export const getShopProducts = async ({
+  search = "",
+  sort = "",
+  brand = "",
+  category = "",
+  price = "",
+  page = 1,
+}) => {
+  const limit = 8;
+  const currentPage = Math.max(parseInt(page) || 1, 1);
+  const skip = (currentPage - 1) * limit;
+
+  /* ===========================
+     1️⃣ FILTER QUERY
+  ============================ */
   const filter = { isBlocked: false };
-  if (category) filter.category = category;
-  if (brand) filter.brand = brand;
+
+  if (search) {
+    filter.productName = { $regex: search, $options: "i" };
+  }
+
+  if (brand) {
+    filter.brand = brand;
+  }
+
+  if (category) {
+    filter.category = category;
+  }
+
   if (price) {
     const [min, max] = price.split("-").map(Number);
     filter.salesPrice = { $gte: min, $lte: max };
   }
-  if (search) filter.productName = { $regex: search, $options: "i" };
 
-  let sortOption = {};
-  if (sort === "priceLowHigh") sortOption.salesPrice = 1;
-  if (sort === "priceHighLow") sortOption.salesPrice = -1;
-  if (sort === "nameAZ") sortOption.productName = 1;
-  if (sort === "nameZA") sortOption.productName = -1;
+  /* ===========================
+     2️⃣ SORT QUERY (NEVER EMPTY)
+  ============================ */
+  let sortOption = { createdAt: -1 }; // default
 
+  switch (sort) {
+    case "priceLowHigh":
+      sortOption = { salesPrice: 1 };
+      break;
+    case "priceHighLow":
+      sortOption = { salesPrice: -1 };
+      break;
+    case "nameAZ":
+      sortOption = { productName: 1 };
+      break;
+    case "nameZA":
+      sortOption = { productName: -1 };
+      break;
+  }
+
+  /* ===========================
+     3️⃣ TOTAL COUNT
+  ============================ */
   const totalProducts = await Product.countDocuments(filter);
-  const totalPages = Math.ceil(totalProducts / limit);
+  const totalPages = Math.max(Math.ceil(totalProducts / limit), 1);
 
+  /* ===========================
+     4️⃣ FETCH PRODUCTS
+  ============================ */
   const products = await Product.find(filter)
     .populate("brand", "name")
     .populate("category", "name")
     .sort(sortOption)
-    .skip((page - 1) * limit)
+    .skip(skip)
     .limit(limit);
 
+  /* ===========================
+     5️⃣ FILTER OPTIONS
+  ============================ */
   const brands = await Brand.find({});
   const categories = await Category.find({});
 
-  return { products, brands, categories, totalPages };
+  return {
+    products,
+    brands,
+    categories,
+    totalPages,
+  };
 };
 
 //PASSWORD RESET 

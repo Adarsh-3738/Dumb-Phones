@@ -94,6 +94,7 @@ export const loadShopPage = async (req, res) => {
       price,
       currentPage: Number(page) || 1,
       totalPages,
+      user: req.session.user || null
     });
   } catch (error) {
     logger.error("Shop page error", {

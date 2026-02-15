@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dumb Phones</title>
 
-  <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="/styles.css" />
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
 
   <style>
-
-    *{
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -19,29 +21,28 @@
 
     body {
       background: #f5f7fa;
-      color: #1a1a1a;
+      color: #111827;
     }
 
-    /* NAVBAR */
+    /* ================= NAVBAR ================= */
     .navbar {
-      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
       height: 70px;
-      background: #fff;
-      padding: 0 40px;
+      background: #ffffff;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 20px;
+      gap: 10px;
+      font-size: 18px;
       font-weight: 600;
     }
 
@@ -50,295 +51,179 @@
       height: 28px;
     }
 
-    .search-box input {
-      width: 320px;
-      padding: 10px 12px;
-      border: 1px solid #e2e2e2;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-      background: #fafafa;
+    /* ================= SEARCH ================= */
+    .search-form {
+      display: none;
     }
 
-    .nav-icons a {
-      margin-left: 20px;
-      font-size: 20px;
-      color: #333;
+    @media (min-width: 768px) {
+      .search-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .search-form input {
+        width: 260px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+      }
+
+      .search-form button {
+        padding: 10px 16px;
+        background: #2563eb;
+        border: none;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    }
+
+    /* ================= ICONS ================= */
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f2937;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
       text-decoration: none;
     }
 
+    .nav-icon:hover {
+      background: #e0e7ff;
+      color: #2563eb;
+    }
 
-    /* --- Dropdown Styles --- */
+    /* ================= CLICK DROPDOWN ================= */
     .dropdown {
       position: relative;
-      display: inline-block;
     }
 
     .dropdown-content {
       display: none;
       position: absolute;
-      background-color: white;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-      z-index: 1000;
+      top: 52px;
       right: 0;
+      background: #ffffff;
+      min-width: 170px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      overflow: hidden;
+      z-index: 2000;
     }
 
     .dropdown-content a {
-      color: black;
       padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #111827;
       text-decoration: none;
-      display: block;
-      width: 100%;
     }
 
     .dropdown-content a:hover {
-      background-color: #f1f1f1;
+      background: #f1f5ff;
+      color: #1d4ed8;
     }
 
-    .dropdown:hover .dropdown-content {
+    /* show dropdown when active */
+    .dropdown-content.show {
       display: block;
     }
-
-    .header {
-      position: relative;
-      z-index: 500;
-    }
-/* SEARCH FORM CONTAINER */
-.search-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-/* SEARCH INPUT */
-.search-form input {
-  width: 260px;
-  padding: 10px 14px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.search-form input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-/* SEARCH BUTTON */
-.search-form button {
-  padding: 10px 18px;
-  background: #2563eb; 
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.search-form button:hover {
-  background: #1e40af;
-}
-
-/* CLEAR BUTTON */
-.clear-btn {
-  padding: 10px 16px;
-  background: #e0e7ff;
-  color: #1e3a8a;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-
-.clear-btn:hover {
-  background: #c7d2fe;
-}
-
-
-    /*    LOGOUT CONFIRMATION MODAL  */
-
-    /* Modal Overlay */
-    .logout-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(2px);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    /* Modal Box */
-    .logout-modal-content {
-      background: #ffffff;
-      width: 90%;
-      max-width: 360px;
-      padding: 25px;
-      border-radius: 14px;
-      text-align: center;
-      animation: fadeIn 0.25s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .logout-modal-content h3 {
-      color: #1d4ed8;
-      margin-bottom: 10px;
-      font-size: 22px;
-    }
-
-    .logout-modal-content p {
-      color: #444;
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
-
-    /* Buttons */
-    .logout-actions {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .cancel-btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: 1px solid #d0d7e6;
-      background: #ffffff;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .cancel-btn:hover {
-      background: #f1f5ff;
-    }
-
-    .logout-confirm-btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: none;
-      background: #2563eb;
-      color: #ffffff;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .logout-confirm-btn:hover {
-      background: #1e4fcf;
-    }
-
-    /* Fade In Animation */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
   </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
+  <!-- ================= NAVBAR ================= -->
   <header class="navbar">
+
+    <!-- LOGO -->
     <div class="logo">
-      <img src="/images/logo.png" alt="Dumb Phones Logo" />
+      <img src="/images/logo.png" alt="Logo">
       <span>Dumb Phones</span>
     </div>
-<!-- search button -->
-   <!-- SEARCH FORM -->
-<form action="/shop" method="GET" class="search-form">
 
-  <!-- SEARCH INPUT -->
-  <input
-    type="text"
-    name="search"
-    placeholder="Search products..."
-    value="<%= search || '' %>"
-  />
+    <!-- SEARCH -->
+    <form class="search-form" action="/shop" method="GET">
+      <input type="text" name="search" placeholder="Search products...">
+      <button type="submit">Search</button>
+    </form>
 
-  <!-- SEARCH BUTTON -->
-  <button type="submit">Search</button>
-
-  <!-- CLEAR BUTTON: clears only search but keeps filters -->
-  <% if (search) { %>
-    <a href="/shop?<%= `sort=${sort||''}&brand=${brand||''}&category=${category||''}&price=${price||''}` %>" class="clear-btn">
-      Clear
-    </a>
-  <% } %>
-
-  <!-- PRESERVE FILTERS WHEN SEARCHING -->
-  <input type="hidden" name="sort" value="<%= sort || '' %>">
-  <input type="hidden" name="brand" value="<%= brand || '' %>">
-  <input type="hidden" name="category" value="<%= category || '' %>">
-  <input type="hidden" name="price" value="<%= price || '' %>">
-
-</form>
-
-
-
-
+    <!-- ICONS -->
     <div class="nav-icons">
-      <a href="#" title="Wishlist">❤</a>
-      <a href="#" title="Cart">🛒</a>
+
+      <!-- Wishlist -->
+      <a href="/wishlist" class="nav-icon" title="Wishlist">
+        <i class="fa-regular fa-heart"></i>
+      </a>
+
+      <!-- Cart -->
+      <a href="/cart" class="nav-icon" title="Cart">
+        <i class="fa-solid fa-cart-shopping"></i>
+      </a>
 
       <% if (user) { %>
-      <div class="dropdown">
-        <a href="#" class="sign-in-link"><%= user.name %></a>
-        <div class="dropdown-content">
-          <a href="/user/userProfile">Profile</a>
+        <!-- USER CLICK DROPDOWN -->
+        <div class="dropdown">
+          <div class="nav-icon" id="userToggle" title="Account">
+            <i class="fa-regular fa-user"></i>
+          </div>
 
-          <!-- TRIGGER LOGOUT MODAL -->
-          <a href="#" onclick="openLogoutModal()">Logout</a>
+          <div class="dropdown-content" id="userDropdown">
+            <a href="/userProfile">
+              <i class="fa-regular fa-id-badge"></i> Profile
+            </a>
+            <a href="/logout">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+          </div>
         </div>
-      </div>
       <% } else { %>
+        <!-- LOGIN -->
+        <a href="/login" class="nav-icon" title="Login">
+          <i class="fa-solid fa-right-to-bracket"></i>
+        </a>
 
-      <a href="/signup" class="signup-btn">Sign Up</a>
-      <a href="/login" class="login-btn">Login</a>
-
+        <!-- SIGNUP -->
+        <a href="/signup" class="nav-icon" title="Sign Up">
+          <i class="fa-solid fa-user-plus"></i>
+        </a>
       <% } %>
+
     </div>
   </header>
 
-
-  <!--  LOGOUT MODAL HTML -->
-  <div id="logoutModal" class="logout-modal">
-    <div class="logout-modal-content">
-      <h3>Confirm Logout</h3>
-      <p>Are you sure you want to log out?</p>
-
-      <div class="logout-actions">
-        <button class="cancel-btn" onclick="closeLogoutModal()">Cancel</button>
-        <button class="logout-confirm-btn" onclick="logoutNow()">Logout</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!--  LOGOUT MODAL-->
+  <!-- ================= JS ================= -->
   <script>
-    function openLogoutModal() {
-      document.getElementById("logoutModal").style.display = "flex";
-    }
+    const toggle = document.getElementById("userToggle");
+    const dropdown = document.getElementById("userDropdown");
 
-    function closeLogoutModal() {
-      document.getElementById("logoutModal").style.display = "none";
-    }
+    if (toggle) {
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("show");
+      });
 
-    function logoutNow() {
-      window.location.href = "/logout";
+      document.addEventListener("click", () => {
+        dropdown.classList.remove("show");
+      });
     }
   </script>
 

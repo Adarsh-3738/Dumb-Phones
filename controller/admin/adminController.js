@@ -7,17 +7,11 @@ export const pageerror = async (req, res) => {
   res.render("admin-error");
 };
 
-// LOAD LOGIN PAGE
 export const loadLogin = (req, res) => {
-  if (req.session.admin) {
-    logger.info("Admin already logged in, redirecting to dashboard", {
-      adminId: req.session.admin.id,
-    });
-    return res.redirect("/admin/dashboard");
-  }
+  const error = req.session.error || null;
+  req.session.error = null; // clear after reading
 
-  logger.info("Admin login page loaded");
-  res.render("admin/login", { message: null });
+  res.render("admin/login", { error });
 };
 
 // ADMIN LOGIN
@@ -27,19 +21,45 @@ export const login = async (req, res) => {
 
     logger.info("Admin login attempt", { email });
 
+    /* ---------------- VALIDATION ---------------- */
+
+    if (!email || !password) {
+      logger.warn("Admin login failed: missing fields", { email });
+      req.session.error = "Email and password are required";
+      return res.redirect("/admin/login");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      logger.warn("Admin login failed: invalid email format", { email });
+      req.session.error = "Invalid email address";
+      return res.redirect("/admin/login");
+    }
+
+    if (password.length < 6) {
+      logger.warn("Admin login failed: password too short", { email });
+      req.session.error = "Password must be at least 6 characters";
+      return res.redirect("/admin/login");
+    }
+
+    /* ---------------- AUTH CHECK ---------------- */
+
     const admin = await findAdminByEmail(email);
     if (!admin) {
       logger.warn("Admin login failed: email not found", { email });
+      req.session.error = "Invalid email or password";
       return res.redirect("/admin/login");
     }
 
     const passwordMatch = await comparePassword(password, admin.password);
     if (!passwordMatch) {
       logger.warn("Admin login failed: incorrect password", { email });
+      req.session.error = "Invalid email or password";
       return res.redirect("/admin/login");
     }
 
-    // Save admin session
+    /* ---------------- SESSION ---------------- */
+
     req.session.admin = {
       id: admin._id,
       email: admin.email,
@@ -51,6 +71,7 @@ export const login = async (req, res) => {
     });
 
     return res.redirect("/admin/dashboard");
+
   } catch (error) {
     logger.error("Admin login error", {
       message: error.message,
