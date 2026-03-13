@@ -83,6 +83,8 @@ export const loadShopPage = async (req, res) => {
         page: Number(page),
       });
 
+    console.log("Shop route - brands retrieved from DB:", brands);
+
     res.render("user/shop", {
       products,
       brands,
@@ -94,6 +96,7 @@ export const loadShopPage = async (req, res) => {
       price,
       currentPage: Number(page) || 1,
       totalPages,
+      user: req.session.user || req.user
     });
   } catch (error) {
     logger.error("Shop page error", {
@@ -104,7 +107,7 @@ export const loadShopPage = async (req, res) => {
   }
 };
 
-// SIGNUP + OTP
+// SIGNUP /OTP
 export const loadSignup = (req, res) => {
   logger.info("Loading signup page");
   res.render("user/signup");
@@ -129,6 +132,8 @@ export const signup = async (req, res) => {
 
     const otp = generateOtp();
     const emailSent = await sendOtpEmail(email, otp);
+
+   console.log("OTP for", email, ":", otp);
 
     if (!emailSent) {
       logger.error("OTP email sending failed", { email });
@@ -228,17 +233,23 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      logger.error("Logout session destroy failed", { err });
-      return res.redirect("/pageerror");
-    }
-    logger.info("User logged out");
+  if (req.session) {
+    delete req.session.user;
+    delete req.session.passport;
+    req.session.save((err) => {
+      if (err) {
+        logger.error("Logout session save failed", { err });
+        return res.redirect("/pageerror");
+      }
+      logger.info("User logged out");
+      res.redirect("/");
+    });
+  } else {
     res.redirect("/");
-  });
+  }
 };
 
-// FORGOT + RESET PASSWORD
+// FORGOT //RESET PASSWORD
 export const loadForgotPassword = (req, res) => {
   logger.info("Loading forgot password page");
   res.render("user/forgot-password", { message: null });
@@ -313,5 +324,50 @@ export const resetPassword = async (req, res) => {
       stack: error.stack,
     });
     res.send("Something went wrong");
+  }
+};
+
+
+//resend otp
+export const resendOtp = async (req, res) => {
+  try {
+
+    if (!req.session.userData) {
+      return res.status(400).json({
+        success: false,
+        message: "Session expired. Please signup again."
+      });
+    }
+
+    const { email } = req.session.userData;
+
+    const otp = generateOtp();
+
+    req.session.userOtp = otp;
+
+    console.log("Resent OTP:", otp);
+
+    const emailSent = await sendOtpEmail(email, otp);
+
+    if (!emailSent) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP"
+      });
+    }
+
+    res.json({ success: true });
+
+  } catch (error) {
+
+    logger.error("Resend OTP error", {
+      message: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: "Error resending OTP"
+    });
   }
 };

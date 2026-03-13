@@ -4,32 +4,54 @@
   <meta charset="UTF-8">
   <title>Change Email</title>
   <link rel="stylesheet" href="/css/user/change-email.css">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 <body>
 
 <%- include("../../views/partials/user/header") %>
 <div class="profile-wrapper">
 <%- include("../../views/partials/user/sidebar.ejs") %>
+<main class="profile-content">
+  <nav class="breadcrumb">
+    <a href="/profile">Profile</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">Change Email</span>
+  </nav>
  <div class="change-email-container">
   <h2>Change Email</h2>
 
   <% if (message) { %>
-    <p class="error"><%= message %></p>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Wait a moment',
+          text: '<%= message %>',
+          confirmButtonColor: '#1d4ed8'
+        });
+      });
+    </script>
   <% } %>
 
-  <form action="/change-email" method="POST">
-    <label for="email">New Email</label>
-    <input type="email" name="email" id="email" placeholder="example@mail.com" required>
+  <form id="changeEmailForm" action="/email/change" method="POST">
+    <div class="form-group">
+      <label for="email">New Email</label>
+      <input type="email" name="email" id="email" placeholder="example@mail.com">
+      <div class="error-message" id="error-email"></div>
+    </div>
 
     <button type="submit">Send OTP</button>
   </form>
 
   <a href="/profile" class="back-btn">← Back to Profile</a>
 </div>
-
+</main>
 </div>
 
 <%- include("../partials/user/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/user/change-email.js"></script>
 
 </body>
 </html>

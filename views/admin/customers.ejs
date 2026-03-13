@@ -6,21 +6,25 @@
 
     <!-- Search -->
     <div class="search-bar-wrapper">
-        <form action="/admin/users" method="get" class="input-group input-group-sm search-form">
-            <input type="text" name="search"
-                   class="form-control search-input"
-                   placeholder="Search customers..." value="<%= searchQuery || '' %>">
-            <button class="btn search-btn">Search</button>
-            <% if (searchQuery) { %>
-                <a href="/admin/users" class="clear-search">Clear</a>
-            <% } %>
-        </form>
-    </div>
+    <form action="/admin/users" method="get" class="search-form">
+        <input type="text" name="search"
+               class="search-input"
+               placeholder="Search customers..."
+               value="<%= searchQuery || '' %>">
+
+        <button type="submit" class="search-btn">Search</button>
+
+        <% if (searchQuery) { %>
+            <a href="/admin/users" class="clear-btn">Clear</a>
+        <% } %>
+    </form>
+</div>
 
     <!-- Card -->
     <div class="users-card">
 
-        <table class="table custom-table">
+       <div class="table-responsive">
+<table class="custom-table">
             <thead>
                 <tr>
                     <th><b>Name</b></th>
@@ -32,36 +36,40 @@
             </thead>
 
             <tbody>
-                <% data.forEach(user => { %>
-                    <tr>
-                        <td><%= user.name %></td>
-                        <td><%= user.email %></td>
-                        <td><%= user.phone %></td>
+  <% data.forEach(user => { %>
+    <tr>
 
-                        <td>
-                            <% if (user.isBlocked) { %>
-                                <span class="status blocked">Blocked</span>
-                            <% } else { %>
-                                <span class="status active">Active</span>
-                            <% } %>
-                        </td>
+      <td data-label="Name"><%= user.name %></td>
 
-                        <td>
-                            <td>
-    <button class="btn <%= user.isBlocked ? 'btn-unblock' : 'btn-block' %>" 
-            data-id="<%= user._id %>"
-            data-name="<%= user.name %>"
-            data-status="<%= user.isBlocked ? 'unblock' : 'block' %>">
-        <%= user.isBlocked ? 'Unblock' : 'Block' %>
-    </button>
-</td>
+      <td data-label="Email"><%= user.email %></td>
 
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
+      <td data-label="Phone"><%= user.phone %></td>
+
+      <td data-label="Status">
+        <% if (user.isBlocked) { %>
+          <span class="status blocked">Blocked</span>
+        <% } else { %>
+          <span class="status active">Active</span>
+        <% } %>
+      </td>
+
+      <!-- ACTION COLUMN -->
+      <td data-label="Action" class="action-cell">
+        <button
+          class="btn <%= user.isBlocked ? 'btn-unblock' : 'btn-block' %>"
+          data-id="<%= user._id %>"
+          data-name="<%= user.name %>"
+          data-status="<%= user.isBlocked ? 'unblock' : 'block' %>">
+          <%= user.isBlocked ? 'Unblock' : 'Block' %>
+        </button>
+      </td>
+
+    </tr>
+  <% }) %>
+</tbody>
+
         </table>
-
+</div>
     </div>
 
     <!-- Pagination -->
@@ -82,16 +90,8 @@
 <%- include("../../views/partials/admin/footer") %>
 
 
-<!-- Confirmation Modal -->
-<div id="confirmationModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width:400px; margin:100px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
-        <p id="modal-message" style="font-size:16px; margin-bottom:20px;"></p>
-        <div style="text-align:right;">
-            <button id="modalCancel" style="margin-right:10px; padding:6px 12px;">Cancel</button>
-            <button id="modalConfirm" style="background:#3b82f6; color:#fff; padding:6px 12px;">Confirm</button>
-        </div>
-    </div>
-</div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/admin/customers.js"></script>
+
 

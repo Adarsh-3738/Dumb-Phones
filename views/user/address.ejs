@@ -10,10 +10,16 @@
 <%- include("../../views/partials/user/header") %>
 <div class="profile-wrapper">
 <%- include("../../views/partials/user/sidebar.ejs") %>
+<main class="profile-content">
+  <nav class="breadcrumb">
+    <a href="/profile">Profile</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">My Addresses</span>
+  </nav>
 <div class="address-container">
   <div class="address-header">
     <h2>My Addresses</h2>
-    <a href="/add-address" class="add-btn">+ Add Address</a>
+    <a href="/address/add" class="add-btn">+ Add Address</a>
   </div>
 
   <% if (!addresses || addresses.length === 0) { %>
@@ -34,7 +40,7 @@
         <div class="address-actions">
           <a href="/address/edit/<%= addr._id %>" class="edit-btn">Edit</a>
 
-          <form action="/address/delete/<%= addr._id %>" method="POST">
+          
 
             <button 
   type="button" 
@@ -51,7 +57,6 @@
 
   <a href="/profile" class="back-btn">← Back to Profile</a>
 </div>
-<!-- modal for delete address -->
 
 <!-- DELETE CONFIRM MODAL -->
 <div id="deleteModal" class="modal-overlay">
@@ -69,6 +74,7 @@
   </div>
 </div>
 
+</main>
 </div>
 
 
@@ -77,18 +83,6 @@
 </body>
 
 
-<script>
-  const modal = document.getElementById("deleteModal");
-  const deleteForm = document.getElementById("deleteForm");
-
-  function openDeleteModal(addressId) {
-    deleteForm.action = `/address/delete/${addressId}`;
-    modal.style.display = "flex";
-  }
-
-  function closeDeleteModal() {
-    modal.style.display = "none";
-  }
-</script>
+<script src="/js/user/address.js"></script>
 
 </html>

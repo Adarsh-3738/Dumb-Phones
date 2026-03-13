@@ -6,6 +6,9 @@
   <title>Login</title>
 
   <link rel="stylesheet" href="/css/user/login.css">
+
+  <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -13,25 +16,17 @@
     <h2>Log in to your account</h2>
 
     <!-- LOGIN FORM -->
-    <form action="/login" method="POST">
+    <form id="loginForm" action="/login" method="POST">
 
-     <label>Email address</label>
-<div class="input-box">
-  <input type="email" id="email" name="email" placeholder="Enter email">
- <!-- for user not found -->
-  <% if (typeof message !== "undefined" && message) { %>
-    <div class="error-text">
-      <%= message %>
-    </div>
-  <% } %>
-</div>
+      <label>Email address</label>
       <div class="input-box">
-    <input type="password" id="password" name="password" placeholder="Password"  >
-    <span class="eye-icon" onclick="togglePassword('password')">👁️</span>
-    <div id="error4" class="error-message"></div>
-  </div>
-     
-   
+        <input type="email" id="email" name="email" placeholder="Enter email">
+      </div>
+
+      <div class="input-box">
+        <input type="password" id="password" name="password" placeholder="Password">
+        <span class="eye-icon" onclick="togglePassword('password')">👁️</span>
+      </div>
 
       <div class="remember-forgot">
         <div class="remember-left">
@@ -47,8 +42,8 @@
     <div class="divider">Or continue with</div>
 
     <!-- GOOGLE SIGN IN -->
-     <a href="/auth/google" style="text-decoration: none;">
-  <div style="
+    <a href="/auth/google" style="text-decoration: none;">
+      <div style="
         margin-top: 16px;
         display: flex;
         align-items: center;
@@ -65,12 +60,23 @@
         <span style="font-size: 15px; color: #444; font-weight: 500;">
           Continue with Google
         </span>
-  </div>
-</a>
+      </div>
+    </a>
 
   </div>
+
+  <!-- Server-side error message -->
+  <% if (typeof message !== "undefined" && message) { %>
+    <script>
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: "<%= message %>",
+        confirmButtonColor: '#3085d6'
+      });
+    </script>
+  <% } %>
 
 <script src="/js/user/login.js"></script>
 </body>
 </html>
-

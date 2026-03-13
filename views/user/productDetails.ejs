@@ -1,184 +1,235 @@
+<!-- HEADER -->
+<%- include("../../views/partials/user/header") %>
 
+<link rel="stylesheet" href="/css/user/product-details.css">
 
-<!-- header -->
- <%-include("../../views/partials/user/header")%>
+<div class="product-page-wrapper">
+  
+  <!-- BREADCRUMBS -->
+  <nav class="breadcrumbs">
+    <a href="/">Home</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/shop?category=<%= product.category?._id %>">
+      <%= product.category?.name || "Category" %>
+    </a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active"><%= product.productName %></span>
+  </nav>
 
+  <div class="product-detail-container">
+    
+    <!-- IMAGE SECTION -->
+    <div class="image-section">
+      <div class="image-zoom-container">
+        <img
+          id="mainImage"
+          class="main-image"
+          src="<%= variants[0]?.variantImages?.[0]?.url || '/images/no-image.png' %>"
+          alt="<%= product.productName %>">
+      </div>
 
- <link rel="stylesheet" href="/css/user/product-details.css">
- 
-<!-- BREADCRUMBS -->
-<nav class="breadcrumbs" style="margin: 20px 40px; font-size: 14px; color:#64748b;">
-  <a href="/" style="color:#2563eb; text-decoration:none;">Home</a> &raquo;
-  <a href="/shop?category=<%= product.category?._id %>" style="color:#2563eb; text-decoration:none;">
-    <%= product.category?.name || "Category" %>
-  </a> &raquo;
-  <span><%= product.productName %></span>
-</nav>
-
-
-<div class="product-detail-container">
-
- <div class="image-section">
-  <% if (product.productImage && product.productImage.length > 0) { %>
-
-    <!-- Main Image with Zoom -->
-<div class="image-zoom-container">
-  <img 
-    id="mainImage"
-    class="main-image" 
-    src="<%= product.productImage[0].url %>" 
-    alt="<%= product.productName %>">
-</div>
-
-    <!-- Thumbnails -->
-    <div class="thumbnail-row">
-      <% product.productImage.forEach(image => { %>
-        <img 
-          src="<%= image.url %>" 
-          class="thumbnail">
-      <% }) %>
+      <div class="thumbnail-row" id="thumbnailRow">
+        <!-- JS will populate thumbnails here initially or when variant changes -->
+      </div>
     </div>
 
-  <% } else { %>
-    <img 
-      class="main-image" 
-      src="/images/no-image.png" 
-      alt="No image available">
-  <% } %>
-</div>
-
-
-  <!-- INFO SECTION -->
-  <div class="info-section">
-    <h2><%= product.productName %></h2>
-    <h3>₹ <%= product.salesPrice %></h3>
-
-  <% 
-  let stockText = product.quantity > 0 ? `In Stock: ${product.quantity}` : 'Out of Stock';
-  let stockClass = product.quantity > 0 ? 'in-stock' : 'out-of-stock';
-%>
-
-<p class="<%= stockClass %>"><%= stockText %></p>
-
-<!-- Quantity Selector -->
-<% if (product.quantity > 0) { %>
-  <div class="quantity-selector">
-    <button type="button" class="qty-btn" id="decreaseQty">-</button>
-    <input 
-      type="number" 
-      id="qtyInput" 
-      value="1" 
-      min="1" 
-      max="<%= product.quantity %>" 
-      readonly
-    >
-    <button type="button" class="qty-btn" id="increaseQty">+</button>
-  </div>
-<% } %>
-
-
-
-
-
-  <h4>Description</h4>  
-    <p><%= product.description %></p>
-
-    <button
-  type="button"
-  class="add-to-cart-btn"
-  onclick="addToCart('<%= product._id %>')">
-  Add to Cart
-</button>
-  </div>
-
-</div>
-
-<!-- REVIEWS & RATINGS -->
-<div class="reviews-section">
-
-  <h2>Customer Reviews</h2>
-
-  <!-- RATING SUMMARY -->
-  <div class="rating-summary">
-    <div class="rating-score">4.5</div>
-    <div>
-      <div class="stars">★★★★★</div>
-      <div class="review-count">Based on 124 reviews</div>
-    </div>
-  </div>
-
-  <!-- REVIEWS -->
-  <div class="review">
-    <div class="review-header">
-      <span class="review-name">Rahul Verma</span>
-      <span class="review-stars">★★★★★</span>
-    </div>
-    <p class="review-text">
-      Amazing phone! Battery lasts long and the build quality is excellent.
-      Totally worth the price.
-    </p>
-  </div>
-
-  <div class="review">
-    <div class="review-header">
-      <span class="review-name">Ananya Sharma</span>
-      <span class="review-stars">★★★★☆</span>
-    </div>
-    <p class="review-text">
-      Simple, clean, and distraction‑free. Perfect for reducing screen time.
-    </p>
-  </div>
-
-  <div class="review">
-    <div class="review-header">
-      <span class="review-name">Karthik S</span>
-      <span class="review-stars">★★★★★</span>
-    </div>
-    <p class="review-text">
-      Great value for money. Sound quality is good and call clarity is excellent.
-    </p>
-  </div>
-
-  <div class="review">
-    <div class="review-header">
-      <span class="review-name">Meera Patel</span>
-      <span class="review-stars">★★★★☆</span>
-    </div>
-    <p class="review-text">
-      Love the minimalist design. Camera is basic but that’s expected.
-    </p>
-  </div>
-
-</div>
-
-
-
-<!-- SIMILAR PRODUCTS -->
-<% if (similarProducts && similarProducts.length > 0) { %>
-  <h2 class="section-title">Similar Products</h2>
-
-  <div class="similar-products-wrapper">
-    <% similarProducts.forEach(sim => { %>
-      <a href="/product/<%= sim._id %>" class="product-link">
-        <div class="similar-product-card">
-
-          <% if (sim.productImage && sim.productImage.length > 0) { %>
-            <img src="<%= sim.productImage[0].url %>" alt="<%= sim.productName %>">
-          <% } else { %>
-            <img src="/images/no-image.png" alt="No image">
-          <% } %>
-
-          <h4><%= sim.productName %></h4>
-          <p class="brand"><%= sim.brand?.name || "N/A" %></p>
-          <p class="price">₹ <%= sim.salesPrice %></p>
+    <!-- INFO SECTION -->
+    <div class="info-section">
+      
+      <div class="product-header">
+        <div class="title-and-wishlist">
+          <h1 class="product-title"><%= product.productName %></h1>
+          <button class="wishlist-btn" onclick="toggleWishlist('<%= product._id %>')" aria-label="Add to Wishlist">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          </button>
         </div>
-      </a>
-    <% }) %>
+        
+        <div class="rating-mini">
+          <div class="stars-mini">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <a href="#reviews" class="review-link-mini">124 Reviews</a>
+        </div>
+      </div>
+
+      <!-- PRICE & STOCK -->
+      <div class="price-stock-card">
+        <div class="price-wrap">
+          <span id="salesPrice" class="sale-price">
+            ₹ <%= variants[0].salesPrice %>
+          </span>
+          <span id="regularPrice" class="regular-price">
+            ₹ <%= variants[0].regularPrice %>
+          </span>
+        </div>
+        
+        <div class="stock-status">
+          <span id="stockText" class="<%= variants[0].quantity > 0 ? 'in-stock' : 'out-of-stock' %>">
+            <span class="pulse-dot"></span>
+            <%= variants[0].quantity > 0 ? `In Stock: ${variants[0].quantity}` : "Out of Stock" %>
+          </span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- OPTIONS -->
+      <div class="options-section">
+        
+        <!-- VARIANT SELECT -->
+        <div class="option-group">
+          <label class="variant-label" for="variantSelect">Select Color</label>
+          <div class="custom-select-wrapper">
+            <select id="variantSelect" class="variant-select">
+              <% variants.forEach((v, index) => { %>
+                <option value="<%= index %>">
+                  <%= v.color %>
+                </option>
+              <% }) %>
+            </select>
+            <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="option-group">
+          <label class="variant-label">Quantity</label>
+          <div class="quantity-selector modern-qty">
+            <button type="button" id="decreaseQty" class="qty-btn" aria-label="Decrease quantity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <input
+              type="number"
+              id="qtyInput"
+              class="qty-input"
+              value="1"
+              min="1"
+              max="<%= Math.min(variants[0].quantity, 5) %>"
+
+              readonly>
+            <button type="button" id="increaseQty" class="qty-btn" aria-label="Increase quantity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FEATURES / PERKS -->
+      <div class="perks-list">
+        <div class="perk-item">
+          <div class="perk-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <span>Free Express Shipping</span>
+        </div>
+        <div class="perk-item">
+          <div class="perk-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <span>1 Year Replacement Warranty</span>
+        </div>
+      </div>
+
+      <!-- BUY BUTTONS -->
+      <div class="product-buttons">
+        <button type="button" class="add-to-cart-btn btn-secondary" onclick="addToCart()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          Add to Cart
+        </button>
+        
+      </div>
+
+    </div>
   </div>
-<% } %>
-<script  src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- TABS SECTION -->
+  <div class="product-tabs-container">
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab('description')">Description</button>
+      <button class="tab-btn" onclick="switchTab('reviews')" id="reviews">Reviews (124)</button>
+    </div>
+    
+    <div class="tabs-content">
+      <!-- DESCRIPTION TAB -->
+      <div id="tab-description" class="tab-pane active">
+        <div class="description-content">
+          <h3>About this product</h3>
+          <p><%= product.description %></p>
+        </div>
+      </div>
+
+      <!-- REVIEWS TAB -->
+      <div id="tab-reviews" class="tab-pane">
+        <div class="reviews-section">
+          <div class="rating-overview">
+            <div class="rating-score-box">
+              <span class="score-number">4.5</span>
+              <div class="stars-large">
+                <span>★★★★★</span>
+              </div>
+              <span class="review-count">Based on 124 reviews</span>
+            </div>
+            <div class="rating-bars">
+              <!-- Placeholder for visual bars -->
+              <div class="bar-row"><span class="star-label">5 star</span><div class="bar-bg"><div class="bar-fill" style="width: 70%"></div></div><span class="pct">70%</span></div>
+              <div class="bar-row"><span class="star-label">4 star</span><div class="bar-bg"><div class="bar-fill" style="width: 20%"></div></div><span class="pct">20%</span></div>
+              <div class="bar-row"><span class="star-label">3 star</span><div class="bar-bg"><div class="bar-fill" style="width: 5%"></div></div><span class="pct">5%</span></div>
+              <div class="bar-row"><span class="star-label">2 star</span><div class="bar-bg"><div class="bar-fill" style="width: 3%"></div></div><span class="pct">3%</span></div>
+              <div class="bar-row"><span class="star-label">1 star</span><div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div><span class="pct">2%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMILAR PRODUCTS -->
+  <% if (similarProducts?.length) { %>
+    <div class="similar-products-section">
+      <h2 class="section-title">You Might Also Like</h2>
+      <div class="similar-products-wrapper">
+        <% similarProducts.forEach(sim => { %>
+          <a href="/product/<%= sim._id %>" class="product-link">
+            <div class="similar-product-card">
+              <div class="card-img-wrap">
+                <img
+                  src="<%= sim.defaultVariant?.variantImages?.[0]?.url || '/images/no-image.png' %>"
+                  alt="<%= sim.productName %>"
+                  loading="lazy">
+              </div>
+              <div class="card-info">
+                <p class="brand"><%= sim.brand?.name %></p>
+                <h4 class="sim-title"><%= sim.productName %></h4>
+                <p class="sim-price">₹ <%= sim.defaultVariant?.salesPrice || 'N/A' %></p>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  <% } %>
+
+</div>
+
+<!-- VARIANT DATA -->
+<script>
+  window.variants = <%- JSON.stringify(variants) %>;
+  // Simple tab switching logic for the UI
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/product-details.js"></script>
 
-<!-- footer -->
- <%-include("../../views/partials/user/footer")%>
-  
+<!-- FOOTER -->
+<%- include("../../views/partials/user/footer") %>

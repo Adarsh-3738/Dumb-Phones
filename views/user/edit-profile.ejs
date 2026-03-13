@@ -2,106 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Edit Profile</title>
+  <title>Edit Profile | DumbPhones Premium</title>
   <link rel="stylesheet" href="/css/user/edit-profile.css">
 
   <!-- Cropper CSS -->
-  <link
-    href="https://unpkg.com/cropperjs/dist/cropper.css"
-    rel="stylesheet"
-  />
+  <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet" />
 </head>
 <body>
 
 <%- include("../../views/partials/user/header") %>
+
 <div class="profile-wrapper">
-<%- include("../../views/partials/user/sidebar.ejs") %>
-<div class="edit-profile-container">
+  
+  <%- include("../../views/partials/user/sidebar.ejs") %>
 
-  <h2>Edit Profile</h2>
+  <!-- MAIN EDIT CONTENT -->
+  <main class="profile-content">
+    
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+      <a href="/">Home</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <a href="/profile">My Profile</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="active">Edit Profile</span>
+    </nav>
 
-  <% if (message) { %>
-    <p class="error"><%= message %></p>
-  <% } %>
+    <div class="edit-profile-card">
+      <div class="card-header">
+        <div class="header-title-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <h2>Edit Profile</h2>
+        </div>
+        <p class="subtitle">Update your personal information and profile picture</p>
+      </div>
 
-  <!-- IMPORTANT: enctype added -->
-  <form 
-    action="/edit-profile" 
-    method="POST" 
-    enctype="multipart/form-data"
-  >
+      <% if (message) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops!',
+              text: '<%= message %>',
+              confirmButtonColor: '#1d4ed8'
+            });
+          });
+        </script>
+      <% } %>
 
-    <!-- PROFILE IMAGE -->
-    <label>Profile Image</label>
+      <!-- FORM -->
+      <form 
+        id="editProfileForm"
+        action="/profile/edit?_method=PATCH"
+        method="POST"
+        enctype="multipart/form-data"
+        class="edit-form-grid"
+      >
+        <!-- Profile Image Row -->
+        <div class="form-group full-width image-upload-group">
+          <label>Profile Picture</label>
+          <div class="image-box">
+            <div class="preview-wrap">
+              <img id="preview" src="<%= user.profileImage || '/images/default-avatar.png' %>" class="preview-img" alt="Profile Avatar"/>
+              <div class="upload-overlay" onclick="document.getElementById('imageInput').click()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Change Avatar</span>
+              </div>
+            </div>
+            
+            <div class="file-input-wrap">
+              <input type="file" id="imageInput" name="profileImage" accept="image/*" class="modern-file-input">
+              <span class="file-help">Supported formats: JPG, PNG. Max size: 2MB.</span>
+            </div>
+          </div>
+        </div>
 
-    <div class="image-box">
-      <img
-        id="preview"
-        src="<%= user.profileImage %>"
-        alt="Profile Image"
-        class="preview-img"
-      />
+        <!-- Name Row -->
+        <div class="form-group">
+          <label for="nameInput">Full Name</label>
+          <div class="input-with-icon">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="text" id="nameInput" name="name" value="<%= user.name %>" placeholder="Enter your full name">
+          </div>
+          <div class="error-message" id="error-nameInput"></div>
+        </div>
+
+        <!-- Phone Row -->
+        <div class="form-group">
+          <label for="phoneInput">Phone Number</label>
+          <div class="input-with-icon">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <input type="tel" id="phoneInput" name="phone" value="<%= user.phone || '' %>" placeholder="Enter your mobile number">
+          </div>
+          <div class="error-message" id="error-phoneInput"></div>
+        </div>
+
+        <div class="form-actions full-width">
+          <button type="submit" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Save Changes
+          </button>
+          <a href="/profile" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+
     </div>
-
-    <input 
-      type="file" 
-      id="imageInput" 
-      name="profileImage" 
-      accept="image/*"
-    >
-
-    <!-- USER INFO -->
-    <label>Name</label>
-    <input type="text" name="name" value="<%= user.name %>" required>
-
-    <label>Phone</label>
-    <input type="text" name="phone" value="<%= user.phone || '' %>">
-
-   
-
-   
-    <div class="form-actions">
-      <button type="submit">Save Changes</button>
-      <a href="/profile" class="cancel-btn">Cancel</a>
-    </div>
-
-  </form>
-
+  </main>
 </div>
-</div>
+
 <!-- Cropper JS -->
 <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
-
-<script>
-  const input = document.getElementById("imageInput");
-  const preview = document.getElementById("preview");
-  let cropper;
-
-  input.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      preview.src = reader.result;
-
-      if (cropper) {
-        cropper.destroy();
-      }
-
-      cropper = new Cropper(preview, {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false,
-        zoomable: true,
-      });
-    };
-
-    reader.readAsDataURL(file);
-  });
-</script>
-
+<script src="/js/user/edit-profile.js"></script>
 <%- include("../../views/partials/user/footer") %>
 
 </body>

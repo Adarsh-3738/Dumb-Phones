@@ -15,14 +15,7 @@ const brandSchema = new Schema({
     type: Number,
     required: true
   },
-  website: {
-    type: String,
-    required: true
-  },
-  logo: {
-    type: String, // single file path
-    default: null
-  },
+  
   description: {
     type: String
   },

@@ -1,113 +1,78 @@
 import {
-  fetchBrands,
+  getBrands,
   createBrand,
-  getBrandById,
-  removeBrandById,
+  updateBrand,
+  removeBrand
 } from "../../services/admin/brandService.js";
-import logger from "../../utils/logger.js";
 
-// LOAD BRAND LIST PAGE
-export const getBrands = async (req, res) => {
+//LIST PAGE 
+export const loadBrands = async (req, res) => {
   try {
-    const { brands, totalBrands } = await fetchBrands();
+    const searchQuery = req.query.search || "";
+    const currentPage = parseInt(req.query.page) || 1;
+    const limit = 5;
 
-    logger.info("Brand list loaded", {
-      totalBrands,
-    });
+    const { brands, totalPages } = await getBrands(
+      searchQuery,
+      currentPage,
+      limit
+    );
 
-    res.render("admin/brandList", { brands, totalBrands });
-  } catch (error) {
-    logger.error("Error loading brand list", {
-      message: error.message,
-      stack: error.stack,
+    res.render("admin/brandList", {
+      brands,
+      searchQuery,
+      currentPage,
+      totalPages
     });
-    res.redirect("/admin/pageNotFound");
+  } catch (err) {
+    res.status(500).render("admin-error");
   }
 };
 
-// LOAD ADD BRAND PAGE
-export const getAddBrand = async (req, res) => {
+/* ADD BRAND */
+export const addBrand = async (req, res) => {
   try {
-    logger.info("Add brand page loaded");
-    res.render("admin/addBrand");
-  } catch (error) {
-    logger.error("Error loading add brand page", {
-      message: error.message,
-      stack: error.stack,
+    await createBrand(req.body);
+
+    res.json({
+      success: true,
+      message: "Brand created successfully"
     });
-    res.redirect("/admin/pageNotFound");
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
-// ADD NEW BRAND
-export const postAddBrand = async (req, res) => {
+//EDIT BRAND 
+export const editBrand = async (req, res) => {
   try {
-    const { name, country, founded, website } = req.body;
-    let logo = req.file ? "/uploads/brands/" + req.file.filename : null;
+    const updated = await updateBrand(req.params.id, req.body);
 
-    logger.info("Creating new brand", {
-      name,
-      country,
-      founded,
+    res.json({
+      success: true,
+      brand: updated
     });
-
-    await createBrand({ name, country, founded, website, logo });
-
-    logger.info("Brand created successfully", { name });
-
-    res.redirect("/admin/brands");
-  } catch (error) {
-    logger.error("Error adding brand", {
-      message: error.message,
-      stack: error.stack,
-      body: req.body,
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message
     });
-    res.redirect("/admin/add-brand");
   }
 };
 
-// VIEW SINGLE BRAND
-export const viewBrand = async (req, res) => {
-  try {
-    const brandId = req.params.id;
-
-    logger.info("Viewing brand", { brandId });
-
-    const brand = await getBrandById(brandId);
-    if (!brand) {
-      logger.warn("Brand not found", { brandId });
-      return res.redirect("/admin/brands");
-    }
-
-    res.render("admin/viewBrand", { brand });
-  } catch (error) {
-    logger.error("Error viewing brand", {
-      message: error.message,
-      stack: error.stack,
-      brandId: req.params.id,
-    });
-    res.redirect("/admin/brands");
-  }
-};
-
-// DELETE BRAND
+//DELETE BRAND 
 export const deleteBrand = async (req, res) => {
   try {
-    const brandId = req.params.id;
+    await removeBrand(req.params.id);
 
-    logger.warn("Deleting brand", { brandId });
-
-    await removeBrandById(brandId);
-
-    logger.info("Brand deleted successfully", { brandId });
-
-    res.redirect("/admin/brands");
-  } catch (error) {
-    logger.error("Error deleting brand", {
-      message: error.message,
-      stack: error.stack,
-      brandId: req.params.id,
+    res.json({ success: true });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message
     });
-    res.redirect("/admin/brands");
   }
 };

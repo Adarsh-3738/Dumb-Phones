@@ -15,27 +15,32 @@ const cartSchema = new Schema({
         ref: "Product",
         required: true
       },
+
+      
+      variantId: {
+        type: Schema.Types.ObjectId,
+        ref: "Variant",
+        required: true
+      },
+
       quantity: {
         type: Number,
         required: true,
         min: 1
       },
+
       price: {
         type: Number,
         required: true
       },
+
       totalPrice: {
         type: Number,
         required: true
-      },
-      status: {
-        type: String,
-        default: "none" // fixed typo: dafault → default
       }
     }
   ]
 });
 
 const Cart = mongoose.model("Cart", cartSchema);
-
 export default Cart;

@@ -1,104 +1,135 @@
-<!-- header -->
- <%-include("../../views/partials/user/header")%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | DumbPhones Premium</title>
+  <link rel="stylesheet" href="/css/user/home.css">
+</head>
+<body>
 
+  <!-- HEADER -->
+  <%- include("../../views/partials/user/header") %>
 
- <link rel="stylesheet" href="/css/user/home.css">
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-left">
-      <h1>DISCOVER THE BEST <br> PHONES FOR YOU</h1>
-      <p></p>
-       <a href="/shop" class="btn-primary">Shop Now</a>
+  <main>
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="hero-left">
+        <h1>DISCOVER THE BEST <br> <span class="highlight-text">PHONES FOR YOU</span></h1>
+        <p>Explore top brands, latest models, and amazing deals engineered for your lifestyle.</p>
+        <div class="hero-actions">
+          <a href="/shop" class="btn-hero-primary">
+            Explore Collection
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
 
-    </div>
+      <div class="hero-right">
+        <div class="hero-image-wrap">
+          <img src="/images/banner.jpeg" alt="Premium Phone Banner">
+        </div>
+      </div>
+    </section>
 
-    <div class="hero-right">
-      <img src="/images/hero-phone.png" alt="">
-    </div>
-  </section>
+    <!-- FEATURED PRODUCTS -->
+    <section class="featured-section">
+      <div class="section-header">
+        <h2>Featured Collection</h2>
+        <a href="/shop" class="view-all-link">View All Products <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+      </div>
 
+      <div class="products-grid">
+        <% if (products.length > 0) { %>
+          <% products.forEach(product => { %>
+            <div class="product-card">
+              
+              <div class="card-img-wrap">
+                <% if(product.defaultVariant?.salesPrice < product.defaultVariant?.regularPrice){ %>
+                  <span class="sale-badge">SALE</span>
+                <% } %>
+                
+                <a href="/product/<%= product._id %>" class="img-link">
+                  <% if (product.defaultVariant?.variantImages?.length) { %>
+                    <img src="<%= product.defaultVariant.variantImages[0].url %>" alt="<%= product.productName %>" loading="lazy">
+                  <% } else { %>
+                    <img src="/images/no-image.png" alt="No image" loading="lazy">
+                  <% } %>
+                </a>
+              </div>
 
- <section class="featured">
-  <h2>Featured Phones</h2>
+              <div class="card-info">
+                <p class="brand-label"><%= product.brand?.name || "Brand" %></p>
+                <a href="/product/<%= product._id %>" class="product-title-link">
+                  <h3 class="product-title"><%= product.productName %></h3>
+                </a>
+                
+                <div class="price-wrap">
+                  <% if (product.defaultVariant) { %>
+                    <span class="sale-price">₹<%= parseInt(product.defaultVariant.salesPrice).toLocaleString('en-IN') %></span>
+                    <% if (product.defaultVariant.regularPrice > product.defaultVariant.salesPrice) { %>
+                      <span class="regular-price">₹<%= parseInt(product.defaultVariant.regularPrice).toLocaleString('en-IN') %></span>
+                    <% } %>
+                  <% } else { %>
+                    <span class="price-unavailable">Price unavailable</span>
+                  <% } %>
+                </div>
+              </div>
 
-  
-    <div class="products-grid">
-  <% if (products.length > 0) { %>
-    <% products.forEach(product => { %>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <h3>No products available</h3>
+            <p>Check back later for our new collections.</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
 
-      <div class="product-card">
+    <!-- PAGINATION -->
+    <% if (totalPages > 1) { %>
+      <div class="pagination-wrapper">
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Previous">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+          <% } else { %>
+            <span class="page-arrow disabled">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </span>
+          <% } %>
 
-  <!-- PRODUCT LINK -->
-  <a href="/product/<%= product._id %>" class="product-link">
-    <% if (product.productImage?.length) { %>
-      <img src="<%= product.productImage[0].url %>" alt="">
+          <div class="page-numbers">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <% if (i === currentPage) { %>
+                <span class="page-num active"><%= i %></span>
+              <% } else { %>
+                <a href="?page=<%= i %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>" class="page-num"><%= i %></a>
+              <% } %>
+            <% } %>
+          </div>
+
+          <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Next">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+          <% } else { %>
+            <span class="page-arrow disabled">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </span>
+          <% } %>
+        </div>
+      </div>
     <% } %>
 
-    <div class="info">
-      <h4><%= product.brand?.name %></h4>
-      <h3><%= product.productName %></h3>
-      <p>
-        ₹<%= product.salesPrice %>
-        <span class="strike">₹<%= product.regularPrice %></span>
-      </p>
-    </div>
-  </a>
+  </main>
 
-  <!-- ADD TO CART (NOT INSIDE LINK) -->
-  <button
-  type="button"
-  class="cart-btn"
-  onclick="addToCart('<%= product._id %>')">
-  Add to Cart
-</button>
-
-</div>
-
-    <% }) %>
-  <% } else { %>
-    <p>No products available</p>
-  <% } %>
-</div>
-
-</section>
-
-
-  <!-- PAGINATION -->
-  <div class="pagination">
-
-  <% if (currentPage > 1) { %>
-    <a href="?page=<%= currentPage - 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>">
-      Previous
-    </a>
-  <% } else { %>
-    <a class="disabled">Previous</a>
-  <% } %>
-
-  <% for (let i = 1; i <= totalPages; i++) { %>
-    <a
-      class="<%= i === currentPage ? 'active' : '' %>"
-      href="?page=<%= i %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>">
-      <%= i %>
-    </a>
-  <% } %>
-
-  <% if (currentPage < totalPages) { %>
-    <a href="?page=<%= currentPage + 1 %>&search=<%= search || '' %>&sort=<%= sort || '' %>&brand=<%= brand || '' %>&category=<%= category || '' %>&price=<%= price || '' %>">
-      Next
-    </a>
-  <% } else { %>
-    <a class="disabled">Next</a>
-  <% } %>
-
-</div>
-
-<!-- footer -->
- <%-include("../../views/partials/user/footer")%>
-  <script  src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/user/home.js"></script>
-
-
-
-
+  <!-- FOOTER -->
+  <%- include("../../views/partials/user/footer") %>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/user/home.js"></script>
 </body>
 </html>

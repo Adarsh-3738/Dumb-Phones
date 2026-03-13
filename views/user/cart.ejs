@@ -1,68 +1,164 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Cart</title>
-  <link rel="stylesheet" href="/css/user/cart.css">
-</head>
-<body>
-
 <%- include("../partials/user/header") %>
+<link rel="stylesheet" href="/css/user/cart.css">
 
-<div class="cart-container">
-  <h2>My Cart</h2>
+<div class="cart-wrapper">
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">Shopping Cart</span>
+  </nav>
 
-  <% if (cartItems.length === 0) { %>
-    <p class="empty">Your cart is empty</p>
-  <% } %>
-
-  <% cartItems.forEach(item => { 
-    const product = item.productId;
-    const disabled = product.quantity <= 0 || product.isBlocked;
-  %>
-
-  <div class="cart-card <%= disabled ? 'disabled' : '' %>">
-
-    <!-- PRODUCT IMAGE -->
-    <div class="cart-img">
-      <% if (product.productImage?.length) { %>
-        <img src="<%= product.productImage[0].url %>" alt="">
-      <% } %>
-    </div>
-
-    <!-- PRODUCT INFO -->
-    <div class="cart-info">
-      <h4><%= product.productName %></h4>
-      <p>₹ <%= product.salesPrice %></p>
-
-      <% if (product.quantity <= 0) { %>
-        <span class="out">Out of stock</span>
-      <% } %>
-    </div>
-
-    <!-- QTY CONTROLS -->
-    <div class="qty-controls">
-      <button onclick="updateQty('<%= product._id %>', 'decrement')" <%= disabled ? 'disabled' : '' %>>−</button>
-      <span><%= item.quantity %></span>
-      <button onclick="updateQty('<%= product._id %>', 'increment')" <%= disabled ? 'disabled' : '' %>>+</button>
-    </div>
-
-    <!-- REMOVE -->
-    <button class="remove-btn" onclick="removeItem('<%= product._id %>')">
-      Remove
-    </button>
-
+  <div class="cart-header-title">
+    <h2>Your Shopping Cart</h2>
+    <span class="item-count"><%= cartItems.length %> <%= cartItems.length === 1 ? 'Item' : 'Items' %></span>
   </div>
-  <% }) %>
 
-  <% if (cartItems.length > 0) { %>
-    <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
-  <% } %>
+  <div class="cart-layout">
+    <div class="cart-main">
+      <% if (cartItems.length === 0) { %>
+        <div class="empty-cart-state">
+          <div class="empty-icon-wrap">
+            <svg class="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added anything to your cart yet.</p>
+          <a href="/shop" class="btn-primary mt-4">Continue Shopping</a>
+        </div>
+      <% } else { %>
+        <div class="cart-items-list">
+          <% cartItems.forEach(item => { 
+            const product = item.productId;
+            const variant = item.variantId;
+            const disabled = !variant || variant.quantity <= 0 || product.isBlocked;
+          %>
+            <div class="cart-card <%= disabled ? 'disabled' : '' %>">
+              
+              <!-- PRODUCT IMAGE -->
+              <div class="cart-card-img">
+                <% if (variant && variant.variantImages && variant.variantImages.length) { %>
+                  <img src="<%= variant.variantImages[0].url %>" alt="<%= product.productName %>">
+                <% } else { %>
+                  <img src="/images/no-image.png" alt="No image">
+                <% } %>
+              </div>
+
+              <!-- PRODUCT DETAILS -->
+              <div class="cart-card-details">
+                <div class="cart-card-header">
+                  <div class="title-wrap">
+                    <h4 class="product-title"><%= product.productName %></h4>
+                    <p class="product-sku">Variant: <%= variant ? variant.color : 'N/A' %></p>
+                  </div>
+                  <p class="product-price">₹<%= parseInt(item.price).toLocaleString('en-IN') %></p>
+                </div>
+
+                <div class="product-meta">
+                  <% if (!variant || variant.quantity <= 0) { %>
+                    <span class="stock-badge out-of-stock">
+                      <span class="dot"></span> Out of stock
+                    </span>
+                  <% } else { %>
+                    <span class="stock-badge in-stock">
+                      <span class="dot"></span> <%= variant.quantity %> in stock
+                    </span>
+                  <% } %>
+                </div>
+
+                <div class="cart-card-actions">
+                  <!-- QTY CONTROLS -->
+                  <div class="qty-controls modern-qty">
+                    <button
+                      class="qty-btn minus"
+                      onclick="updateQty('<%= variant ? variant._id : '' %>', 'decrement')"
+                      <%= disabled ? 'disabled' : '' %>
+                      aria-label="Decrease quantity">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+
+                    <span class="qty-display"><%= item.quantity %></span>
+
+                    <button
+                      class="qty-btn plus"
+                      onclick="updateQty('<%= variant ? variant._id : '' %>', 'increment')"
+                      <%= disabled ? 'disabled' : '' %>
+                      aria-label="Increase quantity">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                  </div>
+
+                  <!-- REMOVE BUTTON -->
+                  <button
+                    class="remove-action"
+                    onclick="removeItem('<%= variant ? variant._id : '' %>')"
+                    aria-label="Remove item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    <span>Remove</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (cartItems.length > 0) { %>
+      <div class="cart-sidebar">
+        <div class="cart-summary-card">
+          <h3>Order Summary</h3>
+          
+          <% 
+            let subtotal = 0;
+            cartItems.forEach(item => {
+              if (item.variantId && item.variantId.quantity > 0 && item.productId && !item.productId.isBlocked) {
+                subtotal += item.price * item.quantity;
+              }
+            });
+            const isCartValid = subtotal > 0;
+            const shipping = isCartValid ? 0 : 0; 
+            const total = subtotal + shipping;
+          %>
+
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="label">Subtotal</span>
+              <span class="value">₹<%= parseInt(subtotal).toLocaleString('en-IN') %></span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Shipping Estimate</span>
+              <span class="value"><span class="free-badge">Free</span></span>
+            </div>
+          </div>
+
+          <div class="summary-total-row">
+            <span class="label">Total</span>
+            <span class="value">₹<%= parseInt(total).toLocaleString('en-IN') %></span>
+          </div>
+
+          <% if (isCartValid) { %>
+            <a href="/checkout" class="btn-checkout">
+              Proceed to Checkout
+            </a>
+          <% } else { %>
+            <button class="btn-checkout" disabled style="opacity: 0.5; cursor: not-allowed;">
+              Cart Items Unavailable
+            </button>
+          <% } %>
+          
+          <div class="secure-checkout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Secure Checkout</span>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
 </div>
 
 <%- include("../partials/user/footer") %>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script src="/js/user/cart.js"></script>
-
-</body>
-</html>

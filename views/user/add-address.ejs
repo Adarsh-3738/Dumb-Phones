@@ -4,43 +4,79 @@
   <meta charset="UTF-8">
   <title>Add Address</title>
   <link rel="stylesheet" href="/css/user/add-address.css">
+  <!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
 </head>
 <body>
 
 <%- include("../partials/user/header") %>
-
-<div class="add-address-container">
-  <h2>Add New Address</h2>
+<div class="profile-wrapper">
+  <%- include("../../views/partials/user/sidebar.ejs") %>
+  <main class="profile-content">
+    <nav class="breadcrumb">
+      <a href="/profile">Profile</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <a href="/address">My Addresses</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="active">Add Address</span>
+    </nav>
+    <div class="add-address-container">
+      <h2>Add New Address</h2>
 
   <% if (message) { %>
     <p class="error"><%= message %></p>
   <% } %>
 
-  <form action="/add-address" method="POST" class="address-form">
+  <form action="/address/add" method="POST" class="address-form">
     
-    <label for="addressType">Address Type</label>
-    <input type="text" name="addressType" id="addressType" placeholder="Home / Office" required>
+    <div class="form-group">
+      <label for="addressType">Address Type</label>
+      <input type="text" name="addressType" id="addressType" placeholder="Home / Office">
+      <div class="error-message" id="error-addressType"></div>
+    </div>
 
-    <label for="name">Full Name</label>
-    <input type="text" name="name" id="name" placeholder="John Doe" required>
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" name="name" id="name" placeholder="John Doe">
+      <div class="error-message" id="error-name"></div>
+    </div>
 
-    <label for="phone">Phone Number</label>
-    <input type="text" name="phone" id="phone" placeholder="1234567890" required>
+    <div class="form-group">
+      <label for="phone">Phone Number</label>
+      <input type="text" name="phone" id="phone" placeholder="1234567890">
+      <div class="error-message" id="error-phone"></div>
+    </div>
 
-    <label for="altPhone">Alternate Phone</label>
-    <input type="text" name="altPhone" id="altPhone" placeholder="0987654321">
+    <div class="form-group">
+      <label for="altPhone">Alternate Phone</label>
+      <input type="text" name="altPhone" id="altPhone" placeholder="0987654321">
+      <div class="error-message" id="error-altPhone"></div>
+    </div>
 
-    <label for="landmark">Landmark</label>
-    <input type="text" name="landmark" id="landmark" placeholder="Near Park / Mall" required>
+    <div class="form-group">
+      <label for="landmark">Landmark</label>
+      <input type="text" name="landmark" id="landmark" placeholder="Near Park / Mall">
+      <div class="error-message" id="error-landmark"></div>
+    </div>
 
-    <label for="city">City</label>
-    <input type="text" name="city" id="city" placeholder="City Name" required>
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" name="city" id="city" placeholder="City Name">
+      <div class="error-message" id="error-city"></div>
+    </div>
 
-    <label for="state">State</label>
-    <input type="text" name="state" id="state" placeholder="State Name" required>
+    <div class="form-group">
+      <label for="state">State</label>
+      <input type="text" name="state" id="state" placeholder="State Name">
+      <div class="error-message" id="error-state"></div>
+    </div>
 
-    <label for="pincode">Pincode</label>
-    <input type="number" name="pincode" id="pincode" placeholder="123456" required>
+    <div class="form-group">
+      <label for="pincode">Pincode</label>
+      <input type="number" name="pincode" id="pincode" placeholder="123456">
+      <div class="error-message" id="error-pincode"></div>
+    </div>
 
     <div class="form-actions">
       <button type="submit" class="btn-submit">Save Address</button>
@@ -48,8 +84,16 @@
     </div>
   </form>
 </div>
+</main>
+</div>
 
 <%- include("../partials/user/footer") %>
 
+
+
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/user/add-address.js"></script>
 </body>
 </html>

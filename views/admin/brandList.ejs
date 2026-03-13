@@ -2,65 +2,153 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Phone Brands</title>
-<link rel="stylesheet" href="/css/admin/brandList.css">
-  
-</head>
 
+  <link rel="stylesheet" href="/css/admin/brandList.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body>
 
-  <!-- Sidebar -->
-  <%- include("../../views/partials/admin/header") %>
+<%- include("../../views/partials/admin/header") %>
 
-  <!-- Main Content -->
-  <div class="main">
-    <div class="header">
+<div class="main">
+
+  <!-- HEADER -->
+  <div class="top-section">
+    <div>
       <h1>Phone Brands</h1>
-      <a href="/admin/brands/add">
-        <button class="btn">+ New Brand</button>
-      </a>
+      <p>Manage all available brands</p>
     </div>
+      <button class="btn-primary" onclick="openAddModal()">
+  + New Brand
+</button>
+    </a>
+  </div>
 
-    <!-- Brand Table -->
+  <!-- SEARCH -->
+  <div class="search-bar">
+    <form method="GET" action="/admin/brands">
+      <input 
+        type="text" 
+        name="search" 
+        placeholder="Search brand..." 
+        value="<%= searchQuery || '' %>"
+      >
+      <button type="submit" class="btn-primary">Search</button>
+    </form>
+
+    <% if (searchQuery) { %>
+      <a href="/admin/brands">
+        <button type="button" class="btn-clear">Clear</button>
+      </a>
+    <% } %>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrapper">
     <table>
       <thead>
         <tr>
-          <th>Logo</th>
-          <th>Brand Name</th>
+          <th>Brand</th>
           <th>Country</th>
           <th>Founded</th>
-          <th>Website</th>
           <th>Actions</th>
         </tr>
       </thead>
 
       <tbody>
-        <% brands.forEach(b => { %>
+        <% if(brands.length === 0) { %>
           <tr>
-            <td><img src="<%= b.logo %>" width="40" /></td>
+            <td colspan="4" class="no-data">No brands found</td>
+          </tr>
+        <% } %>
+
+        <% brands.forEach(b => { %>
+          <tr id="brand-<%= b._id %>">
             <td><%= b.name %></td>
             <td><%= b.country %></td>
             <td><%= b.founded %></td>
-            <td><a class="text-link" href="<%= b.website %>" target="_blank">Visit Site</a></td>
             <td>
-              <a href="/admin/brand/view/<%= b._id %>" class="action-btn">👁</a>
-              <a href="/admin/brand/delete/<%= b._id %>" class="action-btn">🗑</a>
+              
+              <button 
+  class="btn-edit"
+  onclick="openEditModal('<%= b._id %>','<%= b.name %>','<%= b.country %>','<%= b.founded %>')">
+  Edit
+</button>
+
+              <!-- DELETE -->
+              <button 
+                type="button"
+                onclick="deleteBrand('<%= b._id %>')" 
+                class="btn-delete">
+                Delete
+              </button>
             </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
-
-    <div class="footer">
-      <div>Showing 1 to <%= brands.length %> of <%= totalBrands %> results</div>
-
-      <div class="pagination">
-        <button>Previous</button>
-        <button>Next</button>
-      </div>
-    </div>
   </div>
 
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <% if(currentPage > 1) { %>
+      <a href="/admin/brands?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">
+        <button class="page-btn">Prev</button>
+      </a>
+    <% } %>
+
+    <% for(let i=1; i<=totalPages; i++){ %>
+      <a href="/admin/brands?page=<%= i %>&search=<%= searchQuery %>">
+        <button class="page-btn <%= i===currentPage?'active':'' %>">
+          <%= i %>
+        </button>
+      </a>
+    <% } %>
+
+    <% if(currentPage < totalPages){ %>
+      <a href="/admin/brands?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">
+        <button class="page-btn">Next</button>
+      </a>
+    <% } %>
+  </div>
+
+</div>
+<!-- ADD MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal-box">
+    <h3>Add Brand</h3>
+
+    <input type="text" id="addName" placeholder="Brand Name">
+    <input type="text" id="addCountry" placeholder="Country">
+    <input type="number" id="addFounded" placeholder="Founded Year">
+
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="submitAdd()">Save</button>
+      <button class="btn-clear" onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <h3>Edit Brand</h3>
+
+    <input type="text" id="editName">
+    <input type="text" id="editCountry">
+    <input type="number" id="editFounded">
+
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="submitEdit()">Update</button>
+      <button class="btn-clear" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script src="/js/admin/brandList.js"></script>
 </body>
 </html>

@@ -1,17 +1,49 @@
- // Show/Hide Password 
-  
-    const input = document.getElementById("password");
-const icon = document.getElementById("toggleEye");
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
 
-icon.addEventListener("click", () => {
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove("fa-eye");
-        icon.classList.add("fa-eye-slash");
-    } else {
-        input.type = "password";
-        icon.classList.remove("fa-eye-slash");
-        icon.classList.add("fa-eye");
-    }
+const emailError = document.getElementById("emailError");
+const passwordError = document.getElementById("passwordError");
+
+const toggleEye = document.getElementById("toggleEye");
+
+// Password toggle 
+toggleEye.addEventListener("click", () => {
+  const isPassword = password.type === "password";
+  password.type = isPassword ? "text" : "password";
+  toggleEye.classList.toggle("fa-eye");
+  toggleEye.classList.toggle("fa-eye-slash");
 });
 
+// Frontend Validation 
+form.addEventListener("submit", (e) => {
+
+  let isValid = true;
+
+  emailError.textContent = "";
+  passwordError.textContent = "";
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!email.value.trim()) {
+    emailError.textContent = "Email is required";
+    isValid = false;
+  } 
+  else if (!emailPattern.test(email.value.trim())) {
+    emailError.textContent = "Enter a valid email address";
+    isValid = false;
+  }
+
+  if (!password.value.trim()) {
+    passwordError.textContent = "Password is required";
+    isValid = false;
+  } 
+  else if (password.value.length < 6) {
+    passwordError.textContent = "Password must be at least 6 characters";
+    isValid = false;
+  }
+
+  if (!isValid) {
+    e.preventDefault();
+  }
+});

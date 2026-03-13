@@ -1,7 +1,7 @@
 import productService from "../../services/user/productService.js";
 import logger from "../../utils/logger.js";
 
-// GET PRODUCTS (LISTING)
+// GET PRODUCTS
 export const getProducts = async (req, res) => {
   try {
     logger.info("Loading user products listing", {
@@ -38,23 +38,34 @@ export const loadProductDetails = async (req, res) => {
     const productId = req.params.id;
 
     logger.info("Loading product details page", {
-      productId,
+      productId
     });
 
-    const { product, similarProducts } =
-      await productService.getProductDetailsService(productId);
+    
+    const {
+      product,
+      variants,
+      similarProducts
+    } = await productService.getProductDetailsService(productId);
 
-    res.render("user/productDetails", { product, similarProducts,user:req.user || null });
+    
+    res.render("user/productDetails", {
+      product,
+      variants,
+      similarProducts,
+      
+    });
+
   } catch (error) {
     logger.error("Error loading product details", {
       message: error.message,
       stack: error.stack,
-      productId: req.params.id,
+      productId: req.params.id
     });
 
     if (error.message === "PRODUCT_NOT_FOUND") {
       logger.warn("Product not found", {
-        productId: req.params.id,
+        productId: req.params.id
       });
       return res.status(404).render("user/404");
     }

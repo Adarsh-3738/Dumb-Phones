@@ -1,47 +1,57 @@
-
+// Toggle password visibility
 function togglePassword(id) {
   const input = document.getElementById(id);
   input.type = input.type === "password" ? "text" : "password";
 }
 
-// for validation
-document.querySelector("form").addEventListener("submit", function (e) {
-  let valid = true;
-
+// Form validation with SweetAlert
+document.getElementById("loginForm").addEventListener("submit", function (e) {
   const email = document.getElementById("email");
   const password = document.getElementById("password");
 
-  // Clear previous errors
-  document.querySelectorAll(".client-error").forEach(el => el.remove());
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email.value.trim()) {
-    showError(email, "Email is required");
-    valid = false;
-  } else if (!emailRegex.test(email.value)) {
-    showError(email, "Enter a valid email");
-    valid = false;
+    e.preventDefault();
+    Swal.fire({
+      icon: 'warning',
+      title: 'Email Required',
+      text: 'Please enter your email address.'
+    });
+    return;
+  }
+
+  if (!emailRegex.test(email.value)) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Email',
+      text: 'Please enter a valid email address.'
+    });
+    return;
   }
 
   // Password validation
   if (!password.value.trim()) {
-    showError(password, "Password is required");
-    valid = false;
-  } else if (password.value.length < 6) {
-    showError(password, "Password must be at least 6 characters");
-    valid = false;
+    e.preventDefault();
+    Swal.fire({
+      icon: 'warning',
+      title: 'Password Required',
+      text: 'Please enter your password.'
+    });
+    return;
   }
 
-  if (!valid) e.preventDefault();
+  if (password.value.length < 6) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'error',
+      title: 'Weak Password',
+      text: 'Password must be at least 6 characters long.'
+    });
+    return;
+  }
+
+ 
 });
-//error showing on email and password
-function showError(input, message) {
-  const error = document.createElement("div");
-  error.className = "error-text client-error";
-  error.innerText = message;
-  input.closest(".input-box").appendChild(error);
-}
-
-
-

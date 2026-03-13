@@ -4,22 +4,58 @@
   <meta charset="UTF-8">
   <title>Verify Email</title>
   <link rel="stylesheet" href="/css/user/verify-email.css">
+
+  <!-- SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
-<body>
+<%- include("../../views/partials/user/header") %>
 
-<div class="verify-container">
-  <h2>Verify New Email</h2>
+<div class="profile-wrapper">
+  
+  <!-- Sidebar -->
+  <%- include("../../views/partials/user/sidebar.ejs") %>
 
-  <% if (message) { %>
-    <p class="error"><%= message %></p>
-  <% } %>
+  <!-- Main Content -->
+  <main class="profile-content">
+    <nav class="breadcrumb">
+      <a href="/profile">Profile</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <a href="/email/change">Change Email</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="active">Verify OTP</span>
+    </nav>
+    
+    <div class="change-email-container">
+      <h2>Verify New Email</h2>
 
-  <form action="/verify-email" method="POST">
-    <label>Enter OTP sent to your new email</label>
-    <input type="text" name="otp" placeholder="Enter OTP" required>
-    <button type="submit">Verify</button>
-  </form>
+      <% if (message) { %>
+        <p class="error"><%= message %></p>
+      <% } %>
+
+      <form id="verifyForm" action="/email/verify" method="POST">
+        <div class="form-group">
+          <label>Enter OTP sent to your new email</label>
+          <input type="text" name="otp" id="otp" placeholder="Enter 6-digit OTP">
+          <div class="error-message" id="error-otp"></div>
+        </div>
+        <button type="submit">Verify</button>
+      </form>
+
+      <div class="resend-block">
+        <p id="resendText">
+          Didn't receive OTP? 
+          <button id="resendBtn" class="btn-text" style="display:none;">Resend OTP</button> 
+          <span id="timer">60s</span>
+        </p>
+      </div>
+      
+      <a href="/profile" class="back-btn">← Back to Profile</a>
+    </div>
+  </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/user/verify-email.js"></script>
+<%- include("../partials/user/footer") %>
 </body>
 </html>

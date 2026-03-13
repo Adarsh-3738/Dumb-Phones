@@ -23,6 +23,11 @@ userId: {
       ref: "Product",
       required: true
     },
+    variant: {                    
+    type: Schema.Types.ObjectId,
+    ref: "Variant",
+    required: true
+  },
     quantity: {
       type: Number,
       required: true
@@ -46,6 +51,16 @@ userId: {
   totalPrice: {
     type: Number,
     required: true
+  },
+  tax: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  shipping: {
+    type: Number,
+    required: true,
+    default: 0
   },
   discount: {
     type: Number,
@@ -76,11 +91,20 @@ userId: {
       "Pending",
       "Processing",
       "Shipped",
+       "Out for Delivery",
       "Delivered",
       "Cancelled",
       "Return Request",
       "Returned"
     ]
+  },
+  cancelReason: {
+    type: String,
+    default: ""
+  },
+  returnReason: {
+    type: String,
+    default: ""
   },
   createdOn: {
     type: Date,

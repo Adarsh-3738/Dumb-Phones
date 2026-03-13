@@ -1,91 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Checkout</title>
+  <meta charset="UTF-8">
+  <title>Secure Checkout</title>
   <link rel="stylesheet" href="/css/user/checkout.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-  <%- include("../partials/user/header") %>
 
-  <div class="checkout-container">
+<%- include("../partials/user/header") %>
 
-    <h2>Checkout</h2>
+<main class="checkout-wrapper">
 
-    <!-- ADDRESS SELECTION -->
-    <div class="checkout-address">
-      <h3>Select Delivery Address</h3>
-      <form id="addressForm" action="/checkout/place-order" method="POST">
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/cart">Cart</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">Secure Checkout</span>
+  </nav>
 
-        <% if (addresses && addresses.length > 0) { %>
-          <% addresses.forEach(addr => { %>
-            <div class="address-card <%= addr.isDefault ? 'default' : '' %>">
-              <input
-                type="radio"
-                name="addressId"
-                value="<%= addr._id %>"
-                <%= addr.isDefault ? 'checked' : '' %>
-                required
-              >
-              <p>
-                <strong><%= addr.addressType %></strong><br>
-                <%= addr.name %><br>
-                <%= addr.landmark %>, <%= addr.city %><br>
-                <%= addr.state %> - <%= addr.pincode %><br>
-                Phone: <%= addr.phone %>
-              </p>
-              <button
-                type="button"
-                class="btn-edit-address"
-                onclick="editAddress('<%= addr._id %>')">Edit</button>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p>No addresses found.</p>
-        <% } %>
-
-        <button type="button" class="btn-add-address" onclick="addNewAddress()">+ Add New Address</button>
-
-      </form>
-    </div>
-
-    <!-- CART ITEMS -->
-    <div class="checkout-items">
-      <h3>Your Items</h3>
-      <% cartItems.forEach(item => { %>
-        <div class="checkout-item">
-          <img src="<%= item.productId.productImage[0].url %>" alt="">
-          <div class="item-info">
-            <h4><%= item.productId.productName %></h4>
-            <p>Qty: <%= item.quantity %></p>
-            <p>Price: ₹<%= item.price %> × <%= item.quantity %> = ₹<%= item.price * item.quantity %></p>
-          </div>
-        </div>
-      <% }) %>
-    </div>
-
-    <!-- SUMMARY -->
-    <div class="checkout-summary">
-      <h3>Order Summary</h3>
-      <p>Subtotal: ₹<%= subtotal %></p>
-      <p>Tax (5%): ₹<%= tax %></p>
-      <p>Shipping: ₹<%= shipping %></p>
-      <p>Discount: ₹<%= discount %></p>
-      <h4>Total: ₹<%= total %></h4>
-
-      <button form="addressForm" type="submit" class="place-order-btn">Place Order (Cash on Delivery)</button>
-    </div>
+  <div class="checkout-header-title">
+    <h2>Secure Checkout</h2>
+    <p class="subtitle">Complete your premium order safely.</p>
   </div>
 
-  <%- include("../partials/user/footer") %>
+  <div class="checkout-layout">
 
-  <script>
-    function addNewAddress() {
-      window.location.href = "/add-address"; 
-    }
+    <div class="checkout-main">
+      <!-- ADDRESS SELECTION -->
+      <section class="checkout-section">
+        <div class="section-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <h3>Delivery Address</h3>
+        </div>
 
-    function editAddress(id) {
-      window.location.href = `/address/edit/${id}`; 
-    }
-  </script>
+        <div class="checkout-address">
+          <form id="addressForm" action="/checkout/place-order" method="POST">
+            <% if (addresses && addresses.length > 0) { %>
+              <div class="address-grid">
+                <% addresses.forEach(addr => { %>
+                  <label class="address-card <%= addr.isDefault ? 'default' : '' %>">
+                    <div class="address-radio">
+                      <input
+                        type="radio"
+                        name="addressId"
+                        value="<%= addr._id %>"
+                        <%= addr.isDefault ? 'checked' : '' %>
+                      >
+                    </div>
+
+                    <div class="address-info">
+                      <div class="address-top">
+                        <span class="addr-type"><%= addr.addressType || "Home" %></span>
+                        <% if (addr.isDefault) { %>
+                          <span class="default-badge">Optimal</span>
+                        <% } %>
+                      </div>
+                      <p class="addr-name"><%= addr.name || "No Name" %></p>
+                      <p class="addr-lines">
+                        <% if (addr.landmark) { %><%= addr.landmark %><br><% } %>
+                        <%= addr.city || "" %>, <%= addr.state || "" %> - <%= addr.pincode || "" %>
+                      </p>
+                      <p class="addr-phone">Ph: <%= addr.phone || "N/A" %></p>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn-edit-action"
+                      onclick="editAddress('<%= addr._id %>')"
+                      aria-label="Edit Address">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                  </label>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <div class="empty-state-address">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <p>No saved addresses found.</p>
+              </div>
+            <% } %>
+
+            <button type="button" class="btn-add-address" onclick="addNewAddress()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add New Address
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!--  CART ITEMS  -->
+      <section class="checkout-section mt-5">
+        <div class="section-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <h3>Order Items</h3>
+        </div>
+
+        <div class="checkout-items">
+          <% if (cartItems.length === 0) { %>
+            <p class="empty-items-text">Your cart is empty.</p>
+          <% } %>
+
+          <div class="items-list">
+            <% cartItems.forEach(item => {
+              const product = item.productId;
+              const variant = item.variantId;
+              const disabled = !variant || variant.quantity <= 0 || product.isBlocked;
+            %>
+              <div class="checkout-item-card <%= disabled ? 'disabled' : '' %>">
+                <div class="checkout-img-wrap">
+                  <% if (variant.variantImages?.length) { %>
+                    <img src="<%= variant.variantImages[0].url %>" alt="<%= product.productName %>">
+                  <% } else { %>
+                    <img src="/images/no-image.png" alt="No image">
+                  <% } %>
+                </div>
+
+                <div class="item-details">
+                  <div class="item-title-row">
+                    <h4><%= product.productName %></h4>
+                    <span class="item-total-price">₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
+                  </div>
+                  
+                  <div class="item-meta">
+                    <p class="variant-color">Variant: <%= variant.color %></p>
+                    <p class="item-calc">₹<%= parseInt(item.price).toLocaleString('en-IN') %> × <%= item.quantity %></p>
+                  </div>
+
+                  <div class="item-stock-status">
+                    <% if (variant.quantity <= 0) { %>
+                      <span class="status-badge out">Out of stock</span>
+                    <% } else { %>
+                      <span class="status-badge in">In stock: <%= variant.quantity %></span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!--  ORDER SUMMARY  -->
+    <aside class="checkout-sidebar">
+      <div class="checkout-summary-card">
+        <h3>Order Summary</h3>
+
+        <div class="summary-details">
+          <div class="summary-line">
+            <span class="label">Subtotal</span>
+            <span class="value">₹<%= parseInt(subtotal).toLocaleString('en-IN') %></span>
+          </div>
+          <div class="summary-line">
+            <span class="label">Tax (5%)</span>
+            <span class="value">₹<%= parseInt(tax).toLocaleString('en-IN') %></span>
+          </div>
+          <div class="summary-line">
+            <span class="label">Shipping</span>
+            <% if (parseInt(shipping) === 0) { %>
+              <span class="value free-shipping">Free</span>
+            <% } else { %>
+              <span class="value">₹<%= parseInt(shipping).toLocaleString('en-IN') %></span>
+            <% } %>
+          </div>
+          <div class="summary-line discount-line">
+            <span class="label">Discount</span>
+            <span class="value">- ₹<%= parseInt(discount).toLocaleString('en-IN') %></span>
+          </div>
+        </div>
+
+        <div class="summary-total">
+          <span class="label">Total Amount</span>
+          <span class="value">₹<%= parseInt(total).toLocaleString('en-IN') %></span>
+        </div>
+
+        <button form="addressForm" type="submit" class="btn-checkout-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Place Order (COD)
+        </button>
+
+        <p class="secure-notice">Your transaction is fully secured and encrypted.</p>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<%- include("../partials/user/footer") %>
+
+<script src="/js/user/checkout.js"></script>
 </body>
 </html>

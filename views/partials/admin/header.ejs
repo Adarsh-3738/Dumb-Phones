@@ -1,3 +1,4 @@
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
   * {
@@ -7,82 +8,106 @@
     font-family: "Inter", sans-serif;
   }
 
+  /* SIDEBAR */
   .sidebar {
     width: 250px;
     background: #ffffff;
     height: 100vh;
-    border-right: 1px solid #e6e6e6;
-    padding: 20px;
+    border-right: 1px solid #e5eaf2;
+    padding: 25px 20px;
     position: fixed;
     left: 0;
     top: 0;
     overflow-y: auto;
   }
 
+  /* LOGO */
   .logo {
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 30px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    color: #1e3a8a;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eef2f7;
+    margin-bottom: 25px; /* Proper spacing after logo */
   }
 
+  .logo i {
+    width: 22px;
+    height: 22px;
+    color: #2563eb;
+  }
+
+  /* MENU TITLE */
   .menu-title {
     margin-top: 20px;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #777;
+    color: #94a3b8;
     margin-bottom: 10px;
   }
 
+  /* MENU ITEMS */
   .menu-item {
     display: flex;
     align-items: center;
-    padding: 12px;
+    gap: 12px;
+    padding: 12px 14px;
     border-radius: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     cursor: pointer;
-    color: #333;
-    transition: 0.2s;
+    color: #334155;
+    transition: all 0.2s ease;
     text-decoration: none;
-  }
-
-  .menu-item:hover,
-  .menu-item.active {
-    background: #eef3ff;
-    color: #2a55ff;
+    font-size: 14px;
+    font-weight: 500;
   }
 
   .menu-item i {
-    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.8;
   }
 
+  /* HOVER + ACTIVE */
+  .menu-item:hover {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  .menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .menu-item.active i {
+    color: #ffffff;
+  }
+
+  /* LOGOUT BUTTON */
   .logout-btn {
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 12px;
-    border-radius: 10px;
-    text-align: left;
     width: 100%;
+    text-align: left;
   }
 
   .logout-btn:hover {
-    background: #ffe5e5;
-    color: #ff4444;
+    background: #fee2e2;
+    color: #dc2626;
   }
 
-  /* logout modal */
-
+  /* LOGOUT MODAL */
   .logout-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(15, 23, 42, 0.4);
     display: none;
     justify-content: center;
     align-items: center;
@@ -90,67 +115,128 @@
   }
 
   .logout-modal {
-    background: white;
+    background: #ffffff;
     padding: 25px;
     width: 320px;
-    border-radius: 12px;
+    border-radius: 14px;
     text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.2s ease;
+  }
+
+  .logout-modal h3 {
+    color: #1e3a8a;
+    margin-bottom: 10px;
+  }
+
+  .logout-modal p {
+    color: #64748b;
+    font-size: 14px;
   }
 
   .modal-actions {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    gap: 10px;
   }
 
   .btn {
-    padding: 10px 20px;
+    flex: 1;
+    padding: 10px;
     border-radius: 8px;
     cursor: pointer;
     border: none;
+    font-weight: 500;
   }
 
   .btn.cancel {
-    background: #ddd;
+    background: #e2e8f0;
   }
 
   .btn.logout {
-    background: #ff4d4d;
+    background: #2563eb;
     color: white;
   }
 
+  .btn.logout:hover {
+    background: #1e40af;
+  }
+
   @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
+    from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
   }
 </style>
 
+  
 <!-- SIDEBAR -->
 
 <div class="sidebar">
-  <div class="logo">📱 Dumb Phones</div>
+  <div class="logo">
+    <i data-lucide="smartphone"></i>
+    Dumb Phones
+  </div>
 
   <div class="menu-title">Menu</div>
 
-  <a href="/admin/dashboard" class="menu-item nav-link">📊 Dashboard</a>
-  <a href="/admin/products" class="menu-item nav-link">📦 Products</a>
-  <a href="/admin/orders" class="menu-item nav-link">🧾 Orders</a>
-  <a href="/admin/users" class="menu-item nav-link">👥 Users</a>
-  <a href="/admin/brands" class="menu-item nav-link">🏷 Brand</a>
-  <a href="/admin/offers" class="menu-item nav-link">🎁 Offers</a>
-  <a href="/admin/referrals" class="menu-item nav-link">🔗 Referrals</a>
-  <a href="/admin/reviews" class="menu-item nav-link">⭐ Reviews</a>
-  <a href="/admin/coupons" class="menu-item nav-link">🎫 Coupons</a>
-  <a href="/admin/sales" class="menu-item nav-link">📈 Sales</a>
-  <a href="/admin/category" class="menu-item nav-link">📂 Category</a>
-  <a href="/admin/banners" class="menu-item nav-link">🖼 Banners</a>
+  <a href="/admin/dashboard" class="menu-item nav-link">
+    <i data-lucide="layout-dashboard"></i> Dashboard
+  </a>
+
+  <a href="/admin/products" class="menu-item nav-link">
+    <i data-lucide="package"></i> Products
+  </a>
+
+  <a href="/admin/orders" class="menu-item nav-link">
+    <i data-lucide="file-text"></i> Orders
+  </a>
+
+  <a href="/admin/users" class="menu-item nav-link">
+    <i data-lucide="users"></i> Users
+  </a>
+
+  <a href="/admin/brands" class="menu-item nav-link">
+    <i data-lucide="tag"></i> Brand
+  </a>
+
+  <a href="/admin/offers" class="menu-item nav-link">
+    <i data-lucide="gift"></i> Offers
+  </a>
+
+  <a href="/admin/referrals" class="menu-item nav-link">
+    <i data-lucide="link"></i> Referrals
+  </a>
+
+  <a href="/admin/reviews" class="menu-item nav-link">
+    <i data-lucide="star"></i> Reviews
+  </a>
+
+  <a href="/admin/coupons" class="menu-item nav-link">
+    <i data-lucide="ticket"></i> Coupons
+  </a>
+
+  <a href="/admin/sales" class="menu-item nav-link">
+    <i data-lucide="trending-up"></i> Sales
+  </a>
+
+  <a href="/admin/category" class="menu-item nav-link">
+    <i data-lucide="folder"></i> Category
+  </a>
+
+  <a href="/admin/banners" class="menu-item nav-link">
+    <i data-lucide="image"></i> Banners
+  </a>
 
   <div class="menu-title" style="margin-top: 40px;">Admin</div>
 
-  <div class="menu-item">👤 Admin Name</div>
+  <div class="menu-item">
+    <i data-lucide="user"></i> Admin Name
+  </div>
 
-  <button class="menu-item logout-btn" onclick="openLogoutModal()">🚪 Logout</button>
+  <button class="menu-item logout-btn" onclick="openLogoutModal()">
+    <i data-lucide="log-out"></i> Logout
+  </button>
 </div>
 
 <!-- LOGOUT MODAL  -->
@@ -168,8 +254,12 @@
 </div>
 
 <!-- JS SCRIPT -->
+<script>//for icons
+  lucide.createIcons();
+</script>
 
 <script>
+  
   // Highlight current active link
   const currentPath = window.location.pathname;
   const navLinks = document.querySelectorAll(".nav-link");

@@ -1,72 +1,101 @@
 <style>
-  /* FOOTER */
+  /*  FOOTER  */
+  footer {
+    margin-top: auto; /* sticky footer magic */
+    padding: 32px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .footer-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  footer h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #111827;
+  }
+
+  footer p {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 6px;
+    cursor: pointer;
+    line-height: 1.6;
+  }
+
+  footer p:hover {
+    text-decoration: underline;
+    color: #111827;
+  }
+
+  .copyright {
+    text-align: center;
+    font-size: 13px;
+    color: #9ca3af;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+  }
+
+  /* ===== TABLET ===== */
+  @media (min-width: 600px) {
+    .footer-columns {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ===== DESKTOP ===== */
+  @media (min-width: 1024px) {
     footer {
       padding: 40px;
-      background: #fff;
-      margin-top: 40px;
-      border-top: 1px solid #eee;
     }
 
     .footer-columns {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1200px;
+      margin: 0 auto 24px;
     }
-
-    footer h4 {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    footer p {
-      margin-top: 6px;
-      color: #777;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    footer p:hover {
-      text-decoration: underline;
-    }
-
-    .copyright {
-      text-align: center;
-      color: #999;
-      margin-top: 10px;
-    }
-
+  }
 </style>
 
 <footer>
-    <div class="footer-columns">
-      <div>
-        <h4>About</h4>
-        <p>Our Story</p>
-        <p>Careers</p>
-        <p>Press</p>
-      </div>
+  <div class="footer-columns">
 
-      <div>
-        <h4>Support</h4>
-        <p>Contact Us</p>
-        <p>FAQ</p>
-        <p>Shipping</p>
-        <p>Returns</p>
-      </div>
-
-      <div>
-        <h4>Policies</h4>
-        <p>Privacy Policy</p>
-        <p>Terms of Service</p>
-      </div>
-
-      <div>
-        <h4>Social</h4>
-        <p>Twitter</p>
-        <p>Instagram</p>
-        <p>Facebook</p>
-      </div>
+    <div>
+      <h4>About</h4>
+      <p>Our Story</p>
+      <p>Careers</p>
+      <p>Press</p>
     </div>
 
-    <p class="copyright">© 2025 Dumb Phones. All rights reserved.</p>
-  </footer>
+    <div>
+      <h4>Support</h4>
+      <p>Contact Us</p>
+      <p>FAQ</p>
+      <p>Shipping</p>
+      <p>Returns</p>
+    </div>
+
+    <div>
+      <h4>Policies</h4>
+      <p>Privacy Policy</p>
+      <p>Terms of Service</p>
+    </div>
+
+    <div>
+      <h4>Social</h4>
+      <p>Twitter</p>
+      <p>Instagram</p>
+      <p>Facebook</p>
+    </div>
+
+  </div>
+
+  <p class="copyright">
+    © 2025 Dumb Phones. All rights reserved.
+  </p>
+</footer>

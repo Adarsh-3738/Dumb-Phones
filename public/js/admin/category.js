@@ -2,7 +2,7 @@
   let editId = null;
   let deleteId = null;
 
-  /* ADD CATEGORY */
+  // ADD CATEGORY
   function openAddModal() {
     document.getElementById("addModal").style.display = "flex";
   }
@@ -18,15 +18,22 @@
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, status })
   })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) location.reload();
-      else alert(data.msg);
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Category Added",
+          showConfirmButton: false,
+          timer: 1200
+        }).then(() => location.reload());
+      } else {
+        Swal.fire("Error", data.msg, "error");
+      }
     });
 }
 
-
-  /* EDIT CATEGORY */
+  // EDIT CATEGORY
   function openEditModal(id, name, status) {
     editId = id;
     document.getElementById("editName").value = name;
@@ -41,19 +48,27 @@
   const status = document.getElementById("editStatus").value;
 
   fetch("/admin/category/edit", {
-    method: "POST",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: editId, name, status })
   })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) location.reload();
-      else alert(data.msg);
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Category Updated",
+          showConfirmButton: false,
+          timer: 1200
+        }).then(() => location.reload());
+      } else {
+        Swal.fire("Error", data.msg, "error");
+      }
     });
 }
 
 
-  /* DELETE CATEGORY */
+  // DELETE CATEGORY 
   function openDeleteModal(id) {
     deleteId = id;
     document.getElementById("deleteModal").style.display = "flex";
@@ -62,16 +77,31 @@
     document.getElementById("deleteModal").style.display = "none";
   }
   function submitDelete() {
-  fetch("/admin/category/delete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: deleteId })
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) location.reload();
-      else alert("Delete failed");
-    });
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#e74c3c",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch("/admin/category/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: deleteId })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire("Deleted!", "Category removed.", "success")
+              .then(() => location.reload());
+          } else {
+            Swal.fire("Error", "Delete failed", "error");
+          }
+        });
+    }
+  });
 }
 
 

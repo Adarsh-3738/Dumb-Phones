@@ -11,14 +11,29 @@
 <!-- HEADER -->
 <div class="card-header">
   <h2>Products</h2>
-  <button class="add-btn" onclick="openModal()">+ Add Product</button>
+  <button
+  type="button"
+  class="add-btn"
+  onclick="openModal()"
+>
+  + Add Product
+</button>
 </div>
-<form action="/admin/products" method="get" class="search-form">
-  <input type="text"
-         name="search"
-         placeholder="Search products..."
-         value="<%= search %>">
+<% const safeSearch = search || "" %>
+
+<form action="/admin/products" method="get" class="search-form" style="display:flex;gap:8px;">
+  <input
+    type="text"
+    name="search"
+    placeholder="Search products..."
+    value="<%= safeSearch %>"
+  />
+
   <button type="submit">Search</button>
+
+  <% if (safeSearch) { %>
+    <a href="/admin/products" class="clear-btn">Clear</a>
+  <% } %>
 </form>
 
 <!-- PRODUCT LIST -->
@@ -37,17 +52,28 @@
     <tbody>
       <% products.forEach(product => { %>
         <tr>
-          <td>
-  <% if (product.productImage && product.productImage.length > 0) { %>
-    <img 
-      src="<%= product.productImage[0].url %>" 
-      alt="product image"
+       <td>
+  <% 
+    const firstVariant = product.variants?.[0];
+    const firstImage = firstVariant?.variantImages?.[0];
+  %>
+
+  <% if (firstImage) { %>
+    <img
+      src="<%= firstImage.url %>"
       style="width:60px;height:60px;object-fit:cover;border-radius:6px;"
     />
   <% } else { %>
-    <span>No Image</span>
+    <span style="color:#9ca3af;">No Image</span>
   <% } %>
 </td>
+
+
+
+
+
+
+ 
 
 
 
@@ -69,19 +95,33 @@
   </a>
 
   <% if (!product.isBlocked) { %>
-    <button
-      class="delete-btn"
-      onclick="openStatusModal('<%= product._id %>', 'deactivate')"
-    >
-      Deactivate
-    </button>
+   <button
+  type="button"
+  class="delete-btn"
+  onclick="openStatusModal(
+    '<%= product._id %>',
+    '<%= currentPage %>',
+    '<%= safeSearch %>'
+  )"
+>
+  Deactivate
+</button>
+
+
   <% } else { %>
-    <button
-      class="restore-btn"
-      onclick="openStatusModal('<%= product._id %>', 'activate')"
-    >
-      Activate
-    </button>
+   <button
+  type="button"
+  class="restore-btn"
+  onclick="openStatusModal(
+    '<%= product._id %>',
+    '<%= currentPage %>',
+    '<%= safeSearch %>'
+  )"
+>
+  Activate
+</button>
+
+
   <% } %>
 </td>
 
@@ -96,48 +136,41 @@
 
 <div class="pagination">
   <% if (currentPage > 1) { %>
-    <a href="?page=<%= currentPage - 1 %>&search=<%= search %>">Prev</a>
+    <a href="?page=<%= currentPage - 1 %>&search=<%= safeSearch %>">Prev</a>
   <% } %>
 
   <% for (let i = 1; i <= totalPages; i++) { %>
-    <a href="?page=<%= i %>&search=<%= search %>"
-       class="<%= currentPage === i ? 'active' : '' %>">
+    <a
+      href="?page=<%= i %>&search=<%= safeSearch %>"
+      class="<%= currentPage === i ? 'active' : '' %>"
+    >
       <%= i %>
     </a>
   <% } %>
 
   <% if (currentPage < totalPages) { %>
-    <a href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+    <a href="?page=<%= currentPage + 1 %>&search=<%= safeSearch %>">Next</a>
   <% } %>
 </div>
 
 
+
 <!-- ADD PRODUCT MODAL -->
-<div id="productModal" class="modal">
+<div id="productModal" class="modal product-modal">
   <div class="modal-content">
-    <!-- Modal Header -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-      <h3 style="color:#1e40af; margin:0;">Add Product</h3>
-      <span class="close" onclick="closeModal()" style="font-size:22px; cursor:pointer; color:#1e3a8a;">&times;</span>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3>Add Product</h3>
+      <span onclick="closeModal()" style="cursor:pointer;font-size:22px;">&times;</span>
     </div>
 
-    <form action="/admin/products/add-product" method="POST" enctype="multipart/form-data">
-      
-      <!-- Input Fields -->
+    <form id="addProductForm"
+          action="/admin/products/add-product"
+          method="POST"
+          enctype="multipart/form-data">
+
       <label>Product Name</label>
       <input type="text" name="productName" required />
-
-      <label>Regular Price</label>
-      <input type="number" name="regularPrice" min="1" required />
-
-      <label>Sales Price</label>
-      <input type="number" name="salesPrice" min="1" required />
-
-      <label>Color</label>
-      <input type="text" name="color" required />
-
-      <label>Stock Quantity</label>
-      <input type="number" name="quantity" min="1" placeholder="Enter available stock" required />
 
       <label>Description</label>
       <textarea name="description" required></textarea>
@@ -156,25 +189,19 @@
         <% }) %>
       </select>
 
-      <!-- Image Upload & Crop -->
-      <label>Images (Min 3)</label>
-      <input type="file" id="imageInput" name="images" accept="image/*" multiple required />
+      <hr/>
+      <h4>Variant Details</h4>
+      
+      <button type="button" id="addVariantBtn" class="add-btn" style="margin-bottom: 15px; margin-top: 10px;">+ Add Variant</button>
 
-      <img id="previewImage" style="border:1px solid #cbd5e1; border-radius:8px; max-width:100%; margin:10px 0; display:none;" />
+      <div id="variantsContainer"></div>
 
-      <button type="button" id="cropNextBtn" class="submit-btn" style="background:#2563eb; margin-bottom:15px;">
-        Crop & Next
+      <button type="submit" class="submit-btn">
+        Save Product
       </button>
 
-      <!-- Cropped Images Preview Grid -->
-      <div style="margin-top:10px;">
-        <label style="font-weight:500; color:#1e40af;">Selected Images Preview</label>
-        <div id="croppedPreviewGrid" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
-      </div>
-
-      <!-- Save Button -->
-      <button type="submit" class="submit-btn" style="background:#1e40af;">Save Product</button>
     </form>
+
   </div>
 </div>
 
@@ -184,35 +211,29 @@
 
 
 <!-- STATUS CONFIRM MODAL -->
-<div id="statusModal" class="modal">
-  <div class="modal-content" style="max-width:420px;">
-    <h3 id="statusTitle" style="color:#1e40af;">Confirm Action</h3>
-    <p id="statusMessage" style="margin:15px 0;color:#374151;">
+<div id="statusModal" class="modal status-modal">
+
+  <div class="modal-content" >
+    <h3 id="statusTitle" >Confirm Action</h3>
+    <p id="statusMessage" >
       Are you sure?
     </p>
 
-    <div style="display:flex;gap:10px;">
-      <button
-        id="confirmStatusBtn"
-        class="submit-btn"
-        style="background:#2563eb;"
-      >
+    <div >
+     <button type="button" id="confirmStatusBtn" class="submit-btn">
         Yes, Confirm
       </button>
 
-      <button
-        onclick="closeStatusModal()"
-        class="submit-btn"
-        style="background:#ffffff;color:#2563eb;border:1px solid #2563eb;"
-      >
+      <button type="button" onclick="closeStatusModal()" class="submit-btn">
         Cancel
       </button>
     </div>
   </div>
 </div>
 
-<!-- Cropper.js JS (unchanged) -->
+<!-- Cropper.js JS  -->
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="/js/admin/products.js"></script>
 <%- include("../partials/admin/footer.ejs") %>

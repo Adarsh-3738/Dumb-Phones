@@ -27,56 +27,64 @@ router.get("/logout", adminController.logout);
 
 // User Management
 router.get("/users", adminAuth, customerController.customerInfo);
-router.post("/blockCustomer", adminAuth, customerController.customerBlocked);
-router.post("/unblockCustomer", adminAuth, customerController.customerunBlocked);
+router.patch("/blockCustomer", adminAuth, customerController.customerBlocked);
+router.patch("/unblockCustomer", adminAuth, customerController.customerunBlocked);
 
 // Category Management
 router.get("/category", adminAuth, categoryController.categoryInfo);
 router.post("/category/add", adminAuth, categoryController.addCategory);
-router.post("/category/edit", categoryController.editCategory);
-router.post("/category/delete", categoryController.deleteCategory);
+router.patch("/category/edit", categoryController.editCategory);
+router.delete("/category/delete", categoryController.deleteCategory);
+
+
 
 // Product Management
-router.get("/products", adminAuth, productController.getProducts);
+router.get("/products", productController.getProducts);
 
+// ADD PRODUCT
 router.post(
   "/products/add-product",
-  upload.array("images", 5),
+  upload.any(),
   productController.addProduct
 );
 
-router.get("/products/edit/:id", adminAuth, productController.getEditPage);
-
-router.post(
+// LOAD EDIT PAGE 
+router.get(
   "/products/edit/:id",
-  upload.array("images", 5),
+  productController.getEditPage
+);
+
+// UPDATE PRODUCT
+router.patch(
+  "/products/edit/:id",
+  upload.any(),
   productController.editProduct
 );
 
-router.post(
-  "/products/remove-image",
-  adminAuth,
-  productController.removeProductImage
-);
+// REMOVE SINGLE IMAGE
+router.post("/products/remove-image", productController.removeProductImage);
 
-router.get(
-  "/products/delete/:id",
-  adminAuth,
-  productController.softDeleteProduct
-);
+// SOFT DELETE / TOGGLE BLOCK
+router.get("/products/delete/:id", productController.softDeleteProduct);
+
+
+
+
 
 // Brand Management
-router.get("/brands", brandController.getBrands);
-router.get("/brands/add", brandController.getAddBrand);
-router.post("/brands/add", upload.single("logo"), brandController.postAddBrand);
 
-router.get("/brands/view/:id", brandController.viewBrand);
-router.get("/brands/delete/:id", brandController.deleteBrand);
-
+// LIST PAGE
+router.get("/brands", brandController.loadBrands);
+// ADD BRAND 
+router.post("/brand/add", brandController.addBrand);
+// UPDATE BRAND
+router.patch("/brand/edit/:id", brandController.editBrand);
+// DELETE BRAND
+router.delete("/brand/delete/:id", brandController.deleteBrand);
 
 
 //order-management
-// List orders with pagination/search/filter
+// List orders 
 router.get("/orders", adminAuth, orderController.loadOrders);
 // Order details
 router.get("/orders/:orderId",adminAuth, orderController.loadOrderDetails);

@@ -22,46 +22,18 @@ const ProductSchema = new Schema(
       ref: "Category",
       required: true
     },
-    regularPrice: {
-      type: Number,
-      required: true
+
+    // Only to show options in UI
+    attributes: {
+      colors: [String]
     },
-    salesPrice: {
-      type: Number,
-      required: true
-    },
-    productOffer: {
-      type: Number,
-      default: 0
-    },
-    quantity: {
-      type: Number,
-      default: 0
-    },
-    color: {
-      type: String,
-      required: true
-    },
-    productImage: [
-      {
-        url: String,
-        public_id: String // for removing images from cloudinary
-      }
-    ],
+
     isBlocked: {
       type: Boolean,
       default: false
-    },
-    status: {
-      type: String,
-      enum: ["Available", "out of stock", "Discontinued"],
-      required: true,
-      default: "Available"
     }
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", ProductSchema);
-
-export default Product;
+export default mongoose.model("Product", ProductSchema);

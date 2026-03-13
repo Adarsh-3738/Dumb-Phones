@@ -1,123 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Shop Products</title>
-
-  <!-- SHOP CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop | Premium Collection</title>
   <link rel="stylesheet" href="/css/user/shop.css">
 </head>
-
 <body>
 
-  <!-- header -->
-  <%- include("../../views/partials/user/header") %>
+<%- include("../../views/partials/user/header") %>
 
-  <h2>Shop Products</h2>
+<main class="shop-container">
 
-  <!-- SORT -->
-  <form method="GET" action="/shop">
-    <label for="sort">Sort by:</label>
-    <select name="sort" id="sort" onchange="this.form.submit()">
-      <option value="">Default</option>
-      <option value="priceLowHigh" <%= sort === 'priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
-      <option value="priceHighLow" <%= sort === 'priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
-      <option value="nameAZ" <%= sort === 'nameAZ' ? 'selected' : '' %>>Name: A → Z</option>
-      <option value="nameZA" <%= sort === 'nameZA' ? 'selected' : '' %>>Name: Z → A</option>
-    </select>
-  </form>
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">Shop Collection</span>
+  </nav>
 
-  <!-- FILTER -->
-  <form method="GET" action="/shop" class="filter-form">
-
-    <!-- CATEGORY -->
-    <select name="category">
-      <option value="">All Categories</option>
-      <% categories.forEach(c => { %>
-        <option value="<%= c._id %>" <%= category == c._id.toString() ? 'selected' : '' %>>
-          <%= c.name %>
-        </option>
-      <% }) %>
-    </select>
-
-    <!-- BRAND -->
-    <select name="brand">
-      <option value="">All Brands</option>
-      <% brands.forEach(b => { %>
-        <option value="<%= b._id %>" <%= brand == b._id.toString() ? 'selected' : '' %>>
-          <%= b.name %>
-        </option>
-      <% }) %>
-    </select>
-
-    <!-- PRICE -->
-    <select name="price">
-      <option value="">All Prices</option>
-      <option value="0-1000" <%= price === '0-1000' ? 'selected' : '' %>>Below ₹1000</option>
-      <option value="1000-5000" <%= price === '1000-5000' ? 'selected' : '' %>>₹1000 - ₹5000</option>
-      <option value="5000-10000" <%= price === '5000-10000' ? 'selected' : '' %>>₹5000 - ₹10000</option>
-      <option value="10000-999999" <%= price === '10000-999999' ? 'selected' : '' %>>Above ₹10000</option>
-    </select>
-
-    <!-- PRESERVE STATE -->
-    <input type="hidden" name="sort" value="<%= sort || '' %>">
-    <input type="hidden" name="search" value="<%= search || '' %>">
-
-    <button type="submit">Apply Filters</button>
-  </form>
-
-  <!-- PRODUCTS -->
-  <div class="product-grid">
-    <% products.forEach(product => { %>
-      <a href="/product/<%= product._id %>" class="product-link">
-        <div class="product-card">
-
-          <% if (product.productImage?.length) { %>
-            <img src="<%= product.productImage[0].url %>" alt="<%= product.productName %>">
-          <% } else { %>
-            <img src="/images/no-image.png" alt="No image">
-          <% } %>
-
-          <h4><%= product.productName %></h4>
-
-          <p class="brand">Brand: <%= product.brand?.name || "N/A" %></p>
-          <p class="category">Category: <%= product.category?.name || "N/A" %></p>
-          <p class="price">₹ <%= product.salesPrice %></p>
-
-        </div>
-      </a>
-    <% }) %>
+  <div class="shop-header-title">
+    <h2>Explore Our Collection</h2>
+    <p class="subtitle"><%= products.length %> Premium Products Tailored For You</p>
   </div>
 
-  <!-- PAGINATION -->
-  <% if (totalPages > 1) { %>
-    <div class="pagination">
+  <div class="shop-layout">
 
-      <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>">&laquo; Prev</a>
+    <!-- FILTER SIDEBAR -->
+    <aside class="filter-sidebar">
+      <div class="filter-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        <h3>Filters & Refining</h3>
+      </div>
+
+      <form method="GET" action="/shop" class="filter-form">
+
+        <div class="filter-group">
+          <label>Category</label>
+          <div class="custom-select-wrapper">
+            <select name="category">
+              <option value="">All Categories</option>
+              <% categories.forEach(c => { %>
+                <option value="<%= c._id %>" <%= category == c._id.toString() ? 'selected' : '' %>>
+                  <%= c.name %>
+                </option>
+              <% }) %>
+            </select>
+            <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Brand</label>
+          <div class="custom-select-wrapper">
+            <select name="brand">
+              <option value="">All Brands</option>
+              <% brands.forEach(b => { %>
+                <option value="<%= b._id %>" <%= brand == b._id.toString() ? 'selected' : '' %>>
+                  <%= b.name %>
+                </option>
+              <% }) %>
+            </select>
+            <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Price Range</label>
+          <div class="custom-select-wrapper">
+            <select name="price">
+              <option value="">All Prices</option>
+              <option value="0-1000" <%= price === '0-1000' ? 'selected' : '' %>>Below ₹1,000</option>
+              <option value="1000-5000" <%= price === '1000-5000' ? 'selected' : '' %>>₹1,000 - ₹5,000</option>
+              <option value="5000-10000" <%= price === '5000-10000' ? 'selected' : '' %>>₹5,000 - ₹10,000</option>
+              <option value="10000-999999" <%= price === '10000-999999' ? 'selected' : '' %>>Above ₹10,000</option>
+            </select>
+            <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <input type="hidden" name="sort" value="<%= sort || '' %>">
+        <input type="hidden" name="search" value="<%= search || '' %>">
+
+        <div class="filter-actions">
+          <button type="submit" class="apply-btn">
+            Apply Filters
+          </button>
+          <a href="/shop" class="clear-btn">
+            Clear All
+          </a>
+        </div>
+
+      </form>
+    </aside>
+
+    <!-- PRODUCTS  -->
+    <section class="product-section">
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <h3>No products found</h3>
+          <p>We couldn't find anything matching your filter criteria. Try adjusting your filters.</p>
+          <a href="/shop" class="clear-btn mt-4">Clear Filters</a>
+        </div>
       <% } else { %>
-        <span class="disabled">&laquo; Prev</span>
+        <div class="product-grid">
+          <% products.forEach(product => { %>
+            <a href="/product/<%= product._id %>" class="product-card">
+              
+              <div class="card-img-wrap">
+                <% if (product.defaultVariant && product.defaultVariant.quantity <= 0) { %>
+                  <span class="stock-badge absolute-badge">Out of Stock</span>
+                <% } %>
+
+                <% if (product.defaultVariant?.variantImages?.length) { %>
+                  <img src="<%= product.defaultVariant.variantImages[0].url %>" alt="<%= product.productName %>" loading="lazy">
+                <% } else { %>
+                  <img src="/images/no-image.png" loading="lazy">
+                <% } %>
+              </div>
+
+              <div class="card-info">
+                <p class="brand"><%= product.brand?.name || "Brand" %></p>
+                <h4 class="product-title"><%= product.productName %></h4>
+                
+                <% if (product.defaultVariant) { %>
+                  <div class="price-wrap">
+                    <span class="sale-price">₹<%= parseInt(product.defaultVariant.salesPrice).toLocaleString('en-IN') %></span>
+                    <% if (product.defaultVariant.regularPrice > product.defaultVariant.salesPrice) { %>
+                      <span class="regular-price">₹<%= parseInt(product.defaultVariant.regularPrice).toLocaleString('en-IN') %></span>
+                    <% } %>
+                  </div>
+                <% } else { %>
+                  <p class="price-unavailable">Price unavailable</p>
+                <% } %>
+              </div>
+
+            </a>
+          <% }) %>
+        </div>
       <% } %>
 
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <% if (i === currentPage) { %>
-          <span class="current"><%= i %></span>
-        <% } else { %>
-          <a href="?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>"><%= i %></a>
-        <% } %>
+      <!--  PAGINATION  -->
+      <% if (totalPages > 1) { %>
+        <div class="pagination-wrapper">
+          <div class="pagination">
+            <% if (currentPage > 1) { %>
+              <a href="?page=<%= currentPage - 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Previous">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </a>
+            <% } else { %>
+              <span class="page-arrow disabled">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </span>
+            <% } %>
+
+            <div class="page-numbers">
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <% if (i === currentPage) { %>
+                  <span class="page-num active"><%= i %></span>
+                <% } else { %>
+                  <a href="?page=<%= i %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-num"><%= i %></a>
+                <% } %>
+              <% } %>
+            </div>
+
+            <% if (currentPage < totalPages) { %>
+              <a href="?page=<%= currentPage + 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Next">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+            <% } else { %>
+              <span class="page-arrow disabled">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </span>
+            <% } %>
+          </div>
+        </div>
       <% } %>
+    </section>
 
-      <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %>&search=<%= search %>&sort=<%= sort %>&brand=<%= brand %>&category=<%= category %>&price=<%= price %>">Next &raquo;</a>
-      <% } else { %>
-        <span class="disabled">Next &raquo;</span>
-      <% } %>
+  </div>
+</main>
 
-    </div>
-  <% } %>
-
-  <!-- footer -->
-  <%- include("../../views/partials/user/footer") %>
+<%- include("../../views/partials/user/footer") %>
 
 </body>
 </html>

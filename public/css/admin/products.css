@@ -94,14 +94,7 @@
   }
 
   /* MODAL */
-  .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  overflow-y: auto;   /* allow full modal scroll */
-}
+  
 
 .modal-content {
   background: #fff;
@@ -412,3 +405,89 @@
   }
 
 
+/* modal  */
+/* ADD PRODUCT MODAL (LARGE) */
+.product-modal .modal-content {
+  width: 900px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 28px;
+  border-radius: 14px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STATUS CONFIRM MODAL (SMALL) */
+.status-modal .modal-content {
+  width: 280px;
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.modal-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1e40af;
+}
+.modal-content p {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 10px 0 16px;
+  line-height: 1.4;
+}
+.modal-content > div {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.submit-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Confirm */
+#confirmStatusBtn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+}
+
+#confirmStatusBtn:hover {
+  background: #1d4ed8;
+}
+
+/* Cancel */
+.submit-btn[onclick] {
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.submit-btn[onclick]:hover {
+  background: #eff6ff;
+}
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

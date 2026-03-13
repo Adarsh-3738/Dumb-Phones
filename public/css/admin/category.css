@@ -20,8 +20,12 @@ body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
+.btn-add:hover {
+  background: #1f45e6;
+}
 table {
   width: 100%;
   background: #fff;
@@ -47,35 +51,49 @@ td {
   border-radius: 10px;
 }
 
+
 .pagination {
-  margin-top: 15px;
+  margin-top: 40px;
   display: flex;
-  justify-content: right;
-  gap: 10px;
+  justify-content: center;   /* center horizontally */
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
+
 .page-btn {
   padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid #dcdcdc;
+  background: #ffffff;
   cursor: pointer;
+  min-width: 40px;
+  transition: 0.2s ease;
 }
+
+.page-btn:hover {
+  background: #f1f3ff;
+}
+
 .page-btn.active {
   background: #2a55ff;
   color: white;
+  border-color: #2a55ff;
+}
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.search-bar {
-  margin-bottom: 15px;
+.search-bar form {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
-.search-bar input {
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: 220px;
-}
+
 .clear-btn {
   background: #666;
   color: #fff;
@@ -83,8 +101,12 @@ td {
   padding: 10px 15px;
   border-radius: 6px;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
+.clear-btn:hover {
+  background: #444;
+}
 /* MODALS */
 .modal-bg {
   position: fixed;
@@ -171,4 +193,53 @@ select {
 
 .btn-delete:hover {
   background: #cf3e2e;
+}
+
+
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .container {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar form {
+    width: 100%;
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

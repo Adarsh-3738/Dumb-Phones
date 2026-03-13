@@ -2,82 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>User Profile</title>
+  <title>User Profile | DumbPhones</title>
   <link rel="stylesheet" href="/css/user/profile.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-
+  
+<!-- HEADER -->
 <%- include("../../views/partials/user/header") %>
 
+<!-- SIDEBAR  -->
 <div class="profile-wrapper">
-
-  <!-- LEFT SIDEBAR -->
+  
   <%- include("../../views/partials/user/sidebar.ejs") %>
 
-
-  <!-- RIGHT CONTENT -->
+  <!-- MAIN DASHBOARD CONTENT -->
   <main class="profile-content">
+    
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+      <a href="/">Home</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="active">My Profile</span>
+    </nav>
 
-    <!-- USER DETAILS -->
-    <section class="content-card">
-      <h2>User Details</h2>
-      <p><strong>Name:</strong> <%= user.name %></p>
-      <p><strong>Email:</strong> <%= user.email %></p>
-      <p><strong>Phone:</strong> <%= user.phone || "Not added" %></p>
+    <div class="dashboard-header">
+      <h2>Account Dashboard</h2>
+      <p class="subtitle">Manage your personal information and addresses</p>
+    </div>
+
+    <!-- USER DETAILS CARD -->
+    <section class="dashboard-card user-info-card">
+      <div class="card-header">
+        <div class="header-title-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <h3>Personal Details</h3>
+        </div>
+      </div>
+
+      <div class="user-details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Full Name</span>
+          <span class="detail-value"><%= user.name %></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Email Address</span>
+          <span class="detail-value"><%= user.email %></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Phone Number</span>
+          <span class="detail-value"><%= user.phone || "Not added yet" %></span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <a href="/profile/edit" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Edit Profile
+        </a>
+        <a href="/email/change" class="btn btn-outline">Change Email</a>
+        <a href="/change-password" class="btn btn-outline-danger">Change Password</a>
+      </div>
     </section>
 
-    <!-- ADDRESS -->
-    <section class="content-card">
-  <h2>Address</h2>
-
-  <% if (addresses && addresses.length > 0) { %>
-    <% addresses.forEach(addr => { %>
-      <div class="address-box">
-        <p><strong><%= addr.addressType %></strong></p>
-        <p><%= addr.name %></p>
-        <p><%= addr.landmark %></p>
-        <p>
-          <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>
-        </p>
-        <p>Phone: <%= addr.phone %></p>
+    <!-- ADDRESS DIRECTORY -->
+    <section class="dashboard-card address-card">
+      <div class="card-header flex-header">
+        <div class="header-title-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+          <h3>Saved Addresses</h3>
+        </div>
+        <a href="/address/add" class="add-new-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add New
+        </a>
       </div>
-    <% }) %>
-  <% } else { %>
-    <p>No address added</p>
-    <a href="/address" class="btn-link">Add Address</a>
-  <% } %>
-</section>
+
+      <div class="address-grid">
+        <% if (addresses && addresses.length > 0) { %>
+          <% addresses.forEach(addr => { %>
+            <div class="address-box">
+              <div class="address-box-header">
+                <span class="address-badge"><%= addr.addressType %></span>
+                <a href="/address/edit/<%= addr._id %>" class="btn-edit-icon" aria-label="Edit Address">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </a>
+              </div>
+              
+              <div class="address-content">
+                <strong><%= addr.name %></strong>
+                <p><%= addr.landmark %></p>
+                <p><%= addr.city %>, <%= addr.state %></p>
+                <p class="pincode">PIN: <%= addr.pincode %></p>
+                <p class="phone-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <%= addr.phone %>
+                </p>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-address-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <p>You haven't saved any addresses yet.</p>
+            <a href="/address" class="btn btn-outline">Add Address</a>
+          </div>
+        <% } %>
+      </div>
+    </section>
 
   </main>
-
 </div>
-<!-- //confirm logout modal -->
-<div id="logoutModal" class="logout-modal">
-  <div class="logout-box">
-    <h3>Confirm Logout</h3>
-    <p>Are you sure you want to log out?</p>
-
-    <div class="logout-actions">
-      <form action="/logout" method="POST">
-        <button type="submit" class="confirm-btn">Yes, Logout</button>
-      </form>
-      <button class="cancel-btn" onclick="closeLogoutModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-<!-- js for confirm logout -->
- <script>
-  function openLogoutModal() {
-    document.getElementById("logoutModal").style.display = "flex";
-  }
-
-  function closeLogoutModal() {
-    document.getElementById("logoutModal").style.display = "none";
-  }
-</script>
 
 
 
+<script src="/js/user/profile.js"></script>
 <%- include("../../views/partials/user/footer") %>
 
 </body>

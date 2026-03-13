@@ -34,7 +34,7 @@ export const customerInfo = async (req, res) => {
   }
 };
 
-// BLOCK / UNBLOCK CUSTOMER
+// BLOCK UNBLOCK CUSTOMER
 export const customerBlocked = async (req, res) => {
   try {
     const userId = req.body.id;
@@ -56,10 +56,10 @@ export const customerBlocked = async (req, res) => {
   }
 };
 
-// UNBLOCK CUSTOMER (via query param)
+// UNBLOCK CUSTOMER
 export const customerunBlocked = async (req, res) => {
   try {
-    const userId = req.query.id;
+    const userId = req.body.id || req.query.id;
 
     logger.warn("Unblocking customer", { userId });
 
@@ -67,16 +67,18 @@ export const customerunBlocked = async (req, res) => {
 
     logger.info("Customer unblocked successfully", { userId });
 
-    res.redirect("/admin/users");
+    res.json({ success: true, message: "Customer unblocked successfully" });
   } catch (error) {
     logger.error("Error unblocking customer", {
       message: error.message,
       stack: error.stack,
       query: req.query,
+      body: req.body,
     });
-    res.redirect("/pageNotFound");
+    
+    res.status(500).json({ success: false, message: "Error unblocking customer" });
   }
 };
 
-// ALIAS: blockCustomer
+
 export const blockCustomer = customerBlocked;

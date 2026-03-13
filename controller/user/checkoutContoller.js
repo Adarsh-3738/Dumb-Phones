@@ -1,13 +1,19 @@
 import { getCheckoutData, placeOrderService } from "../../services/user/checkoutService.js";
-import Cart from "../../models/cartSchema.js";
 
-// Load checkout page
+
+// LOAD CHECKOUT
+
 export const loadCheckout = async (req, res) => {
   try {
+    if (!req.user) return res.redirect("/login");
+
     const userId = req.user._id;
+
     const data = await getCheckoutData(userId);
 
-    if (!data) return res.redirect("/cart"); // Cart empty
+    if (!data || data.cart.items.length === 0) {
+      return res.redirect("/cart");
+    }
 
     res.render("user/checkout", {
       user: req.user,
@@ -19,15 +25,20 @@ export const loadCheckout = async (req, res) => {
       shipping: data.shipping,
       total: data.total
     });
+
   } catch (error) {
     console.error("Checkout load error:", error);
     res.redirect("/cart");
   }
 };
 
-// Place order cod
+
+// PLACE ORDER (COD)
+
 export const placeOrder = async (req, res) => {
   try {
+    if (!req.user) return res.redirect("/login");
+
     const userId = req.user._id;
     const { addressId } = req.body;
 
@@ -35,7 +46,11 @@ export const placeOrder = async (req, res) => {
 
     const order = await placeOrderService(userId, addressId);
 
-    res.render("user/order-success", { user: req.user, order });
+    res.render("user/order-success", {
+      user: req.user,
+      order
+    });
+
   } catch (error) {
     console.error("Place order error:", error);
     res.redirect("/checkout");

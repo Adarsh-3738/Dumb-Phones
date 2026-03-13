@@ -1,112 +1,160 @@
-/* Container */
-.change-email-container,
-.verify-email-container {
-  max-width: 450px;
-  margin: 60px auto;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  font-family: 'Arial', sans-serif;
-  color: #333;
+:root {
+  --primary-blue: #1d4ed8;
+  --secondary-blue: #eff6ff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-light: #94a3b8;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --danger: #ef4444;
+  --danger-bg: #fee2e2;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Headings */
-.change-email-container h2,
-.verify-email-container h2 {
-  text-align: center;
-  color: #0d6efd; /* Blue */
-  margin-bottom: 25px;
+/* ================= PROFILE LAYOUT GRID ================= */
+.profile-wrapper {
+  max-width: 1280px;
+  margin: 40px auto 80px;
+  padding: 0 40px; 
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
 }
 
-/* Error Messages */
-.change-email-container .error,
-.verify-email-container .error {
-  color: #dc3545; /* Red */
-  background-color: #f8d7da;
-  border: 1px solid #f5c2c7;
-  padding: 10px 15px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-/* Form */
-.change-email-container form,
-.verify-email-container form {
+.profile-content {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  min-width: 0;
 }
 
-/* Labels */
-.change-email-container label,
-.verify-email-container label {
+/* ================= BREADCRUMB ================= */
+.breadcrumb {
+  display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted); margin-bottom: 24px;
+}
+.breadcrumb a { color: var(--primary-blue); text-decoration: none; font-weight: 500; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb svg { color: var(--text-light); }
+.breadcrumb .active { color: var(--text-main); font-weight: 600; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .profile-wrapper { grid-template-columns: 1fr; margin-top: 24px; padding: 0 16px; gap: 24px; }
+}
+
+.change-email-container {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  max-width: 700px;
+}
+
+.change-email-container h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 24px 0;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+
+.error {
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 5px;
+  color: var(--text-main);
 }
 
-/* Inputs */
-.change-email-container input[type="email"],
-.change-email-container input[type="text"],
-.verify-email-container input[type="email"],
-.verify-email-container input[type="text"] {
-  padding: 10px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: 0.3s;
+input[type="email"] {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-main);
+  background: var(--bg-main);
+  transition: all 0.2s;
+  box-sizing: border-box;
 }
 
-.change-email-container input:focus,
-.change-email-container input[type="text"]:focus,
-.verify-email-container input:focus,
-.verify-email-container input[type="text"]:focus {
+input[type="email"]:focus {
+  background: var(--bg-card);
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px var(--secondary-blue);
   outline: none;
-  border-color: #0d6efd;
-  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
 }
 
-/* Buttons */
-.change-email-container button,
-.verify-email-container button {
-  padding: 12px 20px;
+button[type="submit"] {
+  background: var(--primary-blue);
+  color: white;
   border: none;
-  border-radius: 8px;
-  background-color: #0d6efd;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.change-email-container button:hover,
-.verify-email-container button:hover {
-  background-color: #0b5ed7;
-}
-
-/* Back link */
-.change-email-container .back-btn,
-.verify-email-container .back-btn {
-  display: inline-block;
-  margin-top: 15px;
-  color: #0d6efd;
-  text-decoration: none;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
   font-weight: 600;
-  transition: 0.2s;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.2);
 }
 
-.change-email-container .back-btn:hover,
-.verify-email-container .back-btn:hover {
-  text-decoration: underline;
+button[type="submit"]:hover {
+  background: #1e40af;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(29, 78, 216, 0.3);
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-  .change-email-container,
-  .verify-email-container {
-    margin: 30px 15px;
-    padding: 20px;
-  }
+.back-btn {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--primary-blue);
+}
+
+/* ================= VALIDATION ERRORS ================= */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-message {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 18px; /* Prevents layout jump when text appears */
+}
+
+input.error-border {
+  border-color: var(--danger) !important;
+  background-color: var(--danger-bg) !important;
 }

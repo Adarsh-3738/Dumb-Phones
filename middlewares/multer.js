@@ -3,16 +3,15 @@ import path from "path";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "uploads/"); // save all images here
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(null, Date.now() + path.extname(file.originalname)); // unique filename
   }
 });
 
 const upload = multer({
   storage,
-  limits: { files: 5 }
 });
 
 export default upload;

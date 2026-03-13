@@ -23,6 +23,8 @@
         <option value="Out for Delivery" <%= status==='Out for Delivery'?'selected':'' %>>Out for Delivery</option>
         <option value="Delivered" <%= status==='Delivered'?'selected':'' %>>Delivered</option>
         <option value="Cancelled" <%= status==='Cancelled'?'selected':'' %>>Cancelled</option>
+        <option value="Return Request" <%= status==='Return Request'?'selected':'' %>>Return Request</option>
+        <option value="Returned" <%= status==='Returned'?'selected':'' %>>Returned</option>
       </select>
 
       <select name="sort">
@@ -58,18 +60,20 @@
             <td><%= order.userId ? order.userId.email : 'N/A' %></td>
             <td><%= order.createdOn.toDateString() %></td>
             <td>
-              <select onchange="updateStatus('<%= order.orderId %>', this.value)">
+              <select onchange="updateStatus('<%= order._id %>', this.value)">
                 <option value="Pending" <%= order.status==='Pending'?'selected':'' %>>Pending</option>
                 <option value="Processing" <%= order.status==='Processing'?'selected':'' %>>Processing</option>
                 <option value="Shipped" <%= order.status==='Shipped'?'selected':'' %>>Shipped</option>
                 <option value="Out for Delivery" <%= order.status==='Out for Delivery'?'selected':'' %>>Out for Delivery</option>
                 <option value="Delivered" <%= order.status==='Delivered'?'selected':'' %>>Delivered</option>
                 <option value="Cancelled" <%= order.status==='Cancelled'?'selected':'' %>>Cancelled</option>
+                <option value="Return Request" <%= order.status==='Return Request'?'selected':'' %>>Return Request</option>
+                <option value="Returned" <%= order.status==='Returned'?'selected':'' %>>Returned</option>
               </select>
             </td>
             <td>₹<%= order.finalAmount %></td>
             <td>
-              <a href="/admin/orders/<%= order.orderId %>">View</a>
+             <a href="/admin/orders/<%= order._id %>">View</a>
             </td>
           </tr>
         <% }) %>
@@ -84,32 +88,7 @@
     </div>
   </div>
 
-  <script>
-    async function updateStatus(orderId, status) {
-      const { isConfirmed } = await Swal.fire({
-        title: 'Change Order Status?',
-        text: `Set order ${orderId} status to "${status}"`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, update',
-        cancelButtonText: 'Cancel'
-      });
-
-      if (!isConfirmed) return;
-
-      const res = await fetch(`/admin/orders/${orderId}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-
-      if (res.ok) {
-        Swal.fire('Updated!', `Order ${orderId} status updated.`, 'success');
-        setTimeout(()=>location.reload(), 1000);
-      } else {
-        Swal.fire('Error', 'Could not update order status.', 'error');
-      }
-    }
-  </script>
+<script src="/js/admin/orders.js"></script>
+   
 </body>
 </html>
