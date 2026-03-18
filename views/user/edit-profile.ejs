@@ -58,21 +58,32 @@
         enctype="multipart/form-data"
         class="edit-form-grid"
       >
+        <input type="hidden" id="removeImageFlag" name="removeImage" value="false">
         <!-- Profile Image Row -->
         <div class="form-group full-width image-upload-group">
           <label>Profile Picture</label>
           <div class="image-box">
+            <!-- Main cropper area -->
             <div class="preview-wrap">
-              <img id="preview" src="<%= user.profileImage || '/images/default-avatar.png' %>" class="preview-img" alt="Profile Avatar"/>
+              <img id="preview" src="<%= user.profileImage || `https://ui-avatars.com/api/?name=${user.name}&background=1d4ed8&color=fff&size=200&rounded=true` %>" data-original-src="<%= user.profileImage || `https://ui-avatars.com/api/?name=${user.name}&background=1d4ed8&color=fff&size=200&rounded=true` %>" class="preview-img" alt="Profile Avatar"/>
               <div class="upload-overlay" onclick="document.getElementById('imageInput').click()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <span>Change Avatar</span>
               </div>
             </div>
             
-            <div class="file-input-wrap">
+            <!-- Result preview area -->
+            <div class="cropped-preview-wrap" style="display: none; align-items: center; justify-content: center; flex-direction: column; gap: 8px; margin-left: 20px;">
+               <div class="img-preview" style="position: relative; width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid #1d4ed8; background: #f8fafc;"></div>
+               <span style="font-size: 12px; color: #475569; font-weight: 600;">Final Avatar</span>
+            </div>
+            
+            <div class="file-input-wrap" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-left: auto;">
               <input type="file" id="imageInput" name="profileImage" accept="image/*" class="modern-file-input">
-              <span class="file-help">Supported formats: JPG, PNG. Max size: 2MB.</span>
+              <button type="button" id="clearImageBtn" class="btn btn-outline" style="padding: 6px 12px; font-size: 13px; border-radius: 6px; border: 1px solid #ef4444; color: #ef4444; background: transparent; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'">
+                ✖ Clear Selected Image
+              </button>
+              <span class="file-help">Supported formats: JPG, PNG, WEBP. Max size: 2MB.</span>
             </div>
           </div>
         </div>

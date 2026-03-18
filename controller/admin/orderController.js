@@ -38,7 +38,7 @@ export const loadOrders = async (req, res) => {
 
   } catch (error) {
     console.error("Admin loadOrders error:", error);
-    res.redirect("/admin");
+    res.render("admin/error", { message: "Failed to load orders. " + error.message });
   }
 };
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist | Dumb Phones</title>
+  <link rel="stylesheet" href="/css/user/wishlist.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<%- include("../../views/partials/user/header") %>
+
+<main class="wishlist-container">
+  
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/profile">Profile</a>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span class="active">My Wishlist</span>
+  </nav>
+
+  <div class="wishlist-header">
+    <h2>My Wishlist</h2>
+    <p>View and manage all your saved premium products.</p>
+  </div>
+
+  <% if (wishlistItems && wishlistItems.length > 0) { %>
+    <div class="wishlist-grid">
+      <% wishlistItems.forEach(item => { %>
+        <% const product = item.productId; %>
+        <% const variant = product.defaultVariant; %>
+        
+        <div class="wishlist-card">
+          <a href="/product/<%= product._id %>" style="text-decoration: none; color: inherit; flex-grow: 1; display: flex; flex-direction: column;">
+            
+            <div class="card-img-wrap">
+              <% if (variant && variant.quantity <= 0) { %>
+                <span class="stock-badge">Out of Stock</span>
+              <% } %>
+
+              <% if (variant?.variantImages?.length) { %>
+                <img src="<%= variant.variantImages[0].url %>" alt="<%= product.productName %>" loading="lazy">
+              <% } else { %>
+                <img src="/images/no-image.png" loading="lazy">
+              <% } %>
+            </div>
+
+            <div class="card-info">
+              <p class="brand"><%= product.brand?.name || "Brand" %></p>
+              <h4 class="product-title"><%= product.productName %></h4>
+              
+              <% if (variant) { %>
+                <div class="price-wrap">
+                  <span class="sale-price">₹<%= parseInt(variant.salesPrice).toLocaleString('en-IN') %></span>
+                  <% if (variant.regularPrice > variant.salesPrice) { %>
+                    <span class="regular-price">₹<%= parseInt(variant.regularPrice).toLocaleString('en-IN') %></span>
+                  <% } %>
+                </div>
+              <% } else { %>
+                <p class="price-unavailable">Price unavailable</p>
+              <% } %>
+            </div>
+          </a>
+
+          <div class="card-actions">
+            <!-- Remove Button -->
+            <button type="button" class="btn-remove" onclick="removeFromWishlist('<%= product._id %>')" aria-label="Remove from Wishlist" title="Remove">
+              <i data-lucide="trash-2" style="width: 20px; height: 20px;"></i>
+            </button>
+            
+            <!-- Move to Cart Button -->
+            <button type="button" class="btn-add-cart" 
+              onclick="moveToCart('<%= product._id %>', '<%= variant?._id %>')"
+              <%= (!variant || variant.quantity <= 0) ? 'disabled' : '' %>
+            >
+              <i data-lucide="shopping-cart" style="width: 18px; height: 18px;"></i>
+              Add to Cart
+            </button>
+          </div>
+
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i data-lucide="heart" style="width: 40px; height: 40px; fill: #eff6ff;"></i>
+      </div>
+      <h3>Your wishlist is empty</h3>
+      <p>You haven't added any products to your wishlist yet. Explore our premium collection and save your favorites here.</p>
+      <a href="/shop" class="shop-now-btn">
+        <i data-lucide="shopping-bag" style="width: 20px; height: 20px;"></i>
+        Start Shopping
+      </a>
+    </div>
+
+  <% } %>
+
+</main>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/user/wishlist.js"></script>
+
+<%- include("../../views/partials/user/footer") %>
+</body>
+</html>

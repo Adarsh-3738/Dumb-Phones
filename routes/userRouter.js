@@ -6,6 +6,7 @@ import * as productController from "../controller/user/productController.js";
 import * as profileController from "../controller/user/profileController.js"
 import * as cartController from "../controller/user/cartController.js"
 import * as walletController from "../controller/user/walletController.js"
+import * as wishlistController from "../controller/user/wishlistController.js"
 import alreadyLoggedIn from "../middlewares/alreadyLoggedin.js";
 import { userAuth } from "../middlewares/auth.js";
 import protect from "../middlewares/protect.js";
@@ -19,7 +20,7 @@ const router = express.Router();
 router.get("/pageNotFound", userController.pageNotFound);
 router.get("/", userController.loadHomepage);
 router.get("/logout", userController.logout);
-router.get("/signup", userController.loadSignup);
+router.get("/signup", alreadyLoggedIn, userController.loadSignup);
 
 // Auth
 router.post("/signup", userController.signup);
@@ -28,14 +29,15 @@ router.post("/login", userController.login);
 router.post("/verify-otp", userController.verifyOtp);
 router.post("/resend-otp", userController.resendOtp);
 // Forgot / Reset password
-router.get("/forgot-password", userController.loadForgotPassword);
+router.get("/forgot-password", alreadyLoggedIn, userController.loadForgotPassword);
 router.post("/forgot-password", userController.forgotPassword);
-router.get("/reset-password/:token", userController.loadResetPassword);
+router.get("/reset-password/:token", alreadyLoggedIn, userController.loadResetPassword);
 router.post("/reset-password/:token", userController.resetPassword);
 
 // Google Login
 router.get(
   "/auth/google",
+  alreadyLoggedIn,
   passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "select_account"
@@ -107,6 +109,11 @@ router.post("/cart/remove", protect, cartController.removeFromCart);
 router.get("/checkout", protect,checkoutController.loadCheckout);
 // Place order 
 router.post("/checkout/place-order", protect, checkoutController.placeOrder);
+
+//wishlist
+router.get("/wishlist", protect, wishlistController.loadWishlist);
+router.post("/wishlist/add", protect, wishlistController.addToWishlist);
+router.delete("/wishlist/remove", protect, wishlistController.removeFromWishlist);
 
 
 //order management;

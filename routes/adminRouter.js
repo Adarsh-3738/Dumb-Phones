@@ -5,25 +5,34 @@ import * as customerController from "../controller/admin/customerController.js";
 import * as categoryController from "../controller/admin/categoryController.js";
 import * as productController from "../controller/admin/productController.js";
 import * as brandController from "../controller/admin/brandController.js";
-import * as orderController from "../controller/admin/orderController.js"
+import * as orderController from "../controller/admin/orderController.js";
+import * as settingsController from "../controller/admin/settingsController.js";
 import upload from "../middlewares/multer.js";
 import { adminAuth } from "../middlewares/auth.js";
+import { adminAlreadyLoggedin } from "../middlewares/alreadyLoggedin.js";
 
 const router = express.Router();
 
 // Redirect to login
-router.get("/", (req, res) => {
+router.get("/", adminAlreadyLoggedin, (req, res) => {
   res.redirect("/admin/login");
 });
 
 // Admin Routes
 router.get("/pageerror", adminController.pageerror);
 
-router.get("/login", adminController.loadLogin);
+router.get("/login", adminAlreadyLoggedin, adminController.loadLogin);
 router.post("/login", adminController.login);
 
 router.get("/dashboard", adminAuth, adminController.loadDashboard);
 router.get("/logout", adminController.logout);
+
+// Forgot / Reset password
+router.get("/forgot-password", adminAlreadyLoggedin, adminController.loadForgotPassword);
+router.post("/forgot-password", adminController.forgotPassword);
+router.get("/reset-password/:token", adminAlreadyLoggedin, adminController.loadResetPassword);
+router.post("/reset-password/:token", adminController.resetPassword);
+
 
 // User Management
 router.get("/users", adminAuth, customerController.customerInfo);
@@ -92,6 +101,8 @@ router.get("/orders/:orderId",adminAuth, orderController.loadOrderDetails);
 router.post("/orders/:orderId/status", adminAuth, orderController.updateOrderStatus);
 
 
-
+// Settings Management
+router.get("/settings", adminAuth, settingsController.getSettings);
+router.post("/settings/update", adminAuth, settingsController.updateSettings);
 
 export default router;

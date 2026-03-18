@@ -104,9 +104,14 @@ const getProductDetailsService = async (productId) => {
     isBlocked: false
   })
   .populate("brand", "name")
-  .populate("category", "name");
+  .populate("category");
 
-  if (!product) {
+  if (
+    !product ||
+    !product.category ||
+    !product.category.isListed ||
+    product.category.isDeleted
+  ) {
     throw new Error("PRODUCT_NOT_FOUND");
   }
 

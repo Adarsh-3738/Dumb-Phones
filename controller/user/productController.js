@@ -26,7 +26,7 @@ export const getProducts = async (req, res) => {
       query: req.query,
     });
 
-    res.status(500).render("user/error", {
+    res.status(500).render("user/page-404", {
       message: "Failed to load products",
     });
   }
@@ -67,9 +67,9 @@ export const loadProductDetails = async (req, res) => {
       logger.warn("Product not found", {
         productId: req.params.id
       });
-      return res.status(404).render("user/404");
+      return res.status(404).render("user/page-404");
     }
 
-    res.status(500).render("user/error");
+    res.status(500).render("user/page-404");
   }
 };

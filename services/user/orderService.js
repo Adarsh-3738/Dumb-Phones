@@ -106,40 +106,50 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   item.cancelReason = reason || "";
 
   // Update order totals
-  const itemTotal = item.price * item.quantity;
   
-  // Recalculate the discount proportionally
-  // If the total price was 1000 and discount was 100 (10%),
-  // and we cancel a 200 item, we should remove 10% of 200 (20) from the total discount.
+  const variant = await Variant.findById(item.variant);
+  const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+  
+  const regularItemTotal = regularPrice * item.quantity;
+  const saleItemTotal = item.price * item.quantity;
+
   let discountToRemove = 0;
-  if (order.totalPrice > 0 && order.discount > 0) {
-    const discountPercentage = order.discount / order.totalPrice;
-    discountToRemove = Math.round(itemTotal * discountPercentage);
+  if (regularPrice > item.price) {
+    discountToRemove = (regularPrice - item.price) * item.quantity;
   }
 
-  order.totalPrice = Math.max(0, order.totalPrice - itemTotal);
+  // don't deduct more discount than what's available
+  discountToRemove = Math.min(discountToRemove, order.discount);
+
+  // order.totalPrice in DB represents the regularPrice subtotal now
+  order.totalPrice = Math.max(0, order.totalPrice - regularItemTotal);
   order.discount = Math.max(0, order.discount - discountToRemove);
 
   // Recalculate tax proportionally
+  // Tax is charged on the sale price (totalPrice - discount), 
+  
   let taxToRemove = 0;
   if (order.totalPrice > 0 && order.tax > 0) {
-    const taxPercentage = order.tax / (order.totalPrice + itemTotal);
-    taxToRemove = Math.round(itemTotal * taxPercentage);
+    const previousSaleTotal = (order.totalPrice + regularItemTotal) - (order.discount + discountToRemove);
+    if (previousSaleTotal > 0) {
+       const taxPercentage = order.tax / previousSaleTotal;
+       taxToRemove = Math.round(saleItemTotal * taxPercentage);
+    }
   } else if (order.totalPrice === 0) {
     // If all items cancelled, remove all tax
     taxToRemove = order.tax;
   }
   order.tax = Math.max(0, order.tax - taxToRemove);
   
-  // If no more items are active, shipping (if any) should probably be refunded too, 
-  // but for now we'll just recalculate finalAmount based on the new total and discount
+  // Recalculate finalAmount based on the new total and discount
   if (order.totalPrice === 0) {
      order.finalAmount = 0;
      order.shipping = 0;
   } else {
-     // original finalAmount = totalPrice + tax + shipping - discount
-     // so we reduce finalAmount by (itemTotal + taxToRemove - discountToRemove)
-     order.finalAmount = Math.max(0, order.finalAmount - (itemTotal + taxToRemove - discountToRemove));
+     // original finalAmount = totalPrice(regular) + tax + shipping - discount
+     // we reduce finalAmount by (regularItemTotal + taxToRemove - discountToRemove)
+     // which mathematically equals (saleItemTotal + taxToRemove)
+     order.finalAmount = Math.max(0, order.finalAmount - (regularItemTotal + taxToRemove - discountToRemove));
   }
 
   // Check if ALL items are now cancelled. If so, mark the entire order as cancelled.
@@ -196,14 +206,16 @@ export const searchUserOrders = async (userId, searchTerm) => {
 
 
 
- //  GET ORDER FOR INVOICE
-
 export const getOrderForInvoice = async (orderId, userId) => {
 
   const order = await Order.findOne({
     orderId,
     userId
-  }).populate("orderedItems.product");
+  })
+    .populate("orderedItems.product")
+    .populate("orderedItems.variant")
+    .populate("userId", "name email phone")
+    .populate("address");
 
   return order;
 };

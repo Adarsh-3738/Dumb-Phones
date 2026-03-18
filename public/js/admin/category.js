@@ -68,40 +68,38 @@
 }
 
 
-  // DELETE CATEGORY 
-  function openDeleteModal(id) {
-    deleteId = id;
-    document.getElementById("deleteModal").style.display = "flex";
+  // DELETE CATEGORY
+  function deleteCategory(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e74c3c",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("/admin/category/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                title: "Deleted!",
+                text: "Category removed.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500
+              }).then(() => location.reload());
+            } else {
+              Swal.fire("Error", "Delete failed", "error");
+            }
+          });
+      }
+    });
   }
-  function closeDeleteModal() {
-    document.getElementById("deleteModal").style.display = "none";
-  }
-  function submitDelete() {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#e74c3c",
-    confirmButtonText: "Yes, delete it!"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      fetch("/admin/category/delete", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: deleteId })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire("Deleted!", "Category removed.", "success")
-              .then(() => location.reload());
-          } else {
-            Swal.fire("Error", "Delete failed", "error");
-          }
-        });
-    }
-  });
-}
 
 

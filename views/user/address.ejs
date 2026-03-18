@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>My Addresses</title>
   <link rel="stylesheet" href="/css/user/address.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -58,22 +59,6 @@
   <a href="/profile" class="back-btn">← Back to Profile</a>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
-<div id="deleteModal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Delete Address</h3>
-    <p>Are you sure you want to delete this address?</p>
-
-    <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
-
-      <form id="deleteForm" method="POST">
-        <button type="submit" class="confirm-btn">Yes, Delete</button>
-      </form>
-    </div>
-  </div>
-</div>
-
 </main>
 </div>
 
@@ -84,5 +69,43 @@
 
 
 <script src="/js/user/address.js"></script>
+
+<script>
+  // Check for success query params
+  const urlParams = new URLSearchParams(window.location.search);
+  const successParam = urlParams.get('success');
+
+  if (successParam === 'added') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Address Added!',
+      text: 'Your new address was successfully saved.',
+      confirmButtonColor: '#2563eb',
+      timer: 3000
+    });
+    // Clean URL
+    window.history.replaceState(null, '', window.location.pathname);
+  } else if (successParam === 'updated') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Address Updated!',
+      text: 'Your address was successfully updated.',
+      confirmButtonColor: '#2563eb',
+      timer: 3000
+    });
+    // Clean URL
+    window.history.replaceState(null, '', window.location.pathname);
+  } else if (successParam === 'deleted') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Address Deleted!',
+      text: 'Your address was successfully removed.',
+      confirmButtonColor: '#2563eb',
+      timer: 3000
+    });
+    // Clean URL
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+</script>
 
 </html>

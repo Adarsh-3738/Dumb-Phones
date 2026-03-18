@@ -58,7 +58,7 @@
             <td><%= order.orderId %></td>
             <td><%= order.userId ? order.userId.name : 'N/A' %></td>
             <td><%= order.userId ? order.userId.email : 'N/A' %></td>
-            <td><%= order.createdOn.toDateString() %></td>
+            <td><%= order.createdOn ? new Date(order.createdOn).toDateString() : 'N/A' %></td>
             <td>
               <select onchange="updateStatus('<%= order._id %>', this.value)">
                 <option value="Pending" <%= order.status==='Pending'?'selected':'' %>>Pending</option>
@@ -71,7 +71,7 @@
                 <option value="Returned" <%= order.status==='Returned'?'selected':'' %>>Returned</option>
               </select>
             </td>
-            <td>₹<%= order.finalAmount %></td>
+            <td>₹<%= order.finalAmount || 0 %></td>
             <td>
              <a href="/admin/orders/<%= order._id %>">View</a>
             </td>

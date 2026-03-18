@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const emailVal = emailInput.value.trim();
 
-      // Simple email regex test
+      // Simple email regex
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!emailVal) {

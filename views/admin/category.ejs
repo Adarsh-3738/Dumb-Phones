@@ -74,7 +74,7 @@
 
 <button
   class="action-btn btn-delete"
-  onclick="openDeleteModal('<%= cat._id %>')"
+  onclick="deleteCategory('<%= cat._id %>')"
 >
   Delete
 </button>
@@ -139,19 +139,6 @@
     <div class="modal-btns">
       <button class="btn btn-blue" onclick="submitEdit()">Save</button>
       <button class="btn btn-gray" onclick="closeEditModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- DELETE MODAL -->
-<div class="modal-bg" id="deleteModal">
-  <div class="modal-box">
-    <h3>Delete Category?</h3>
-    <p>This action cannot be undone.</p>
-
-    <div class="modal-btns">
-      <button class="btn btn-red" onclick="submitDelete()">Delete</button>
-      <button class="btn btn-gray" onclick="closeDeleteModal()">Cancel</button>
     </div>
   </div>
 </div>

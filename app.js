@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 
 import Cart from "./models/cartSchema.js";
 import User from "./models/userSchema.js";
+import Wishlist from "./models/wishlistSchema.js";
 
 // user profile
 import cookieParser from "cookie-parser";
@@ -46,6 +47,17 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Cache control
+app.use((req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, private"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "-1");
+  next();
+});
+
 // Session
 app.use(
   session({
@@ -70,6 +82,7 @@ app.use(async (req, res, next) => {
   let sessionUser = req.user || req.session.user;
   res.locals.user = null;
   res.locals.cartCount = 0;
+  res.locals.wishlistCount = 0;
 
   if (sessionUser) {
     try {
@@ -110,6 +123,11 @@ app.use(async (req, res, next) => {
         // This sums up the quantity of all items in the cart
         res.locals.cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
       }
+      
+      const wishlist = await Wishlist.findOne({ userId: liveUser._id });
+      if (wishlist) {
+        res.locals.wishlistCount = wishlist.products.length;
+      }
     } catch (err) {
       console.log("Error fetching user or cart status:", err);
     }
@@ -124,18 +142,6 @@ app.set("views", path.join(__dirname, "views"));
 
 // Static
 app.use(express.static(path.join(__dirname, "public")));
-
-// Cache control
-app.use((req, res, next) => {
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, private"
-  );
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  next();
-});
-
 
 
 app.use(methodOverride('_method')); // looks for _method query or hidden input

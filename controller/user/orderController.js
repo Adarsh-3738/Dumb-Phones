@@ -9,9 +9,7 @@ import {
   searchUserOrders,
   getOrderForInvoice
 } from "../../services/user/orderService.js";
-
-
-
+import Settings from "../../models/settingsSchema.js";
  //  LOAD ORDERS
 
 export const loadOrders = async (req, res) => {
@@ -116,115 +114,224 @@ export const returnOrder = async (req, res) => {
 };
 
 
-
- //  DOWNLOAD INVOICE
-
+//order invoice 
 export const downloadInvoice = async (req, res) => {
   try {
-
-    const order = await getOrderForInvoice(
-      req.params.orderId,
-      req.user._id
-    );
+    const order = await getOrderForInvoice(req.params.orderId, req.user._id);
 
     if (!order) return res.redirect("/orders");
 
-    const doc = new PDFDocument();
+    // Increased margins for better layout
+    const doc = new PDFDocument({ margin: 50, size: 'A4' });
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=invoice-${order.orderId}.pdf`
-    );
+    res.setHeader("Content-Disposition", `attachment; filename=invoice-${order.orderId}.pdf`);
 
     doc.pipe(res);
 
-    doc.fontSize(20).text(`Invoice`, { align: "center" });
-    doc.fontSize(12).text(`Order #: ${order.orderId}`, { align: "center" });
-    doc.moveDown(2);
+    // Fetch Settings
+    const settings = await Settings.findOne();
+    const taxRate = settings ? settings.taxRate / 100 : 0.05;
+    const taxRateLabel = settings ? settings.taxRate : 5;
 
-    doc.fontSize(10);
-    doc.text(`Date: ${order.createdOn.toDateString()}`);
-    doc.text(`Status: ${order.status}`);
-    doc.moveDown();
+    // Helper functions
+    const generateHr = (y) => {
+      doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, y).lineTo(550, y).stroke();
+    };
+
+    const formatCurrency = (amount) => {
+      return "Rs. " + amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    // --- HEADER ---
+    doc.fillColor("#000000").fontSize(26).font("Helvetica-Bold").text("Dumb Phones.", 50, 45);
     
-    // Draw a line
-    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-    doc.moveDown();
+    doc.fillColor("#444444").fontSize(10).font("Helvetica")
+       .text("Dumb Phones Pvt. Ltd.", 50, 80)
+       .text("1st Floor, Tech Park, Whitefield", 50, 95)
+       .text("Bangalore, Karnataka - 560066", 50, 110)
+       .text("GSTIN: 29AWBPP1234F1Z5", 50, 125);
 
-    // Table Header
-    doc.font('Helvetica-Bold');
-    doc.text('Item', 50, doc.y, { continued: true });
-    doc.text('Qty', 350, doc.y, { continued: true });
-    doc.text('Price', 400, doc.y, { continued: true });
-    doc.text('Total', 500, doc.y);
-    doc.font('Helvetica');
+    // INVOICE DETAILS //RIGHT 
+    doc.fillColor("#000000").fontSize(20).font("Helvetica-Bold").text("TAX INVOICE", 400, 45, { align: "right" });
     
-    doc.moveDown(0.5);
-    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-    doc.moveDown();
+    // Increased spacing and width to handle long UUID order numbers without wrapping text
+    doc.fillColor("#444444").fontSize(10).font("Helvetica-Bold")
+       .text("Invoice Number:", 200, 80, { width: 120, align: "right" })
+       .font("Helvetica").text(order.orderId, 330, 80, { width: 215, align: "right" })
+       
+       .font("Helvetica-Bold").text("Invoice Date:", 200, 100, { width: 120, align: "right" })
+       .font("Helvetica").text((order.invoiceDate || order.createdOn).toLocaleDateString("en-IN"), 330, 100, { width: 215, align: "right" })
+       
+       .font("Helvetica-Bold").text("Order Number:", 200, 120, { width: 120, align: "right" })
+       .font("Helvetica").text(order.orderId, 330, 120, { width: 215, align: "right" })
 
+       .font("Helvetica-Bold").text("Order Date:", 200, 140, { width: 120, align: "right" })
+       .font("Helvetica").text(order.createdOn.toLocaleDateString("en-IN"), 330, 140, { width: 215, align: "right" });
+
+    generateHr(170);
+
+    //  BILLING & SHIPPING DETAILS
+    const customerTop = 185;
+    
+    doc.fillColor("#000000").fontSize(12).font("Helvetica-Bold").text("Billing Address", 50, customerTop);
+    doc.fillColor("#444444").fontSize(10).font("Helvetica-Bold")
+       .text(order.userId.name, 50, customerTop + 20)
+       .font("Helvetica")
+       .text(order.userId.email, 50, customerTop + 35)
+       .text(order.userId.phone || "", 50, customerTop + 50);
+
+    doc.fillColor("#000000").fontSize(12).font("Helvetica-Bold").text("Shipping Address", 300, customerTop);
+    doc.fillColor("#444444").fontSize(10).font("Helvetica-Bold")
+       .text(`${order.address?.name || (order.address?.firstName + " " + order.address?.lastName)}`, 300, customerTop + 20)
+       .font("Helvetica")
+       .text(`${order.address?.addressType || 'Home'} - ${order.address?.streetAddress || order.address?.landmark || ''}`, 300, customerTop + 35)
+       .text(`${order.address?.city}, ${order.address?.state} - ${order.address?.pincode || order.address?.zipCode}`, 300, customerTop + 50)
+       .text(`Phone: ${order.address?.phone}`, 300, customerTop + 65);
+
+    generateHr(255);
+
+    // TABLE HEADERS
+    const tableTop = 280;
+    doc.fillColor("#f3f4f6").rect(50, tableTop - 5, 500, 25).fill();
+    doc.fillColor("#000000").fontSize(10).font("Helvetica-Bold");
+
+    doc.text("Sl", 55, tableTop);
+    doc.text("Description", 80, tableTop);
+    doc.text("Unit Price", 290, tableTop, { width: 60, align: "right" });
+    doc.text("Qty", 360, tableTop, { width: 30, align: "right" });
+    doc.text("Disc.", 400, tableTop, { width: 50, align: "right" });
+    doc.text("Net Amount", 460, tableTop, { width: 80, align: "right" });
+
+    generateHr(tableTop + 20);
+
+    let tableY = tableTop + 30;
     let activeSubtotal = 0;
+    let totalDiscount = 0;
+    
+    //  TABLE ROWS 
+    doc.font("Helvetica");
+    let slNo = 1;
 
-    order.orderedItems.forEach(item => {
-      // Only show active items or cross them out if cancelled
-      if(item.itemStatus === 'Cancelled') {
-        doc.fillColor('gray');
+    order.orderedItems.forEach((item) => {
+      let isCancelled = item.itemStatus === "Cancelled";
+      
+      const variant = item.variant;
+      const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+      const unitPrice = regularPrice;
+      const itemDiscount = (regularPrice - item.price) * item.quantity;
+      
+      if (!isCancelled) {
+        activeSubtotal += (unitPrice * item.quantity);
+        totalDiscount += itemDiscount;
+      }
+
+      doc.fillColor(isCancelled ? "#9ca3af" : "#000000").fontSize(10);
+      
+      const productName = item.product?.productName || "Unknown Product";
+      const color = item.variant?.color ? ` (${item.variant.color})` : "";
+      const description = `${productName}${color}`;
+      
+      const descHeight = doc.heightOfString(description, { width: 200 });
+      
+      doc.text(slNo.toString(), 55, tableY);
+      doc.text(description, 80, tableY, { width: 200 });
+      
+      doc.text(formatCurrency(unitPrice), 290, tableY, { width: 60, align: "right" });
+      doc.text(item.quantity.toString(), 360, tableY, { width: 30, align: "right" });
+      
+      doc.text(formatCurrency(itemDiscount), 400, tableY, { width: 50, align: "right" });
+      
+      if(isCancelled) {
+        doc.fillColor("#ef4444").text("Cancelled", 460, tableY, { width: 80, align: "right" });
       } else {
-        doc.fillColor('black');
-        activeSubtotal += (item.price * item.quantity);
+        const rowAmount = (unitPrice * item.quantity) - itemDiscount;
+        doc.text(formatCurrency(rowAmount), 460, tableY, { width: 80, align: "right" });
       }
+
+      tableY += Math.max(descHeight, 20) + 10;
+      slNo++;
       
-      const y = doc.y;
-      doc.text(`${item.product?.productName || 'Unknown Product'}`, 50, y, { width: 280, continued: false });
-      doc.text(`${item.quantity}`, 350, y, { continued: false });
-      doc.text(`Rs. ${item.price}`, 400, y, { continued: false });
-      doc.text(`Rs. ${item.price * item.quantity}`, 500, y, { continued: false });
-      
-      if(item.itemStatus === 'Cancelled') {
-         doc.fontSize(8).text(`(Cancelled)`, 50, doc.y);
-         doc.fontSize(10);
+      // Page break check for table rows
+      if (tableY > 600) {
+        generateHr(tableY);
+        doc.addPage();
+        tableY = 50;
       }
-      
-      doc.moveDown(0.5);
     });
 
-    doc.fillColor('black');
-    doc.moveDown();
-    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-    doc.moveDown();
+    generateHr(tableY);
 
-    // Calculate valid parameters from standard metrics
-    const tax = order.tax !== undefined ? order.tax : Math.round(activeSubtotal * 0.05);
-    const shipping = order.shipping !== undefined ? order.shipping : 0;
-    const discount = order.discount || 0;
-    const finalAmt = order.finalAmount || (activeSubtotal + tax + shipping - discount);
+    // TOTALS CALCULATION 
+    // If order was fully cancelled, show 0
+    const isActive = order.orderedItems.some(i => i.itemStatus !== "Cancelled");
+    
+    const tax = isActive ? (order.tax !== undefined ? order.tax : 0) : 0;
+    const shipping = isActive ? (order.shipping !== undefined ? order.shipping : 0) : 0;
+    
+    // Use the newly computed exact discounts from active items for display rather than proportioning order.discount
+    const discount = isActive ? totalDiscount : 0;
+    
+    const finalAmt = isActive ? (order.finalAmount || (activeSubtotal + tax + shipping - discount)) : 0;
 
-    // Totals section right aligned
-    const totalsStartX = 400;
-    const totalsValueX = 500;
+    // TOTALS DISPLAY 
+    const totalsY = tableY + 15;
+    const totalsStartX = 340;
+    const totalsValueX = 460;
+
+    doc.fillColor("#000000").fontSize(10).font("Helvetica");
     
-    doc.text(`Subtotal:`, totalsStartX, doc.y, { continued: false });
-    doc.text(`Rs. ${activeSubtotal}`, totalsValueX, doc.y - 12);
+    doc.text("Gross Amount:", totalsStartX, totalsY, { width: 100, align: "right" });
+    doc.text(formatCurrency(activeSubtotal), totalsValueX, totalsY, { width: 80, align: "right" });
     
-    doc.text(`Tax (5%):`, totalsStartX, doc.y, { continued: false });
-    doc.text(`Rs. ${tax}`, totalsValueX, doc.y - 12);
+    doc.text(`Tax (${taxRateLabel}%):`, totalsStartX, totalsY + 20, { width: 100, align: "right" });
+    doc.text(formatCurrency(tax), totalsValueX, totalsY + 20, { width: 80, align: "right" });
     
-    doc.text(`Shipping:`, totalsStartX, doc.y, { continued: false });
-    doc.text(shipping === 0 ? `Free` : `Rs. ${shipping}`, totalsValueX, doc.y - 12);
-    
+    doc.text("Shipping Charge:", totalsStartX, totalsY + 40, { width: 100, align: "right" });
+    doc.text(shipping === 0 ? "Free" : formatCurrency(shipping), totalsValueX, totalsY + 40, { width: 80, align: "right" });
+
+    let finalLineY = totalsY + 60;
+
     if (discount > 0) {
-      doc.fillColor('green');
-      doc.text(`Discount:`, totalsStartX, doc.y, { continued: false });
-      doc.text(`- Rs. ${discount}`, totalsValueX, doc.y - 12);
-      doc.fillColor('black');
+      doc.fillColor("#16a34a");
+      doc.text("Total Discount:", totalsStartX, finalLineY, { width: 100, align: "right" });
+      doc.text(`- ${formatCurrency(discount)}`, totalsValueX, finalLineY, { width: 80, align: "right" });
+      finalLineY += 20;
     }
 
-    doc.moveDown(0.5);
-    doc.font('Helvetica-Bold');
-    doc.text(`Total Paid:`, totalsStartX, doc.y, { continued: false });
-    doc.text(`Rs. ${finalAmt}`, totalsValueX, doc.y - 12);
-    doc.font('Helvetica');
+    // Final Divider
+    doc.strokeColor("#000000").lineWidth(1).moveTo(340, finalLineY).lineTo(540, finalLineY).stroke();
+
+    // Grand Total
+    doc.fillColor("#000000").fontSize(12).font("Helvetica-Bold");
+    doc.text("Total Payable:", totalsStartX, finalLineY + 10, { width: 100, align: "right" });
+    doc.text(formatCurrency(finalAmt), totalsValueX, finalLineY + 10, { width: 80, align: "right" });
+
+    // Amount in words
+    const numToWords = (num) => {
+       if (num === 0) return "Zero";
+       const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+       const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+       if ((num = num.toString()).length > 9) return 'overflow';
+       let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+       if (!n) return; let str = '';
+       str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+       str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+       str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+       str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+       str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+       return str.trim() + " Only";
+    };
+
+    doc.fontSize(10).font("Helvetica-Oblique").fillColor("#444444");
+    doc.text(`Amount in Words: Rupees ${numToWords(Math.round(finalAmt))}`, 50, finalLineY + 35);
+
+
+    //  FOOTER 
+    const bottomY = doc.page.height - 80;
+    generateHr(bottomY - 10);
+    doc.fillColor("#444444").fontSize(9).font("Helvetica").text("Thank you for shopping with Dumb Phones. Returns policy applies as per website terms. For any queries, please contact support@dumbphones.com.", 50, bottomY, { align: "center", width: 500 });
+    doc.text("This is a computer generated invoice and requires no physical signature.", 50, bottomY + 25, { align: "center", width: 500 });
 
     doc.end();
 

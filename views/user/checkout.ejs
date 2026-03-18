@@ -154,8 +154,14 @@
             <span class="label">Subtotal</span>
             <span class="value">₹<%= parseInt(subtotal).toLocaleString('en-IN') %></span>
           </div>
+          <% if (typeof totalSavings !== 'undefined' && totalSavings > 0) { %>
+            <div class="summary-line discount-line">
+              <span class="label" style="color: #10b981; font-weight: 600;">Discount</span>
+              <span class="value" style="color: #10b981; font-weight: 600;">- ₹<%= parseInt(totalSavings).toLocaleString('en-IN') %></span>
+            </div>
+          <% } %>
           <div class="summary-line">
-            <span class="label">Tax (5%)</span>
+            <span class="label">Tax</span>
             <span class="value">₹<%= parseInt(tax).toLocaleString('en-IN') %></span>
           </div>
           <div class="summary-line">
@@ -165,10 +171,6 @@
             <% } else { %>
               <span class="value">₹<%= parseInt(shipping).toLocaleString('en-IN') %></span>
             <% } %>
-          </div>
-          <div class="summary-line discount-line">
-            <span class="label">Discount</span>
-            <span class="value">- ₹<%= parseInt(discount).toLocaleString('en-IN') %></span>
           </div>
         </div>
 

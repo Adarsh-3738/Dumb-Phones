@@ -31,8 +31,9 @@ export const getCartData = async (userId) => {
         variant.isBlocked ||
         variant.quantity <= 0 ||
         !product.category ||
-        product.category.isBlocked ||
-        !product.category.isListed
+        !product.category.isListed ||
+        product.category.isDeleted ||
+        product.status === "Discontinued"
       ) {
         return false;
       }
@@ -58,8 +59,9 @@ export const addToCartService = async (userId, productId, variantId, quantity = 
     !product ||
     product.isBlocked ||
     !product.category ||
-    product.category.isBlocked ||
-    !product.category.isListed
+    !product.category.isListed ||
+    product.category.isDeleted ||
+    product.status === "Discontinued"
   ) {
     throw new Error("Product unavailable");
   }
@@ -126,7 +128,7 @@ export const addToCartService = async (userId, productId, variantId, quantity = 
 
   await Wishlist.updateOne(
     { userId },
-    { $pull: { products: productId } }
+    { $pull: { products: { productId: productId } } }
   );
 
   return true;

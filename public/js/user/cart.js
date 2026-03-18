@@ -12,9 +12,13 @@ async function updateQty(variantId, action) {
 
     if (!data.success) {
       Swal.fire({
-        icon: "error",
-        title: "Action Failed",
-        text: data.message || "Quantity limit reached"
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: data.message || "Quantity limit reached",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
       });
       return;
     }

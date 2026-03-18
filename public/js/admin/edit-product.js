@@ -10,6 +10,17 @@ if (imageInput) {
   imageInput.addEventListener("change", (e) => {
     selectedFiles = Array.from(e.target.files);
 
+    const hasInvalidFormat = selectedFiles.some(file => !file.type.startsWith("image/"));
+    if (hasInvalidFormat) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File Format",
+        text: "Only image files (JPEG, PNG, WEBP, etc.) are allowed."
+      });
+      imageInput.value = "";
+      return;
+    }
+
     if (selectedFiles.length < 1) {
       Swal.fire({
         icon: "warning",
@@ -194,22 +205,39 @@ if (addVariantBtn) {
       <label>Sales Price</label>
       <input type="number" min="1" class="salesPrice" name="variants[${index}][salesPrice]" required />
 
-      <label>Stock Quantity</label>
-      <input type="number" min="0" class="quantity" name="variants[${index}][quantity]" required />
-
       <label>Images</label>
-      <input type="file" name="variants[${index}][images]" multiple accept="image/*" />
+      <input type="file" class="variant-image-input" name="variants[${index}][images]" multiple accept="image/jpeg, image/png, image/webp" />
     `;
     
     variantsContainer.appendChild(div);
   });
 }
 
-form.addEventListener("submit", function (e) {
+// UNIVERSAL IMAGE VALIDATION
+document.addEventListener("change", e => {
+  if (e.target.type === "file") {
+    const files = Array.from(e.target.files);
+    const hasInvalidFormat = files.some(file => 
+      !file.type.startsWith("image/") && 
+      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+    );
+    
+    if (hasInvalidFormat) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File Format",
+        text: "Only image files (JPEG, PNG, WEBP) are allowed."
+      });
+      e.target.value = ""; // Clear the input
+    }
+  }
+});
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
   
   const variantCards = document.querySelectorAll(".variant-card");
   if (variantCards.length === 0) {
-    e.preventDefault();
     Swal.fire({
       icon: "error",
       title: "Missing Variant",
@@ -227,7 +255,6 @@ form.addEventListener("submit", function (e) {
 
     if (regularPrice <= 0 || salesPrice <= 0 || quantity < 0) {
       if(valid) {
-        e.preventDefault();
         valid = false;
         Swal.fire({
           icon: "error",
@@ -237,4 +264,51 @@ form.addEventListener("submit", function (e) {
       }
     }
   });
+
+  if(!valid) return;
+
+  Swal.fire({ 
+    title: "Saving Product...", 
+    text: "Please wait", 
+    showConfirmButton: false, 
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  try {
+    const formData = new FormData(form);
+    const response = await fetch(form.action, {
+      method: "POST", // Method override via ?_method=PATCH handled by server
+      body: formData
+    });
+    
+    const data = await response.json();
+
+    if(data.success) {
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: data.message || "Product updated successfully!",
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = "/admin/products";
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: data.message || "Failed to update product."
+      });
+    }
+
+  } catch(error) {
+     Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Something went wrong while updating."
+    });
+  }
 });

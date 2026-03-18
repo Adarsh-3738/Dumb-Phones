@@ -73,7 +73,7 @@ export const updateProfile = async (req, res) => {
 
   try {
 
-    const { name, phone } = req.body;
+    const { name, phone, removeImage } = req.body;
 
     const user = await getUserById(req.user._id);
 
@@ -87,10 +87,10 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    if (!/^[A-Za-z ]+$/.test(name)) {
+    if (!/^[A-Za-z0-9 ]+$/.test(name)) {
       return res.render("user/edit-profile", {
         user,
-        message: "Name can contain only letters and spaces",
+        message: "Name can contain only letters, numbers and spaces",
       });
     }
 
@@ -110,6 +110,10 @@ export const updateProfile = async (req, res) => {
     }
 
     let imageUrl = user.profileImage;
+
+    if (removeImage === "true") {
+      imageUrl = ""; // Empty string acts as generic fallback trigger in UI
+    }
 
     if (req.file) {
 
@@ -177,14 +181,13 @@ export const updateProfile = async (req, res) => {
       profileImage: imageUrl
     });
 
-    req.session.user.name = updatedUser.name;
-    req.session.user.phone = updatedUser.phone;
-
-    if (updatedUser.profileImage) {
+    if (req.session && req.session.user) {
+      req.session.user.name = updatedUser.name;
+      req.session.user.phone = updatedUser.phone;
       req.session.user.profileImage = updatedUser.profileImage;
     }
 
-    return res.redirect("/profile");
+    return res.redirect("/profile?success=profile_updated");
 
   } catch (error) {
 
@@ -494,7 +497,7 @@ export const addAddress = async (req, res) => {
 
     await addNewAddress(userId, newAddress);
 
-    res.redirect("/address");
+    res.redirect("/address?success=added");
 
   } catch (error) {
 
@@ -559,7 +562,7 @@ export const updateAddress = async (req, res) => {
 
     await updateUserAddress(req.user._id, req.params.id, updatedAddress);
 
-    res.redirect("/address");
+    res.redirect("/address?success=updated");
 
   } catch (error) {
 
@@ -582,7 +585,7 @@ export const deleteAddress = async (req, res) => {
 
     await deleteUserAddress(req.user._id, req.params.id);
 
-    res.redirect("/address");
+    res.redirect("/address?success=deleted");
 
   } catch (error) {
 

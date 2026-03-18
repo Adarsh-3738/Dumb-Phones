@@ -88,12 +88,12 @@ export const addProduct = async (req, res) => {
 
     await productService.createVariants(variantDocs);
 
-    res.redirect("/admin/products");
+    res.json({ success: true, message: "Product created successfully!" });
 
   } catch (error) {
     console.error("ADD PRODUCT ERROR:", error);
     logger.error("Add product failed", error);
-    res.status(500).send(error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 // LOAD EDIT PAGE
@@ -162,35 +162,16 @@ export const editProduct = async (req, res) => {
 
     logger.info("Product updated successfully", { productId });
 
-    res.redirect("/admin/products");
+    res.json({ success: true, message: "Product updated successfully!" });
   } catch (error) {
-  logger.error("Error updating product", {
-    message: error.message,
-    stack: error.stack,
-    productId: req.params.id,
-  });
+    logger.error("Error updating product", {
+      message: error.message,
+      stack: error.stack,
+      productId: req.params.id,
+    });
 
-  const product = await Product.findById(req.params.id)
-    .populate("brand")
-    .populate("category");
-
-  const variants = await Variant.find({ productId: req.params.id });
-
-  const brands = await Brand.find();
-  const categories = await Category.find({
-    status: "Active",
-    isDeleted: false,
-    isListed: true
-  });
-
-  res.render("admin/edit-product", {
-    product,
-    variants,   
-    brands,
-    categories,
-    message: error.message,
-  });
-}
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 // REMOVE SINGLE IMAGE
@@ -241,6 +222,10 @@ export const softDeleteProduct = async (req, res) => {
 
     logger.info("Product status toggled successfully", { productId });
 
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+      return res.json({ success: true, message: "Status toggled successfully" });
+    }
+
     // redirect back with state preserved
     res.redirect(
       `/admin/products?page=${page}&search=${encodeURIComponent(search)}`
@@ -251,6 +236,10 @@ export const softDeleteProduct = async (req, res) => {
       stack: error.stack,
       productId: req.params.id
     });
+
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
 
     res.status(500).render("admin/error", { message: error.message });
   }

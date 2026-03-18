@@ -1,82 +1,160 @@
 <!-- header -->
 <%-include("../../views/partials/admin/header")%> 
-  <!-- Main -->
+
+<!-- Add robust Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Custom Dashboard CSS -->
+<link rel="stylesheet" href="/css/admin/dashboard.css">
+
+  <!-- Main Content -->
   <div class="main">
 
     <div class="topbar">
-      <h1>Dashboard</h1>
-
-      <div style="display: flex; gap: 15px; align-items: center;">
-        <div class="search-box">
-          <input type="text" placeholder="Search...">
-        </div>
-
-        <button class="btn-export">Export Report</button>
+      <div>
+        <h1>Admin Overview</h1>
+        <p class="welcome-text">Here is what's happening in your store today.</p>
       </div>
     </div>
 
-    <p>Welcome back, Admin! Here's what's happening today.</p>
-
-    <!-- Cards -->
+    <!-- Stats Cards -->
     <div class="cards">
-      <div class="card">
+      
+      <!-- Revenue Card -->
+      <div class="card animate-up delay-1">
+        <div class="card-icon">
+          <i data-lucide="dollar-sign"></i>
+        </div>
         <h4>Total Revenue</h4>
-        <h2>$1,250,450</h2>
-        <small>+5.2% vs last month</small>
-      </div>
-
-      <div class="card">
-        <h4>Sales this Month</h4>
-        <h2>$85,600</h2>
-        <small>+2.1% vs last month</small>
-      </div>
-
-      <div class="card">
-        <h4>New Orders</h4>
-        <h2>350</h2>
-        <small>+3.5% vs last month</small>
-      </div>
-
-      <div class="card">
-        <h4>New Customers</h4>
-        <h2>120</h2>
-        <small>+6.8% vs last month</small>
-      </div>
-    </div>
-
-    <!-- Chart -->
-    <div class="chart-box">
-      <div class="chart-header">
-        <h3>Sales Overview</h3>
-
-        <div class="chart-tabs">
-          <button class="active">30 Days</button>
-          <button>7 Days</button>
-          <button>24 Hours</button>
+        <h2>₹<%= totalRevenue.toLocaleString('en-IN') %></h2>
+        <div class="metrics-row">
+          <span class="badge badge-success"><i data-lucide="trending-up" style="width: 12px; height: 12px;"></i> Lifetime</span>
         </div>
       </div>
 
-      <canvas id="salesChart"></canvas>
+      <!-- Sales/Orders Card -->
+      <div class="card animate-up delay-2">
+        <div class="card-icon" style="background: #fef3c7; color: #d97706;">
+          <i data-lucide="shopping-bag"></i>
+        </div>
+        <h4>Total Orders</h4>
+        <h2><%= salesCount %></h2>
+        <div class="metrics-row">
+          <span class="badge badge-success"><i data-lucide="activity" style="width: 12px; height: 12px;"></i> All-Time</span>
+        </div>
+      </div>
+
+      <!-- Users Card -->
+      <div class="card animate-up delay-3">
+        <div class="card-icon" style="background: #fce7f3; color: #db2777;">
+          <i data-lucide="users"></i>
+        </div>
+        <h4>Total Customers</h4>
+        <h2><%= usersCount %></h2>
+        <div class="metrics-row">
+          <span class="badge badge-success"><i data-lucide="user-check" style="width: 12px; height: 12px;"></i> Active Base</span>
+        </div>
+      </div>
+
+      <!-- Products Card -->
+      <div class="card animate-up delay-4">
+        <div class="card-icon" style="background: #dcfce7; color: #16a34a;">
+          <i data-lucide="package"></i>
+        </div>
+        <h4>Available Products</h4>
+        <h2><%= productsCount %></h2>
+        <div class="metrics-row">
+          <span class="badge badge-warning"><i data-lucide="box" style="width: 12px; height: 12px;"></i> Catalog</span>
+        </div>
+      </div>
+
     </div>
 
-  </div>
+    <!-- Charts Grid -->
+    <div class="dashboard-grid animate-up delay-3">
+      
+      <!-- Revenue Chart -->
+      <div class="chart-box">
+        <div class="chart-header">
+          <h3>Monthly Revenue (<%= new Date().getFullYear() %>)</h3>
+        </div>
+        <div class="chart-container-large">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
 
-  <!-- Optional Chart JS -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <!-- Order Status Split -->
+      <div class="chart-box">
+        <div class="chart-header">
+          <h3>Order Status Distribution</h3>
+        </div>
+        <div class="chart-container-small">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="recent-orders animate-up delay-4">
+      <div class="recent-orders-header">
+        <h3>Recent Transactions</h3>
+      </div>
+      
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (recentOrders && recentOrders.length > 0) { %>
+              <% recentOrders.forEach(order => { %>
+                <tr>
+                  <td><span style="font-family: monospace; color: var(--primary); font-weight: 500;">#<%= order.orderId ? order.orderId.substring(0,8) : 'N/A' %></span></td>
+                  <td>
+                    <div class="customer-info">
+                      <span class="customer-name"><%= order.userId ? order.userId.name : 'Unknown User' %></span>
+                      <span class="customer-email"><%= order.userId ? order.userId.email : 'N/A' %></span>
+                    </div>
+                  </td>
+                  <td><%= new Date(order.createdOn).toLocaleDateString() %></td>
+                  <td class="order-amount">₹<%= order.finalAmount.toLocaleString('en-IN') %></td>
+                  <td>
+                    <% 
+                      let statusClass = 'status-pending';
+                      if(order.status === 'Delivered') statusClass = 'status-delivered';
+                      else if(order.status === 'Shipped' || order.status === 'Out for Delivery') statusClass = 'status-shipped';
+                      else if(order.status === 'Processing') statusClass = 'status-processing';
+                      else if(order.status === 'Cancelled') statusClass = 'status-cancelled';
+                      else if(order.status === 'Returned' || order.status === 'Return Request') statusClass = 'status-returned';
+                    %>
+                    <span class="status-badge <%= statusClass %>"><%= order.status %></span>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recent orders found.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div> <!-- End Main -->
+<!--  Passed Data from Controller  -->
   <script>
-    const ctx = document.getElementById("salesChart");
-
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: ["", "", "", "", "", ""],
-        datasets: [{
-          data: [2500, 3500, 5000, 7500, 9000, 7000],
-          borderWidth: 3
-        }]
-      }
-    });
-  </script>
+    const rawMonthlyData = <%- monthlyData || '[]' %>;
+    const rawStatusLabels = <%- statusLabels || '[]' %>;
+    const rawStatusCounts = <%- statusCounts || '[]' %>;
+</script>
+ <script src="/js/admin/dashboard.js"></script>
 
 </body>
 </html>

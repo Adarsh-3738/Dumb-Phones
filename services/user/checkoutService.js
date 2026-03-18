@@ -2,7 +2,8 @@ import Cart from "../../models/cartSchema.js";
 import Address from "../../models/addressSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Order from "../../models/orderSchema.js";
-const TAX_RATE = 0.05;
+import Settings from "../../models/settingsSchema.js";
+
 const SHIPPING_COST = 0;
 
 
@@ -30,23 +31,40 @@ export const getCheckoutData = async (userId) => {
   await cart.save();
   if (cart.items.length === 0) return null;
 
-  let subtotal = 0;
+  let subtotal = 0; // Will hold the total regular price
+  let salePriceSubtotal = 0; // The actual money the user is paying before tax/shipping
+  let totalSavings = 0;
+
   cart.items.forEach(item => {
-    subtotal += item.price * item.quantity;
+    // If the item has a valid variant with a regular price that is greater than the sale price
+    if (item.variantId && item.variantId.regularPrice && item.variantId.regularPrice > item.price) {
+      subtotal += item.variantId.regularPrice * item.quantity;
+      totalSavings += (item.variantId.regularPrice - item.price) * item.quantity;
+    } else {
+      subtotal += item.price * item.quantity;
+    }
+    salePriceSubtotal += item.price * item.quantity;
   });
 
-  const tax = Math.round(subtotal * TAX_RATE);
-  const discount = 0;
+  const settings = await Settings.findOne();
+  const taxRate = settings ? settings.taxRate / 100 : 0.05;
+
+  // Tax is calculated on the sale price the actual amount paid for items
+  const tax = Math.round(salePriceSubtotal * taxRate);
+  const discount = totalSavings;
   const shipping = SHIPPING_COST;
+  
+  // Final total should be precisely the sale amount + tax + shipping.
+  // Because subtotal is regular prices, subtotal - discount = salePriceSubtotal.
   const total = subtotal + tax + shipping - discount;
 
   const addressDoc = await Address.findOne({ userId }).lean();
 
-const addresses = addressDoc
-  ? addressDoc.address.sort((a, b) => b.isDefault - a.isDefault)
-  : [];
+  const addresses = addressDoc
+    ? addressDoc.address.sort((a, b) => b.isDefault - a.isDefault)
+    : [];
 
-  return { cart, addresses, subtotal, tax, discount, shipping, total };
+  return { cart, addresses, subtotal, tax, discount, shipping, total, totalSavings };
 };
 
 // PLACE ORDER SERVICE
@@ -73,14 +91,27 @@ export const placeOrderService = async (userId, addressId) => {
   }
 
   // CALCULATIONS
-  let subtotal = 0;
+  let subtotal = 0; // Regular price sum
+  let salePriceSubtotal = 0; // Sale price sum
+  let totalSavings = 0;
+
   cart.items.forEach(item => {
-    subtotal += item.price * item.quantity;
+    if (item.variantId && item.variantId.regularPrice && item.variantId.regularPrice > item.price) {
+      subtotal += item.variantId.regularPrice * item.quantity;
+      totalSavings += (item.variantId.regularPrice - item.price) * item.quantity;
+    } else {
+      subtotal += item.price * item.quantity;
+    }
+    salePriceSubtotal += item.price * item.quantity;
   });
 
-  const tax = Math.round(subtotal * TAX_RATE);
+  const settings = await Settings.findOne();
+  const taxRate = settings ? settings.taxRate / 100 : 0.05;
+
+  const tax = Math.round(salePriceSubtotal * taxRate);
+  const discount = totalSavings;
   const shipping = SHIPPING_COST;
-  const finalAmount = subtotal + tax + shipping;
+  const finalAmount = subtotal + tax + shipping - discount;
 
   // COPY ITEMS BEFORE CLEARING CART
   const orderedItems = cart.items.map(item => ({
@@ -110,7 +141,7 @@ const order = await Order.create({
   totalPrice: subtotal,
   tax: tax,
   shipping: shipping,
-  discount: 0,
+  discount: discount,
   finalAmount: finalAmount,
 
   address: {

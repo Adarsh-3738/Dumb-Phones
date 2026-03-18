@@ -23,7 +23,8 @@ export const loadCheckout = async (req, res) => {
       tax: data.tax,
       discount: data.discount,
       shipping: data.shipping,
-      total: data.total
+      total: data.total,
+      totalSavings: data.totalSavings
     });
 
   } catch (error) {

@@ -18,7 +18,7 @@ export const updateUserProfile = async (userId, data) => {
   user.name = data.name;
   user.phone = data.phone;
 
-  if (data.profileImage) {
+  if (data.profileImage !== undefined) {
     user.profileImage = data.profileImage;
   }
 

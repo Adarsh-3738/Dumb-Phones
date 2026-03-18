@@ -1,6 +1,19 @@
 
 const form = document.querySelector(".address-form");
 
+// Real-time input restriction/ only allow numbers
+const phoneInput = document.getElementById("phone");
+const altPhoneInput = document.getElementById("altPhone");
+const pincodeInput = document.getElementById("pincode");
+
+const restrictToNumbers = (e) => {
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+};
+
+if (phoneInput) phoneInput.addEventListener("input", restrictToNumbers);
+if (altPhoneInput) altPhoneInput.addEventListener("input", restrictToNumbers);
+if (pincodeInput) pincodeInput.addEventListener("input", restrictToNumbers);
+
 form.addEventListener("submit", function(e) {
   e.preventDefault();
   let hasErrors = false;

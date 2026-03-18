@@ -100,47 +100,6 @@
     color: #dc2626;
   }
 
-  /* LOGOUT MODAL */
-  .logout-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.4);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  .logout-modal {
-    background: #ffffff;
-    padding: 25px;
-    width: 320px;
-    border-radius: 14px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.2s ease;
-  }
-
-  .logout-modal h3 {
-    color: #1e3a8a;
-    margin-bottom: 10px;
-  }
-
-  .logout-modal p {
-    color: #64748b;
-    font-size: 14px;
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    gap: 10px;
-  }
-
   .btn {
     flex: 1;
     padding: 10px;
@@ -224,6 +183,10 @@
     <i data-lucide="folder"></i> Category
   </a>
 
+  <a href="/admin/settings" class="menu-item nav-link">
+    <i data-lucide="settings"></i> Tax settings
+  </a>
+
   <a href="/admin/banners" class="menu-item nav-link">
     <i data-lucide="image"></i> Banners
   </a>
@@ -239,21 +202,8 @@
   </button>
 </div>
 
-<!-- LOGOUT MODAL  -->
-
-<div id="logoutModal" class="logout-modal-overlay">
-  <div class="logout-modal">
-    <h3>Confirm Logout</h3>
-    <p>Are you sure you want to logout?</p>
-
-    <div class="modal-actions">
-      <button class="btn cancel" onclick="closeLogoutModal()">Cancel</button>
-      <a href="/admin/logout" class="btn logout">Logout</a>
-    </div>
-  </div>
-</div>
-
 <!-- JS SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>//for icons
   lucide.createIcons();
 </script>
@@ -270,21 +220,21 @@
     }
   });
 
-  // Logout modal controls
+  // Logout SweetAlert
   function openLogoutModal() {
-    document.getElementById("logoutModal").style.display = "flex";
-  }
-
-  function closeLogoutModal() {
-    document.getElementById("logoutModal").style.display = "none";
-  }
-
-  // Close when clicking outside modal
-  window.onclick = function(event) {
-    const modal = document.getElementById("logoutModal");
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
+    Swal.fire({
+      title: "Confirm Logout",
+      text: "Are you sure you want to end your session?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      cancelButtonColor: "#94a3b8",
+      confirmButtonText: "Yes, Logout"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "/admin/logout";
+      }
+    });
   }
 </script>
 

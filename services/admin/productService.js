@@ -3,6 +3,7 @@ import Product from "../../models/productSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Brand from "../../models/brandSchema.js";
 import Category from "../../models/categorySchema.js";
+import Cart from "../../models/cartSchema.js";
 
 export const fetchProducts = async ({ search = "", page = 1, limit = 10 }) => {
   const skip = (page - 1) * limit;
@@ -159,6 +160,39 @@ export const updateProduct = async ({ id, body, files }) => {
     
     // Add processed _id to tracker
     if (variantDoc._id) submittedVariantIds.push(variantDoc._id.toString());
+
+    // Update prices in user carts containing this variant
+    try {
+      if (variantDoc._id) {
+         await Cart.updateMany(
+           { "items.variantId": variantDoc._id },
+           {
+             $set: {
+               "items.$[elem].price": variantDoc.salesPrice
+             }
+           },
+           {
+             arrayFilters: [{ "elem.variantId": variantDoc._id }]
+           }
+         );
+
+         // Recalculate total price for these items separately since mongo cant easily multiply fields in updateMany simple updates
+         const affectedCarts = await Cart.find({ "items.variantId": variantDoc._id });
+         for (const cart of affectedCarts) {
+           let changed = false;
+           cart.items.forEach(item => {
+             if (item.variantId.toString() === variantDoc._id.toString()) {
+               item.price = variantDoc.salesPrice;
+               item.totalPrice = item.price * item.quantity;
+               changed = true;
+             }
+           });
+           if(changed) await cart.save();
+         }
+      }
+    } catch (err) {
+      console.error("Failed to update cart prices for variant", err);
+    }
   }
   
   // Clean up deleted variants
@@ -167,6 +201,16 @@ export const updateProduct = async ({ id, body, files }) => {
       productId: id,
       _id: { $nin: submittedVariantIds }
     });
+
+    // Also remove deleted variants from carts
+    try {
+       await Cart.updateMany(
+         {},
+         { $pull: { items: { variantId: { $nin: submittedVariantIds }, productId: id } } }
+       );
+    } catch(err) {
+       console.error("Failed to pull deleted variants from carts", err);
+    }
   }
 };
 

@@ -13,9 +13,9 @@ const userSchema = new Schema({
     unique: true
   },
   profileImage: {
-  type: String,
-  default: "https://res.cloudinary.com/demo/image/upload/v1690000000/default-avatar.png",
-},
+    type: String,
+    default: "",
+  },
 
   phone: {
     type: String,

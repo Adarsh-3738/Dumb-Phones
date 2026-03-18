@@ -103,7 +103,7 @@ export const loadShopPage = async (req, res) => {
       message: error.message,
       stack: error.stack,
     });
-    res.status(500).render("user/error");
+    res.status(500).render("user/page-404");
   }
 };
 
@@ -317,7 +317,11 @@ export const resetPassword = async (req, res) => {
 
     logger.info("Password reset successful", { userId: user._id });
 
-    res.redirect("/login");
+    // Render the page with a success message to trigger SweetAlert 
+    res.render("user/reset-password", {
+      token: req.params.token,
+      message: "Password reset successful"
+    });
   } catch (error) {
     logger.error("Reset password error", {
       message: error.message,

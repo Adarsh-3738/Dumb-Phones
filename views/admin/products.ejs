@@ -101,7 +101,8 @@
   onclick="openStatusModal(
     '<%= product._id %>',
     '<%= currentPage %>',
-    '<%= safeSearch %>'
+    '<%= safeSearch %>',
+    'Active'
   )"
 >
   Deactivate
@@ -115,7 +116,8 @@
   onclick="openStatusModal(
     '<%= product._id %>',
     '<%= currentPage %>',
-    '<%= safeSearch %>'
+    '<%= safeSearch %>',
+    'Inactive'
   )"
 >
   Activate
@@ -210,26 +212,7 @@
 
 
 
-<!-- STATUS CONFIRM MODAL -->
-<div id="statusModal" class="modal status-modal">
 
-  <div class="modal-content" >
-    <h3 id="statusTitle" >Confirm Action</h3>
-    <p id="statusMessage" >
-      Are you sure?
-    </p>
-
-    <div >
-     <button type="button" id="confirmStatusBtn" class="submit-btn">
-        Yes, Confirm
-      </button>
-
-      <button type="button" onclick="closeStatusModal()" class="submit-btn">
-        Cancel
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- Cropper.js JS  -->
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>

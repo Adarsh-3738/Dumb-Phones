@@ -299,6 +299,9 @@
 
         <a href="/wishlist" class="nav-icon" title="Wishlist">
           <i class="fa-regular fa-heart"></i>
+          <% if (typeof wishlistCount !== 'undefined' && wishlistCount > 0) { %>
+            <span class="cart-badge"><%= wishlistCount %></span>
+          <% } %>
         </a>
 
                 <a href="/cart" class="nav-icon" title="Cart">

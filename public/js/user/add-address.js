@@ -1,6 +1,19 @@
 
 const form = document.querySelector(".address-form");
 
+// Realtime input restriction/ only allow numbers
+const phoneInput = document.getElementById("phone");
+const altPhoneInput = document.getElementById("altPhone");
+const pincodeInput = document.getElementById("pincode");
+
+const restrictToNumbers = (e) => {
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+};
+
+if (phoneInput) phoneInput.addEventListener("input", restrictToNumbers);
+if (altPhoneInput) altPhoneInput.addEventListener("input", restrictToNumbers);
+if (pincodeInput) pincodeInput.addEventListener("input", restrictToNumbers);
+
 form.addEventListener("submit", function(e) {
   e.preventDefault(); 
   let hasErrors = false;
@@ -24,10 +37,10 @@ form.addEventListener("submit", function(e) {
 
   clearErrors();
 
-  // Address Type (Auto Title Case & Validation)
+  // Address Type /Auto Title Case & Validation
   let addressTypeInput = document.getElementById("addressType");
   let addressType = addressTypeInput.value.trim();
-  // Format to title case ("home" -> "Home")
+  // Format to title case ("home" to "Home")
   if (addressType) {
     addressType = addressType.charAt(0).toUpperCase() + addressType.slice(1).toLowerCase();
     addressTypeInput.value = addressType; // Update the actual input value
