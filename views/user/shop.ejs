@@ -79,7 +79,20 @@
           </div>
         </div>
 
-        <input type="hidden" name="sort" value="<%= sort || '' %>">
+        <div class="filter-group">
+          <label>Sort By</label>
+          <div class="custom-select-wrapper">
+            <select name="sort">
+              <option value="">New Arrivals</option>
+              <option value="priceLowHigh" <%= sort === 'priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="priceHighLow" <%= sort === 'priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="aToZ" <%= sort === 'aToZ' ? 'selected' : '' %>>A - Z</option>
+              <option value="zToA" <%= sort === 'zToA' ? 'selected' : '' %>>Z - A</option>
+            </select>
+            <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
         <input type="hidden" name="search" value="<%= search || '' %>">
 
         <div class="filter-actions">
@@ -151,7 +164,7 @@
         <div class="pagination-wrapper">
           <div class="pagination">
             <% if (currentPage > 1) { %>
-              <a href="?page=<%= currentPage - 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Previous">
+              <a href="?page=<%= currentPage - 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-arrow" aria-label="Previous">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
               </a>
             <% } else { %>
@@ -165,13 +178,13 @@
                 <% if (i === currentPage) { %>
                   <span class="page-num active"><%= i %></span>
                 <% } else { %>
-                  <a href="?page=<%= i %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-num"><%= i %></a>
+                  <a href="?page=<%= i %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-num"><%= i %></a>
                 <% } %>
               <% } %>
             </div>
 
             <% if (currentPage < totalPages) { %>
-              <a href="?page=<%= currentPage + 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>" class="page-arrow" aria-label="Next">
+              <a href="?page=<%= currentPage + 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-arrow" aria-label="Next">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
               </a>
             <% } else { %>

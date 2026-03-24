@@ -7352,3 +7352,118 @@
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Already logged-in admin redirected","path":"/admin/login","timestamp":"2026-03-18 15:40:07"}
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-18 15:40:07"}
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-18 15:40:07"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:04:33"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:04:35"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/dashboard","timestamp":"2026-03-18 16:04:37"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:04:39"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:06:55"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:07:01"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:07:04"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:07:07"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:07:09"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:07:12"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-03-18 16:07:24"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:36:48"}
+{"level":"info","message":"Loading forgot password page","timestamp":"2026-03-18 16:37:02"}
+{"email":"mmmm@gmail.com","level":"info","message":"Forgot password request","timestamp":"2026-03-18 16:37:20"}
+{"email":"mmmm@gmail.com","level":"warn","message":"Forgot password - user not found","timestamp":"2026-03-18 16:37:20"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:37:33"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-18 16:37:55"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-18 16:37:55"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:37:55"}
+{"level":"info","message":"Already logged-in user redirected","path":"/login","timestamp":"2026-03-18 16:38:01","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:38:01"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 16:38:12"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","page":"2","price":""},"timestamp":"2026-03-18 16:38:21"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","page":"1","price":""},"timestamp":"2026-03-18 16:38:33"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"69284f9a1d5087a9abcd1577","price":"","search":"","sort":""},"timestamp":"2026-03-18 16:40:00"}
+{"level":"info","message":"Loading shop page","query":{"brand":"692a7c52b03fa404e11802e8","category":"69284f9a1d5087a9abcd1577","price":"","search":"","sort":""},"timestamp":"2026-03-18 16:40:19"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 16:40:27"}
+{"level":"info","message":"Loading shop page","query":{"search":"unbe"},"timestamp":"2026-03-18 16:40:44"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 16:40:51"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:40:57"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-18 16:42:00"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-18 16:42:00"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-18 16:42:00"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-18 16:42:00"}
+{"body":{"brand":"692a7c52b03fa404e11802e8","category":"6931107587e5f293b7569451","description":"The Qin F21 Pro is a compact and versatile Android-powered mobile phone that blends the simplicity of a traditional keypad device with modern smartphone functionality. Featuring a 2.8-inch touchscreen alongside a physical T9 keypad, it offers intuitive navigation and efficient control for everyday tasks. Running on Android 11 with a quad-core processor and up to 4 GB RAM + 64 GB storage, this phone supports essential apps like WhatsApp, Facebook, TikTok, and more, making it ideal as a reliable backup device or a minimalist primary phone. Equipped with both a 5 MP rear camera and a 2 MP front camera, 4G LTE connectivity, Wi-Fi, and Bluetooth, the Qin F21 Pro keeps you connected while maintaining long battery life from its built-in 2120 mAh battery. Its lightweight, durable design makes it perfect for users who want basic smart features without the complexity of a full-size smartphone.","productName":"qin F21 pro","variants":[{"_id":"69aa30854e08a9bcc109550a","color":"black","quantity":"2","regularPrice":"10000","salesPrice":"9999"}]},"fileCount":0,"level":"info","message":"Updating product","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:42:15"}
+{"level":"info","message":"Product updated successfully","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:42:15"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:42:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:42:41"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:42:45"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 16:42:53"}
+{"level":"info","message":"Loading product details page","productId":"69aa2f9e4e08a9bcc10954ef","timestamp":"2026-03-18 16:43:03"}
+{"level":"info","message":"Loading product details page","productId":"69aa2f9e4e08a9bcc10954ef","timestamp":"2026-03-18 16:43:10"}
+{"level":"info","message":"Loading product details page","productId":"69aa2e814e08a9bcc10954d5","timestamp":"2026-03-18 16:43:13"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:43:25"}
+{"level":"info","message":"Loading product details page","productId":"69aa2ccd4e08a9bcc10954a7","timestamp":"2026-03-18 16:43:27"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-18 16:48:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba892bf9e379d7e9e98131","timestamp":"2026-03-18 16:48:38"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba892bf9e379d7e9e98131/status","timestamp":"2026-03-18 16:48:47"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba892bf9e379d7e9e98131","timestamp":"2026-03-18 16:48:50"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba892bf9e379d7e9e98131","timestamp":"2026-03-18 16:49:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-18 16:50:06"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-18 16:50:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/blockCustomer","timestamp":"2026-03-18 16:50:13"}
+{"level":"warn","message":"Toggling customer block status","timestamp":"2026-03-18 16:50:13","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Customer block status updated","timestamp":"2026-03-18 16:50:13","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 16:50:24"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-18 16:50:40"}
+{"email":"krishnan@gmail.com","level":"warn","message":"Blocked user login attempt","timestamp":"2026-03-18 16:50:40"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/unblockCustomer","timestamp":"2026-03-18 16:50:56"}
+{"level":"warn","message":"Unblocking customer","timestamp":"2026-03-18 16:50:56","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Customer unblocked successfully","timestamp":"2026-03-18 16:50:56","userId":"69ba5f3139f07def2df3581b"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-18 16:51:10"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-18 16:51:10"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 16:51:10"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-03-18 16:51:18"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-03-18 16:51:18"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category/add","timestamp":"2026-03-18 16:51:29"}
+{"level":"info","message":"Creating category","name":"foldable","status":"Active","timestamp":"2026-03-18 16:51:29"}
+{"body":{"name":"foldable","status":"Active"},"level":"warn","message":"Add category failed Category already exists","timestamp":"2026-03-18 16:51:29"}
+{"id":"693a4c4e03a452abb721e60c","level":"info","message":"Updating category","name":"foldable","status":"Active","timestamp":"2026-03-18 16:51:48"}
+{"body":{"id":"693a4c4e03a452abb721e60c","name":"foldable","status":"Active"},"level":"warn","message":"Edit category failed Category name already exists","timestamp":"2026-03-18 16:51:48"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 20:01:18"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 20:01:27"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 20:01:29"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceLowHigh"},"timestamp":"2026-03-18 20:01:37"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceHighLow"},"timestamp":"2026-03-18 20:01:43"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"zToA"},"timestamp":"2026-03-18 20:01:49"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"aToZ"},"timestamp":"2026-03-18 20:01:59"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceHighLow"},"timestamp":"2026-03-18 21:40:32"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 21:40:40"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-18 21:40:56"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceHighLow"},"timestamp":"2026-03-18 21:42:49"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"aToZ"},"timestamp":"2026-03-18 21:42:50"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"zToA"},"timestamp":"2026-03-18 21:42:50"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceHighLow"},"timestamp":"2026-03-18 21:42:51"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","price":"","search":"","sort":"priceLowHigh"},"timestamp":"2026-03-18 21:42:51"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-18 21:42:52"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:42:53"}
+{"level":"info","message":"Already logged-in user redirected","path":"/login","timestamp":"2026-03-18 21:42:55","userId":"69aabd2b62ccc0071ad60cf6"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:42:55"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-18 21:43:07"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-18 21:43:17"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-18 21:43:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:43:17"}
+{"level":"info","message":"Already logged-in user redirected","path":"/login","timestamp":"2026-03-18 21:43:20","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:43:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:43:24"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:43:25"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-18 21:45:40"}
+{"level":"info","message":"Loading product details page","productId":"69aa2ccd4e08a9bcc10954a7","timestamp":"2026-03-18 21:45:41"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/users","timestamp":"2026-03-19 08:42:22"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-19 08:42:34"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-19 08:42:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-19 08:42:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-19 08:42:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-19 08:42:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba5fb539f07def2df35a2e","timestamp":"2026-03-19 08:42:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-19 08:42:45"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69ba892bf9e379d7e9e98131","timestamp":"2026-03-19 08:42:46"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-19 08:44:17"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-19 19:11:18"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-03-19 19:11:23"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-19 19:11:29"}
+{"level":"info","message":"Loading product details page","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-03-19 19:11:31"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-19 19:11:51"}

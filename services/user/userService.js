@@ -114,6 +114,10 @@ export const getProducts = async ({
     filteredProducts.sort(
       (a, b) => b.defaultVariant.salesPrice - a.defaultVariant.salesPrice
     );
+  } else if (sort === "aToZ") {
+    filteredProducts.sort((a, b) => a.productName.localeCompare(b.productName));
+  } else if (sort === "zToA") {
+    filteredProducts.sort((a, b) => b.productName.localeCompare(a.productName));
   }
 
   const totalProducts = await Product.countDocuments(productFilter);
@@ -193,6 +197,10 @@ export const getShopProducts = async ({
     filteredProducts.sort(
       (a, b) => b.defaultVariant.salesPrice - a.defaultVariant.salesPrice
     );
+  } else if (sort === "aToZ") {
+    filteredProducts.sort((a, b) => a.productName.localeCompare(b.productName));
+  } else if (sort === "zToA") {
+    filteredProducts.sort((a, b) => b.productName.localeCompare(a.productName));
   }
 
   const totalProducts = await Product.countDocuments(productFilter);

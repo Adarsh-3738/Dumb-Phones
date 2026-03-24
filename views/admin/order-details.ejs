@@ -101,7 +101,14 @@
               ₹<%= item.price * item.quantity %>
             </td>
             <td>
-              <% if (order.status === 'Returned') { %>
+              <% if (item.itemStatus === 'Cancelled') { %>
+                <span style="color: red; font-weight: bold; font-size: 0.85em;">Cancelled</span>
+                <% if (item.cancelReason) { %>
+                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.cancelReason %></div>
+                <% } else if (order.cancelReason) { %>
+                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.cancelReason %></div>
+                <% } %>
+              <% } else if (order.status === 'Returned') { %>
                 <span style="color: #ef4444; font-weight: bold; font-size: 0.85em;">Returned</span>
                 <% if (order.returnReason) { %>
                   <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.returnReason %></div>
@@ -110,13 +117,6 @@
                 <span style="color: #f59e0b; font-weight: bold; font-size: 0.85em;">Return Requested</span>
                 <% if (order.returnReason) { %>
                   <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.returnReason %></div>
-                <% } %>
-              <% } else if (item.itemStatus === 'Cancelled') { %>
-                <span style="color: red; font-weight: bold; font-size: 0.85em;">Cancelled</span>
-                <% if (item.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.cancelReason %></div>
-                <% } else if (order.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.cancelReason %></div>
                 <% } %>
               <% } else { %>
                 <span style="color: green; font-size: 0.85em;">Active</span>
