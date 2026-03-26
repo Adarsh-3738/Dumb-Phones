@@ -1,5 +1,6 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
+import { addMoneyToWallet } from "../../services/user/walletService.js";
 
 
  //  GET USER ORDERS
@@ -60,6 +61,12 @@ export const cancelUserOrder = async (orderId, userId, reason) => {
 
   order.status = "Cancelled";
   order.cancelReason = reason || "";
+
+  // AUTOMATED REFUND FOR PRE-PAID ORDERS
+  if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
+    await addMoneyToWallet(userId, order.finalAmount, `Refund for Cancelled Order ${order.orderId}`);
+    order.paymentStatus = "Refunded";
+  }
 
   await order.save();
 
@@ -141,15 +148,15 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   }
   order.tax = Math.max(0, order.tax - taxToRemove);
   
+  // Refund Mathematics
+  const refundAmount = (regularItemTotal + taxToRemove) - discountToRemove;
+
   // Recalculate finalAmount based on the new total and discount
   if (order.totalPrice === 0) {
      order.finalAmount = 0;
      order.shipping = 0;
   } else {
-     // original finalAmount = totalPrice(regular) + tax + shipping - discount
-     // we reduce finalAmount by (regularItemTotal + taxToRemove - discountToRemove)
-     // which mathematically equals (saleItemTotal + taxToRemove)
-     order.finalAmount = Math.max(0, order.finalAmount - (regularItemTotal + taxToRemove - discountToRemove));
+     order.finalAmount = Math.max(0, order.finalAmount - refundAmount);
   }
 
   // Check if ALL items are now cancelled. If so, mark the entire order as cancelled.
@@ -158,6 +165,16 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   if (allCancelled) {
     order.status = "Cancelled";
     order.cancelReason = "All individual items cancelled";
+  }
+
+  // AUTOMATED PARTIAL/FULL REFUND FOR PRE-PAID ORDERS
+  if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
+    if (refundAmount > 0) {
+      await addMoneyToWallet(userId, refundAmount, `Refund for Cancelled Item in Order ${order.orderId}`);
+    }
+    if (allCancelled && order.finalAmount === 0) {
+      order.paymentStatus = "Refunded";
+    }
   }
 
   await order.save();

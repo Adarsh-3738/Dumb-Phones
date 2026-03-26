@@ -2,6 +2,7 @@ import * as productService from "../../services/admin/productService.js";
 import logger from "../../utils/logger.js";
 import Brand from "../../models/brandSchema.js";
 import Category from "../../models/categorySchema.js";
+import { recalculateVariantPrices } from "./offerController.js";
 
 // GET PRODUCTS
 export const getProducts = async (req, res) => {
@@ -87,6 +88,7 @@ export const addProduct = async (req, res) => {
     });
 
     await productService.createVariants(variantDocs);
+    await recalculateVariantPrices(product._id);
 
     res.json({ success: true, message: "Product created successfully!" });
 
@@ -159,6 +161,8 @@ export const editProduct = async (req, res) => {
       body: req.body,
       files: req.files,
     });
+
+    await recalculateVariantPrices(productId);
 
     logger.info("Product updated successfully", { productId });
 

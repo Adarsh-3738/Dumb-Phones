@@ -65,6 +65,52 @@
       </div>
     </section>
 
+    <!-- REFERRAL LINK CARD -->
+    <% if (user.referalCode) { %>
+    <section class="dashboard-card user-info-card" style="margin-top:20px;">
+      <div class="card-header">
+        <div class="header-title-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          <h3>Refer & Earn</h3>
+        </div>
+      </div>
+      
+      <div style="padding: 15px 25px 25px;">
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">Share this link with your friends. When they sign up, you'll earn a reward coupon!</p>
+        
+        <div style="display: flex; gap: 10px; align-items: center; background: #f1f5f9; padding: 12px 16px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+          <input type="text" id="refLinkInput" readonly value="" style="flex:1; background:transparent; border:none; outline:none; color: #0f172a; font-family: monospace; font-size: 14px;">
+          <button onclick="copyReferralLink()" class="btn btn-primary" style="padding: 8px 16px; min-width: 80px; cursor: pointer;">Copy</button>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const refInput = document.getElementById("refLinkInput");
+        if(refInput) {
+          refInput.value = window.location.origin + "/signup?ref=<%= user.referalCode %>";
+        }
+      });
+
+      function copyReferralLink() {
+        const input = document.getElementById("refLinkInput");
+        input.select();
+        input.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(input.value).then(() => {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Copied to clipboard!',
+            showConfirmButton: false,
+            timer: 2000
+          });
+        });
+      }
+    </script>
+    <% } %>
+
     <!-- ADDRESS DIRECTORY -->
     <section class="dashboard-card address-card">
       <div class="card-header flex-header">

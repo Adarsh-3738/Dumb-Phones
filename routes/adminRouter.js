@@ -7,6 +7,12 @@ import productRoutes from "./admin/product.js";
 import brandRoutes from "./admin/brand.js";
 import orderRoutes from "./admin/order.js";
 import settingsRoutes from "./admin/settings.js";
+import offerRoutes from "./admin/offer.js";
+import referralRoutes from "./admin/referral.js";
+import couponRoutes from "./admin/coupon.js";
+import salesRoutes from "./admin/sales.js"; 
+
+
 
 const router = express.Router();
 
@@ -17,5 +23,11 @@ router.use("/", productRoutes);
 router.use("/", brandRoutes);
 router.use("/", orderRoutes);
 router.use("/", settingsRoutes);
+router.use("/", offerRoutes);
+router.use("/", referralRoutes);
+router.use("/", couponRoutes);
+router.use("/", salesRoutes);
+
+
 
 export default router;

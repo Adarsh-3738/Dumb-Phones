@@ -17,17 +17,20 @@ export const getOrCreateWallet = async (userId) => {
 
 
 // Add money to wallet
-export const addMoneyToWallet = async (userId, amount) => {
-  const wallet = await Wallet.findOne({ userId });
+export const addMoneyToWallet = async (userId, amount, description = "Wallet Top-up") => {
+  let wallet = await Wallet.findOne({ userId });
 
-  if (!wallet) return null;
+  if (!wallet) {
+    wallet = await getOrCreateWallet(userId);
+    if (!wallet) return null;
+  }
 
   wallet.balance += Number(amount);
 
   wallet.transactions.push({
     amount,
     type: "credit",
-    description: "Wallet Top-up"
+    description: description
   });
 
   await wallet.save();

@@ -42,6 +42,8 @@
         <div id="error5" class="error-message"></div>
       </div>
 
+      <input type="hidden" id="referralCode" name="referralCode" value="<%= locals.refCode ? refCode : '' %>" />
+
       <% if (locals.message && message.length > 0) { %>
         <div class="alert alert-danger text-center">
           <%= message %>

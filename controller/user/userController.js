@@ -110,12 +110,13 @@ export const loadShopPage = async (req, res) => {
 // SIGNUP /OTP
 export const loadSignup = (req, res) => {
   logger.info("Loading signup page");
-  res.render("user/signup");
+  const refCode = req.query.ref || "";
+  res.render("user/signup", { refCode, message: null });
 };
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, referralCode } = req.body;
 
     logger.info("User signup attempt", { email });
 
@@ -141,7 +142,7 @@ export const signup = async (req, res) => {
     }
 
     req.session.userOtp = otp;
-    req.session.userData = { name, email, phone, password };
+    req.session.userData = { name, email, phone, password, referralCode };
 
     logger.info("OTP sent successfully", { email });
 
@@ -169,9 +170,9 @@ export const verifyOtp = async (req, res) => {
         .json({ success: false, message: "Invalid OTP" });
     }
 
-    const { name, email, phone, password } = req.session.userData;
+    const { name, email, phone, password, referralCode } = req.session.userData;
 
-    await createUser({ name, email, phone, password });
+    await createUser({ name, email, phone, password, referralCode });
 
     logger.info("User created successfully", { email });
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coupon Management</title>
+  <style>
+    body { background: #f8fafc; margin-left: 250px; font-family: sans-serif; }
+    .container { padding: 30px; max-width: 1000px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .btn-add { background: #2563eb; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f1f5f9; color: #475569; }
+    .btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    /* Modal Styles */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;}
+    .modal-content { background: white; padding: 30px; border-radius: 8px; width: 400px; display: flex; flex-direction: column; gap: 15px; }
+    .modal-content input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<%- include("../../views/partials/admin/header") %> 
+
+<div class="container">
+  <div class="header">
+    <h2>Coupons Management</h2>
+    <button class="btn-add" onclick="document.getElementById('addModal').style.display='flex'">+ Add Coupon</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code Name</th>
+        <th>Discount Value</th>
+        <th>Minimum Purchase</th>
+        <th>Expires On</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (coupons.length === 0) { %>
+        <tr><td colspan="5" style="text-align:center;">No coupons found</td></tr>
+      <% } %>
+      <% coupons.forEach(coupon => { %>
+      <tr>
+        <td><strong><%= coupon.name %></strong></td>
+        <td>₹<%= coupon.offerPrice %></td>
+        <td>₹<%= coupon.minimumPrice %></td>
+        <td><%= new Date(coupon.expireOn).toLocaleDateString() %></td>
+        <td><button class="btn-delete" onclick="deleteCoupon('<%= coupon._id %>')">Delete</button></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="addModal">
+  <div class="modal-content">
+    <h3>Create Coupon</h3>
+    <input type="text" id="couponName" placeholder="Coupon Code (e.g. SUMMER50)">
+    <input type="number" id="offerPrice" placeholder="Discount Amount (₹)">
+    <input type="number" id="minPrice" placeholder="Minimum Purchase Required (₹)">
+    <label style="font-size:12px; color:#64748b;">Expiry Date</label>
+    <input type="date" id="expireDate">
+    <div class="modal-actions">
+      <button style="padding: 8px 16px; border:none; cursor:pointer;" onclick="document.getElementById('addModal').style.display='none'">Cancel</button>
+      <button style="padding: 8px 16px; background:#2563eb; color:white; border:none; cursor:pointer;" onclick="submitCoupon()">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // Set min date
+  document.getElementById('expireDate').min = new Date().toISOString().split("T")[0];
+
+  async function submitCoupon() {
+    const data = {
+      name: document.getElementById('couponName').value,
+      offerPrice: document.getElementById('offerPrice').value,
+      minimumPrice: document.getElementById('minPrice').value,
+      expireOn: document.getElementById('expireDate').value
+    };
+
+    if (!data.name || !data.offerPrice || !data.minimumPrice || !data.expireOn) {
+      return Swal.fire("Error", "All fields are required", "error");
+    }
+
+    try {
+      const res = await fetch('/admin/coupons/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        Swal.fire("Success", result.message, "success").then(() => location.reload());
+      } else {
+        Swal.fire("Error", result.message, "error");
+      }
+    } catch (e) {
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  }
+
+  async function deleteCoupon(id) {
+    if(await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true }).then(r => r.isConfirmed)) {
+      const res = await fetch('/admin/coupons/delete/' + id, { method: 'DELETE' });
+      const result = await res.json();
+      if(result.success) location.reload();
+    }
+  }
+</script>
+</body>
+</html>

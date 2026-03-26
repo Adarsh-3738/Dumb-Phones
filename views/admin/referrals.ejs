@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Referrals Dashboard</title>
+  <link rel="stylesheet" href="/css/admin/referrals.css">
+</head>
+<body>
+
+<%- include("../../views/partials/admin/header") %> 
+
+<div class="container">
+  <div class="title-box">
+    <div>
+      <h2>Referrals Dashboard</h2>
+      <p>Track your platform's most active referrers and their invited users.</p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Referrer</th>
+        <th>Referral Code</th>
+        <th>Total Referred</th>
+        <th>Referred Users</th>
+        <th>Joined On</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if(referrers.length === 0) { %>
+        <tr><td colspan="5" style="text-align:center;padding:20px;">No successful referrals found.</td></tr>
+      <% } %>
+
+      <% referrers.forEach(referrer => { %>
+      <tr>
+        <td>
+          <strong><%= referrer.name %></strong><br>
+          <small><%= referrer.email %></small>
+        </td>
+        <td><span class="ref-code"><%= referrer.referalCode || 'N/A' %></span></td>
+        <td><%= referrer.redeemedUsers ? referrer.redeemedUsers.length : 0 %></td>
+        <td>
+          <div class="user-list">
+            <% if (referrer.redeemedUsers && referrer.redeemedUsers.length > 0) { %>
+              <% referrer.redeemedUsers.forEach(u => { %>
+                <div class="referred-user">
+                  <span><%= u.name %></span> - <small><%= u.email %></small><br>
+                  <span style="color:#94a3b8; font-size:10px;">Joined: <%= u.createdOn ? u.createdOn.toDateString() : 'N/A' %></span>
+                </div>
+              <% }) %>
+            <% } else { %>
+              -
+            <% } %>
+          </div>
+        </td>
+        <td><%= referrer.createdOn.toDateString() %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="/admin/referrals?page=<%= currentPage - 1 %>"><button class="page-btn">Prev</button></a>
+    <% } %>
+
+    <% for(let i = 1; i <= totalPages; i++) { %>
+      <a href="/admin/referrals?page=<%= i %>">
+        <button class="page-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></button>
+      </a>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+      <a href="/admin/referrals?page=<%= currentPage + 1 %>"><button class="page-btn">Next</button></a>
+    <% } %>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

@@ -17,6 +17,7 @@ import { generateOtp, sendOtpEmail } from "../../services/user/userService.js";
 import cloudinary from "../../config/cloudinary.js";
 import streamifier from "streamifier";
 import { validateAddress } from "../../helpers/addressValidator.js";
+import crypto from "crypto";
 
 
 
@@ -26,7 +27,21 @@ import { validateAddress } from "../../helpers/addressValidator.js";
 export const renderProfilePage = async (req, res) => {
   try {
 
-    const user = req.user;
+    let user = req.user || req.session.user;
+    
+    if (!user) return res.redirect("/login");
+
+    const dbUser = await getUserById(user._id);
+    if (dbUser && !dbUser.referalCode) {
+      dbUser.referalCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+      await dbUser.save();
+      // Update session user for consistency
+      if (req.session && req.session.user) {
+        req.session.user.referalCode = dbUser.referalCode;
+      }
+    }
+    
+    user = dbUser || user;
 
     const addressDoc = await getUserAddresses(user._id);
 

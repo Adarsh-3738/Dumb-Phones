@@ -158,5 +158,6 @@ const getProductDetailsService = async (productId) => {
   };
 };
 export default {
-  getProductDetailsService
+  getProductDetailsService,
+  getProductsService
 };

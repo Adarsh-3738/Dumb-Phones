@@ -13,5 +13,7 @@ router.post("/cart/remove", protect, cartController.removeFromCart);
 
 router.get("/checkout", protect, checkoutController.loadCheckout);
 router.post("/checkout/place-order", protect, checkoutController.placeOrder);
+router.post("/checkout/apply-coupon", protect, checkoutController.applyCoupon);
+router.post("/checkout/remove-coupon", protect, checkoutController.removeCoupon);
 
 export default router;

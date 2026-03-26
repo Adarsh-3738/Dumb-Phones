@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Offers Management</title>
+  <link rel="stylesheet" href="/css/admin/offers.css">
+</head>
+<body>
+
+<%- include("../../views/partials/admin/header") %> 
+
+<div class="container">
+  <div class="title-box">
+    <div>
+      <h2>Offers Management</h2>
+      <p>Create and manage product and category offers.</p>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">+ Add Offer</button>
+  </div>
+
+  <!-- Offers Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Target</th>
+        <th>Discount (%)</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if(offers.length === 0) { %>
+        <tr><td colspan="7" style="text-align:center;padding:20px;">No offers found.</td></tr>
+      <% } %>
+
+      <% offers.forEach(offer => { %>
+      <tr>
+        <td><%= offer.name %></td>
+        <td><%= offer.type %></td>
+        <td>
+          <% if (offer.target) { %>
+            <%= offer.target.name || offer.target.productName %>
+          <% } else { %>
+            N/A
+          <% } %>
+        </td>
+        <td><%= offer.discountValue %>%</td>
+        <td><%= offer.endDate ? offer.endDate.toDateString() : 'N/A' %></td>
+        <td>
+          <% if(offer.status === "Active") { %>
+            <span class="status-active" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Active</span>
+          <% } else { %>
+            <span class="status-draft" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Inactive</span>
+          <% } %>
+        </td>
+        <td>
+          <button class="action-btn" style="background:#e0f2fe; color:#0369a1" onclick="openEditModal('<%= offer._id %>', '<%= offer.name %>', '<%= offer.type %>', '<%= offer.target ? offer.target._id : '' %>', '<%= offer.discountValue %>', '<%= offer.endDate ? offer.endDate.toISOString().split('T')[0] : '' %>')">Edit</button>
+          <button class="action-btn btn-delete" onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- ADD OFFER MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal-box">
+    <h3>Add Offer</h3>
+    
+    <label>Offer Name</label>
+    <input type="text" id="offerName" placeholder="e.g. Summer Sale 20%">
+
+    <label>Offer Type</label>
+    <select id="offerType" onchange="toggleTargetDropdown()">
+      <option value="Product">Product Offer</option>
+      <option value="Category">Category Offer</option>
+      <option value="Referral">Referral Offer</option>
+    </select>
+
+    <label id="targetLabel">Select Target</label>
+    <select id="offerTarget">
+      <!-- Options populated via JS depending on type -->
+    </select>
+
+    <label>Discount Value (%)</label>
+    <input type="number" id="discountValue" min="1" max="99" placeholder="Discount percentage">
+
+    <label>End Date</label>
+    <input type="date" id="endDate">
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitAdd()">Add</button>
+      <button class="btn btn-gray" onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT OFFER MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <h3>Edit Offer</h3>
+    <input type="hidden" id="editOfferId">
+    
+    <label>Offer Name</label>
+    <input type="text" id="editOfferName" placeholder="e.g. Summer Sale 20%">
+
+    <label>Offer Type</label>
+    <select id="editOfferType" onchange="toggleEditTargetDropdown()">
+      <option value="Product">Product Offer</option>
+      <option value="Category">Category Offer</option>
+      <option value="Referral">Referral Offer</option>
+    </select>
+
+    <label id="editTargetLabel">Select Target</label>
+    <select id="editOfferTarget">
+      <!-- Options populated via JS depending on type -->
+    </select>
+
+    <label>Discount Value (%)</label>
+    <input type="number" id="editDiscountValue" min="1" max="99" placeholder="Discount percentage">
+
+    <label>End Date</label>
+    <input type="date" id="editEndDate">
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitEdit()">Save Changes</button>
+      <button class="btn btn-gray" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const products = <%- JSON.stringify(products || []) %>;
+  const categories = <%- JSON.stringify(categories || []) %>;
+</script>
+<script src="/js/admin/offers.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>

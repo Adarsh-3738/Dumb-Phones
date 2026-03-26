@@ -3,6 +3,8 @@ import Address from "../../models/addressSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Order from "../../models/orderSchema.js";
 import Settings from "../../models/settingsSchema.js";
+import Wallet from "../../models/walletSchema.js";
+import Coupon from "../../models/couponSchema.js";
 
 const SHIPPING_COST = 0;
 
@@ -49,14 +51,41 @@ export const getCheckoutData = async (userId) => {
   const settings = await Settings.findOne();
   const taxRate = settings ? settings.taxRate / 100 : 0.05;
 
+  let couponDeduction = 0;
+  let appliedCouponCode = null;
+
+  if (cart.appliedCoupon) {
+    const couponId = cart.appliedCoupon._id || cart.appliedCoupon;
+    const coupon = await Coupon.findById(couponId);
+    
+    if (coupon) {
+      // Secure End OF Day Expiry
+      const now = new Date();
+      const expiry = new Date(coupon.expireOn);
+      expiry.setHours(23, 59, 59, 999);
+
+      const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
+
+      if (now <= expiry && salePriceSubtotal >= coupon.minimumPrice && !hasUsed) {
+        couponDeduction = coupon.offerPrice;
+        appliedCouponCode = coupon.name;
+      } else {
+        await Cart.findByIdAndUpdate(cart._id, { $set: { appliedCoupon: null } });
+        cart.appliedCoupon = null;
+      }
+    } else {
+       await Cart.findByIdAndUpdate(cart._id, { $set: { appliedCoupon: null } });
+       cart.appliedCoupon = null;
+    }
+  }
+
   // Tax is calculated on the sale price the actual amount paid for items
   const tax = Math.round(salePriceSubtotal * taxRate);
-  const discount = totalSavings;
+  const discount = totalSavings + couponDeduction;
   const shipping = SHIPPING_COST;
   
-  // Final total should be precisely the sale amount + tax + shipping.
-  // Because subtotal is regular prices, subtotal - discount = salePriceSubtotal.
-  const total = subtotal + tax + shipping - discount;
+  let total = subtotal + tax + shipping - discount;
+  if (total < 0) total = 0;
 
   const addressDoc = await Address.findOne({ userId }).lean();
 
@@ -64,14 +93,14 @@ export const getCheckoutData = async (userId) => {
     ? addressDoc.address.sort((a, b) => b.isDefault - a.isDefault)
     : [];
 
-  return { cart, addresses, subtotal, tax, discount, shipping, total, totalSavings };
+  return { cart, addresses, subtotal, tax, discount, shipping, total, totalSavings, couponDeduction, appliedCouponCode };
 };
 
 // PLACE ORDER SERVICE
 
 
 
-export const placeOrderService = async (userId, addressId) => {
+export const placeOrderService = async (userId, addressId, paymentMethod = "COD") => {
 
   const cart = await Cart.findOne({ userId })
     .populate("items.productId")
@@ -108,10 +137,34 @@ export const placeOrderService = async (userId, addressId) => {
   const settings = await Settings.findOne();
   const taxRate = settings ? settings.taxRate / 100 : 0.05;
 
+  let couponDeduction = 0;
+  let couponApplied = false;
+
+  if (cart.appliedCoupon) {
+    const couponId = cart.appliedCoupon._id || cart.appliedCoupon;
+    const coupon = await Coupon.findById(couponId);
+    
+    if (coupon) {
+      const now = new Date();
+      const expiry = new Date(coupon.expireOn);
+      expiry.setHours(23, 59, 59, 999);
+      
+      const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
+
+      if (now <= expiry && salePriceSubtotal >= coupon.minimumPrice && !hasUsed) {
+        couponDeduction = coupon.offerPrice;
+        coupon.userId.push(userId);
+        await coupon.save();
+        couponApplied = true;
+      }
+    }
+  }
+
   const tax = Math.round(salePriceSubtotal * taxRate);
-  const discount = totalSavings;
+  const discount = totalSavings + couponDeduction;
   const shipping = SHIPPING_COST;
-  const finalAmount = subtotal + tax + shipping - discount;
+  let finalAmount = subtotal + tax + shipping - discount;
+  if (finalAmount < 0) finalAmount = 0;
 
   // COPY ITEMS BEFORE CLEARING CART
   const orderedItems = cart.items.map(item => ({
@@ -121,6 +174,31 @@ export const placeOrderService = async (userId, addressId) => {
     price: item.price,
     status: "Active"
   }));
+
+  let paymentStatus = "Pending";
+
+  // SECURE WALLET TRANSACTION PROCESSING
+  if (paymentMethod === "Wallet") {
+    const wallet = await Wallet.findOne({ userId });
+    
+    if (!wallet || wallet.balance < finalAmount) {
+      throw new Error("Insufficient Wallet Balance to complete this purchase.");
+    }
+
+    // Mathematical Deduction
+    wallet.balance -= finalAmount;
+    
+    // Receipt Logging
+    wallet.transactions.push({
+      amount: finalAmount,
+      type: "debit",
+      description: `Payment for Order`,
+      status: "success"
+    });
+
+    await wallet.save();
+    paymentStatus = "Paid";
+  }
 
   // CREATE ORDER 
   // Find address document
@@ -154,6 +232,9 @@ const order = await Order.create({
     pincode: selectedAddress.pincode
   },
 
+  couponApplied: couponApplied,
+  paymentMethod: paymentMethod,
+  paymentStatus: paymentStatus,
   status: "Pending"
 });
   // REDUCE STOCK

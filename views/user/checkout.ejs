@@ -142,10 +142,66 @@
           </div>
         </div>
       </section>
+
+      <!--  PAYMENT METHOD  -->
+      <section class="checkout-section mt-5">
+        <div class="section-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <h3>Payment Method</h3>
+        </div>
+
+        <div class="payment-methods" style="display: flex; gap: 15px; margin-top: 20px;">
+          <!-- COD -->
+          <label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <input type="radio" name="paymentMethod" value="COD" form="addressForm" checked style="transform: scale(1.2);">
+              <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Cash on Delivery</span>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-left: 25px;">Pay with cash when your order arrives.</p>
+          </label>
+
+          <!-- WALLET -->
+          <label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid <%= walletBalance < total ? '#f87171' : '#e2e8f0' %>; border-radius: 12px; cursor: <%= walletBalance < total ? 'not-allowed' : 'pointer' %>; opacity: <%= walletBalance < total ? 0.6 : 1 %>; transition: all 0.2s; background: <%= walletBalance < total ? '#fef2f2' : '#ffffff' %>;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <input type="radio" name="paymentMethod" value="Wallet" form="addressForm" <%= walletBalance < total ? 'disabled' : '' %> style="transform: scale(1.2);">
+              <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Digital Wallet</span>
+            </div>
+            <div style="margin-left: 25px;">
+              <span style="font-size: 15px; font-weight: 600; color: #10b981;">Balance: ₹<%= walletBalance.toLocaleString() %></span>
+              <% if (walletBalance < total) { %>
+                <div style="color: #ef4444; font-size: 12px; margin-top: 4px; font-weight: bold;">Insufficient Balance for this order</div>
+              <% } else { %>
+                <div style="color: #64748b; font-size: 12px; margin-top: 4px;">Instant digital deduction.</div>
+              <% } %>
+            </div>
+          </label>
+        </div>
+      </section>
+      
     </div>
 
     <!--  ORDER SUMMARY  -->
     <aside class="checkout-sidebar">
+
+      <!-- COUPON SECTION -->
+      <div class="checkout-summary-card" style="margin-bottom: 20px;">
+        <h3>Coupon & Promos</h3>
+        <% if (appliedCouponCode) { %>
+          <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+            <div>
+              <span style="font-weight: 800; color: #065f46; letter-spacing: 0.5px; font-size: 15px;"><%= appliedCouponCode %></span>
+              <p style="font-size: 12px; color: #047857; margin-top: 4px; font-weight: 500;">Valid coupon activated!</p>
+            </div>
+            <button type="button" onclick="removeCoupon()" style="background: none; border: none; color: #ef4444; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline;">Remove</button>
+          </div>
+        <% } else { %>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <input type="text" id="couponCodeInput" placeholder="Enter offer code" style="flex: 1; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; font-size: 14px; text-transform: uppercase;">
+            <button type="button" onclick="applyCoupon()" style="padding: 10px 22px; background: #0f172a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s;">Apply</button>
+          </div>
+        <% } %>
+      </div>
+
       <div class="checkout-summary-card">
         <h3>Order Summary</h3>
 
@@ -156,8 +212,14 @@
           </div>
           <% if (typeof totalSavings !== 'undefined' && totalSavings > 0) { %>
             <div class="summary-line discount-line">
-              <span class="label" style="color: #10b981; font-weight: 600;">Discount</span>
+              <span class="label" style="color: #10b981; font-weight: 600;">Product Discounts</span>
               <span class="value" style="color: #10b981; font-weight: 600;">- ₹<%= parseInt(totalSavings).toLocaleString('en-IN') %></span>
+            </div>
+          <% } %>
+          <% if (typeof couponDeduction !== 'undefined' && couponDeduction > 0) { %>
+            <div class="summary-line discount-line">
+              <span class="label" style="color: #6366f1; font-weight: 600;">Coupon: <%= appliedCouponCode %></span>
+              <span class="value" style="color: #6366f1; font-weight: 600;">- ₹<%= parseInt(couponDeduction).toLocaleString('en-IN') %></span>
             </div>
           <% } %>
           <div class="summary-line">
@@ -181,7 +243,7 @@
 
         <button form="addressForm" type="submit" class="btn-checkout-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          Place Order (COD)
+          Complete Order
         </button>
 
         <p class="secure-notice">Your transaction is fully secured and encrypted.</p>
@@ -194,5 +256,43 @@
 <%- include("../partials/user/footer") %>
 
 <script src="/js/user/checkout.js"></script>
+
+<script>
+async function applyCoupon() {
+  const code = document.getElementById("couponCodeInput").value.trim();
+  if(!code) return Swal.fire("Code Required", "Please enter a valid coupon code first.", "warning");
+
+  try {
+    const res = await fetch("/checkout/apply-coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if(data.success) {
+      await Swal.fire("Coupon Applied!", data.message, "success");
+      location.reload();
+    } else {
+      Swal.fire("Offer Ineligible", data.message, "error");
+    }
+  } catch(e) { 
+    console.error(e);
+    Swal.fire("Error", "Could not apply coupon securely.", "error");
+  }
+}
+
+async function removeCoupon() {
+  try {
+    const res = await fetch("/checkout/remove-coupon", { method: "POST" });
+    const data = await res.json();
+    if(data.success) {
+      location.reload();
+    } else {
+      Swal.fire("Failed to Remove", data.message, "error");
+    }
+  } catch(e) { console.error(e) }
+}
+</script>
+
 </body>
 </html>

@@ -10,7 +10,7 @@ export const getProducts = async (req, res) => {
 
     const data = await productService.getProductsService(req.query);
 
-    res.render("user/products", {
+    res.render("user/shop", {
       ...data,
       search: req.query.search,
       sort: req.query.sort,

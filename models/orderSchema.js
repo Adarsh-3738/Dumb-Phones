@@ -95,7 +95,8 @@ userId: {
       "Delivered",
       "Cancelled",
       "Return Request",
-      "Returned"
+      "Returned",
+      "Return Rejected"
     ]
   },
   cancelReason: {
@@ -114,6 +115,18 @@ userId: {
   couponApplied: {
     type: Boolean,
     default: false
+  },
+  paymentMethod: {
+    type: String,
+    enum: ["COD", "Wallet"],
+    default: "COD",
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["Pending", "Paid", "Refunded"],
+    default: "Pending",
+    required: true
   }
 });
 

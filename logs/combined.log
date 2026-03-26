@@ -7467,3 +7467,266 @@
 {"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-19 19:11:29"}
 {"level":"info","message":"Loading product details page","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-03-19 19:11:31"}
 {"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-19 19:11:51"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-24 16:15:52"}
+{"level":"info","message":"Loading product details page","productId":"69aa2f9e4e08a9bcc10954ef","timestamp":"2026-03-24 16:15:58"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-24 16:16:01"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-24 16:16:06"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-24 16:16:20"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-24 16:16:20"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-24 16:16:20"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-24 16:16:20"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/offers","timestamp":"2026-03-24 16:33:10"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-24 16:33:25"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-24 16:33:26"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-24 16:33:26"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-24 16:33:26"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:33:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-24 16:34:37"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:34:38"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-24 16:34:44"}
+{"level":"info","message":"Loading homepage","query":{"brand":"","category":"","page":"3","price":"","search":"","sort":""},"timestamp":"2026-03-24 16:34:50"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:34:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-24 16:36:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:36:30"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:36:37"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:36:39"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:36:39"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:36:39"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:36:40"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-24 16:37:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:37:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/delete/69c2703509f54b357e3a2017","timestamp":"2026-03-24 16:37:47"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:37:48"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/delete/69c26fc509f54b357e3a1fdb","timestamp":"2026-03-24 16:37:50"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 16:37:52"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:56"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:57"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:57"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:57"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:57"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:58"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:58"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:58"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:58"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-24 16:37:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:01:38"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/offers","timestamp":"2026-03-24 19:07:30"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-24 19:07:42"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-24 19:07:42"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-24 19:07:42"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-24 19:07:42"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:07:56"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/edit/69c2707009f54b357e3a20b7","timestamp":"2026-03-24 19:08:24"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/edit/69c2707009f54b357e3a20b7","timestamp":"2026-03-24 19:08:32"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:08:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/edit/69c2707009f54b357e3a20b7","timestamp":"2026-03-24 19:14:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:14:14"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/offers","timestamp":"2026-03-24 19:22:16"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-24 19:22:30"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-24 19:22:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-24 19:22:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-24 19:22:31"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:22:44"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/referrals","timestamp":"2026-03-24 19:37:34"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-24 19:37:44"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-24 19:37:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-24 19:37:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-24 19:37:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-24 19:37:47"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-24 19:37:50"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-03-24 19:38:25"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-24 19:38:33"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/referrals","timestamp":"2026-03-25 10:38:32"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:39:06"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:42:40"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-25 10:42:54"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-25 10:42:54"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:42:54"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:43:16"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-25 10:43:29"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-25 10:43:29"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:43:29"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:49:55"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-03-25 10:50:00"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:50:03"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-25 10:50:12"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-25 10:50:12"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:50:12"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 10:50:44"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 10:50:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 10:50:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 10:50:44"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:50:47"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 10:50:50"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:50:51"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-25 10:51:24"}
+{"error":{"_message":"Offer validation failed","errors":{"targetModel":{"kind":"enum","message":"`Referral` is not a valid enum value for path `targetModel`.","name":"ValidatorError","path":"targetModel","properties":{"enumValues":["Product","Category"],"length":8,"message":"`Referral` is not a valid enum value for path `targetModel`.","path":"targetModel","type":"enum","value":"Referral"},"value":"Referral"}},"message":"Offer validation failed: targetModel: `Referral` is not a valid enum value for path `targetModel`.","name":"ValidationError"},"level":"error","message":"Error adding offer","timestamp":"2026-03-25 10:51:24"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-25 10:51:32"}
+{"error":{"_message":"Offer validation failed","errors":{"targetModel":{"kind":"enum","message":"`Referral` is not a valid enum value for path `targetModel`.","name":"ValidatorError","path":"targetModel","properties":{"enumValues":["Product","Category"],"length":8,"message":"`Referral` is not a valid enum value for path `targetModel`.","path":"targetModel","type":"enum","value":"Referral"},"value":"Referral"}},"message":"Offer validation failed: targetModel: `Referral` is not a valid enum value for path `targetModel`.","name":"ValidationError"},"level":"error","message":"Error adding offer","timestamp":"2026-03-25 10:51:32"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-25 10:51:35"}
+{"error":{"_message":"Offer validation failed","errors":{"targetModel":{"kind":"enum","message":"`Referral` is not a valid enum value for path `targetModel`.","name":"ValidatorError","path":"targetModel","properties":{"enumValues":["Product","Category"],"length":8,"message":"`Referral` is not a valid enum value for path `targetModel`.","path":"targetModel","type":"enum","value":"Referral"},"value":"Referral"}},"message":"Offer validation failed: targetModel: `Referral` is not a valid enum value for path `targetModel`.","name":"ValidationError"},"level":"error","message":"Error adding offer","timestamp":"2026-03-25 10:51:35"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/offers/add","timestamp":"2026-03-25 10:53:51"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/offers","timestamp":"2026-03-25 10:53:53"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 10:54:04"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 10:54:05"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 10:54:05"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 10:54:05"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:54:07"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-03-25 10:54:24"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:54:25"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 10:54:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:54:31"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:54:36"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-25 10:54:47"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-25 10:54:48"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:54:48"}
+{"level":"info","message":"Already logged-in user redirected","path":"/signup?ref=B2D305","timestamp":"2026-03-25 10:54:57","userId":"69ba5f3139f07def2df3581b"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:54:57"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 10:55:26"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:55:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 10:55:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 10:55:42"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:56:26"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-03-25 10:56:34"}
+{"email":"vikas@gmail.com","level":"info","message":"User signup attempt","timestamp":"2026-03-25 10:57:18"}
+{"email":"vikas@gmail.com","level":"info","message":"OTP sent successfully","timestamp":"2026-03-25 10:57:23"}
+{"email":"vikas@gmail.com","level":"info","message":"User created successfully","timestamp":"2026-03-25 10:57:43"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 10:57:44"}
+{"email":"vikas@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-03-25 10:57:53"}
+{"email":"vikas@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-03-25 10:57:53"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 10:57:53"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 10:58:04"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/settings","timestamp":"2026-03-25 10:58:35"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/settings","timestamp":"2026-03-25 16:43:18"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 16:43:28"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 16:43:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 16:43:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 16:43:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 16:43:35"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 16:43:37"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 16:43:40"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/referrals","timestamp":"2026-03-25 16:46:18"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 16:46:28"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 16:46:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 16:46:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 16:46:28"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-25 16:46:31"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/add","timestamp":"2026-03-25 16:47:17"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-25 16:47:20"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/coupons","timestamp":"2026-03-25 16:54:49"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 16:54:58"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 16:54:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 16:54:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 16:54:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-25 18:41:53"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-03-25 18:45:14"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-03-25 18:45:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-25 18:45:16"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/category","timestamp":"2026-03-25 18:45:18"}
+{"level":"info","message":"Loading category list","page":1,"searchQuery":"","timestamp":"2026-03-25 18:45:18"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-25 19:50:29"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-25 19:50:29"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 21:23:04"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:23:13"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:23:52"}
+{"level":"info","message":"Loading product details page","productId":"69aa2d454e08a9bcc10954c0","timestamp":"2026-03-25 21:23:55"}
+{"level":"info","message":"Loading product details page","productId":"69aa2ccd4e08a9bcc10954a7","timestamp":"2026-03-25 21:24:03"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:24:06"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-25 21:24:10"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","page":"2","price":"","search":"","sort":""},"timestamp":"2026-03-25 21:24:14"}
+{"level":"info","message":"Loading product details page","productId":"69a955220e6ec7a1e2a43ece","timestamp":"2026-03-25 21:24:24"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:25:50"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/users","timestamp":"2026-03-25 21:27:54"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 21:28:03"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 21:28:03"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 21:28:03"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 21:28:03"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report","timestamp":"2026-03-25 21:28:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/pdf?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:28:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/excel?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:28:15"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/excel?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:28:48"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:32"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:32"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:35"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:35"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=weekly&startDate=&endDate=","timestamp":"2026-03-25 21:29:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=daily&startDate=&endDate=","timestamp":"2026-03-25 21:29:42"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=weekly&startDate=&endDate=","timestamp":"2026-03-25 21:29:45"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=weekly&startDate=&endDate=","timestamp":"2026-03-25 21:29:45"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=weekly&startDate=&endDate=","timestamp":"2026-03-25 21:29:45"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=weekly&startDate=&endDate=","timestamp":"2026-03-25 21:29:46"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=monthly&startDate=&endDate=","timestamp":"2026-03-25 21:29:47"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=custom&startDate=2026-03-01&endDate=2026-03-01","timestamp":"2026-03-25 21:30:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=custom&startDate=2026-03-01&endDate=2026-02-11","timestamp":"2026-03-25 21:30:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?range=custom&startDate=2026-03-01&endDate=2026-02-11","timestamp":"2026-03-25 21:30:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/pdf?range=custom&startDate=2026-03-01&endDate=2026-02-11","timestamp":"2026-03-25 21:32:15"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/orders","timestamp":"2026-03-25 21:38:22"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 21:38:33"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 21:38:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 21:38:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 21:38:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 21:38:38"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:38:40"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 21:38:48"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:38:51"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d/status","timestamp":"2026-03-25 21:38:55"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:39:02"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 21:39:11"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:39:18"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 21:41:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 21:41:25"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/orders/69bbfd1d7569a8ae120d555d/status","timestamp":"2026-03-25 21:41:39"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:41:42"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 21:42:01"}
+{"email":"admin@gmail.com","level":"warn","message":"Admin login failed: incorrect password","timestamp":"2026-03-25 21:42:01"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 21:42:16"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 21:42:16"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 21:42:16"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 21:42:17"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report","timestamp":"2026-03-25 21:42:19"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-25 21:42:25"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-25 21:42:25"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 21:42:27"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:42:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d/status","timestamp":"2026-03-25 21:42:51"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69bbfd1d7569a8ae120d555d","timestamp":"2026-03-25 21:42:52"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 21:42:54"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-25 22:02:01"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/orders","timestamp":"2026-03-25 22:02:05"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 22:02:12"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-03-25 22:02:15"}
+{"level":"info","message":"Loading product details page","productId":"69aa2f9e4e08a9bcc10954ef","timestamp":"2026-03-25 22:02:20"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-25 22:04:22"}
+{"level":"info","message":"Loading homepage","query":{"brand":"","category":"","page":"2","price":"","search":"","sort":""},"timestamp":"2026-03-25 22:04:28"}
+{"level":"info","message":"Loading homepage","query":{"brand":"","category":"","page":"3","price":"","search":"","sort":""},"timestamp":"2026-03-25 22:04:50"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-03-25 22:05:14"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-03-25 22:05:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 22:05:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 22:05:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-03-25 22:05:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 22:05:43"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-25 22:05:49"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/referrals","timestamp":"2026-03-25 22:07:08"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-25 22:07:12"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-25 22:07:12"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-25 22:07:13"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-25 22:07:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 22:07:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-03-25 22:07:15"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-03-25 22:07:15"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-03-25 22:07:22"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-03-25 22:07:23"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-03-25 22:07:23"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-03-26 08:00:27"}
+{"level":"info","message":"Loading product details page","productId":"69aa2d454e08a9bcc10954c0","timestamp":"2026-03-26 08:00:31"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-03-26 08:00:47"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-26 19:21:38"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-26 19:21:46"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-26 19:25:53"}
+{"level":"info","message":"Loading login page","timestamp":"2026-03-26 19:25:58"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-03-26 19:26:04"}

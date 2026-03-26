@@ -74,8 +74,8 @@ export const changeOrderStatus = async (orderId, status) => {
   // If approving a return
   if (status === "Returned" && order.status !== "Returned") {
     
-    // Add amount back to user's wallet
-    await addMoneyToWallet(order.userId, order.finalAmount);
+    // Add amount back to user's wallet safely
+    await addMoneyToWallet(order.userId, order.finalAmount, "Refund for Returned Order");
 
     // Restore inventory and mark items as cancelled/returned
     for (const item of order.orderedItems) {

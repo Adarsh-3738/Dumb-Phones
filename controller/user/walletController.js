@@ -7,7 +7,9 @@ import {
 // Load wallet page
 export const loadWallet = async (req, res) => {
 
-  const userId = req.session.user;
+  const userId = req.session.user?._id || req.user?._id;
+
+  if (!userId) return res.redirect('/login');
 
   const wallet = await getOrCreateWallet(userId);
 
@@ -19,7 +21,9 @@ export const loadWallet = async (req, res) => {
 // Add money
 export const addMoney = async (req, res) => {
 
-  const userId = req.session.user;
+  const userId = req.session.user?._id || req.user?._id;
+  if (!userId) return res.json({ success: false, message: "Unauthorized" });
+
   const { amount } = req.body;
 
   const wallet = await addMoneyToWallet(userId, amount);

@@ -7,6 +7,8 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import Variant from "../../models/variantSchema.js";
+import Offer from "../../models/offerSchema.js";
+import Coupon from "../../models/couponSchema.js";
 dotenv.config();
 
 // PASSWORD & OTP
@@ -45,10 +47,44 @@ export const sendOtpEmail = async (email, otp) => {
 
 // USER DB OPERATIONS
 export const findUserByEmail = async (email) => await User.findOne({ email });
-export const createUser = async ({ name, email, phone, password }) => {
+export const createUser = async ({ name, email, phone, password, referralCode }) => {
   const hashedPassword = await hashPassword(password);
-  const user = new User({ name, email, phone, password: hashedPassword });
+  const newReferalCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+  
+  const user = new User({ 
+    name, 
+    email, 
+    phone, 
+    password: hashedPassword,
+    referalCode: newReferalCode
+  });
   await user.save();
+
+  // Handle provided referral code
+  if (referralCode) {
+    const referrer = await User.findOne({ referalCode: referralCode });
+    if (referrer) {
+      if (!referrer.redeemedUsers) referrer.redeemedUsers = [];
+      referrer.redeemedUsers.push(user._id);
+      await referrer.save();
+
+      const activeReferralOffer = await Offer.findOne({ type: "Referral", status: "Active" });
+      if (activeReferralOffer) {
+        // Generate a new unique coupon for the referrer
+        const uniqueCouponCode = "REF-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+        
+        const newCoupon = new Coupon({
+          name: uniqueCouponCode,
+          expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days valid
+          offerPrice: activeReferralOffer.discountValue,
+          minimumPrice: 0,
+          userId: [referrer._id]
+        });
+        await newCoupon.save();
+      }
+    }
+  }
+
   return user;
 };
 export const getUserById = async (id) => await User.findById(id);
