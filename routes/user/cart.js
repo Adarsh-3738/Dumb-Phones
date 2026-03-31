@@ -16,4 +16,11 @@ router.post("/checkout/place-order", protect, checkoutController.placeOrder);
 router.post("/checkout/apply-coupon", protect, checkoutController.applyCoupon);
 router.post("/checkout/remove-coupon", protect, checkoutController.removeCoupon);
 
+
+router.post("/checkout/razorpay-create", protect, checkoutController.createRazorpayOrder);
+router.post("/checkout/razorpay-verify", protect, checkoutController.verifyRazorpayPayment);
+
+router.get("/order-success", protect, checkoutController.orderSuccessPage);
+router.get("/order-failed", protect, checkoutController.orderFailedPage);
+
 export default router;

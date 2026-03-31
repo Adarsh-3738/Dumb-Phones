@@ -13,6 +13,11 @@ const couponSchema = new Schema({
     default: Date.now,
     required: true
   },
+  startDate: {
+    type: Date,
+    default: Date.now,
+    required: true
+  },
   expireOn: {
     type: Date,
     required: true

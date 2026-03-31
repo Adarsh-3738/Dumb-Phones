@@ -62,9 +62,18 @@
           <span id="salesPrice" class="sale-price">
             ₹ <%= variants[0].salesPrice %>
           </span>
-          <span id="regularPrice" class="regular-price">
+          <span id="regularPrice" class="regular-price" <%= variants[0].regularPrice <= variants[0].salesPrice ? 'style="display:none;"' : '' %>>
             ₹ <%= variants[0].regularPrice %>
           </span>
+          <% if (variants[0].regularPrice > variants[0].salesPrice) { 
+               const pct = Math.round(((variants[0].regularPrice - variants[0].salesPrice) / variants[0].regularPrice) * 100);
+          %>
+            <span id="discountBadge" class="discount-badge" style="background:#10b981; color:white; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-left:10px; display:inline-block;">
+              <%= pct %>% OFF
+            </span>
+          <% } else { %>
+            <span id="discountBadge" class="discount-badge" style="background:#10b981; color:white; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-left:10px; display:none;"></span>
+          <% } %>
         </div>
         
         <div class="stock-status">

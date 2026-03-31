@@ -119,14 +119,24 @@
                 </div>
 
                 <div class="item-details">
-                  <div class="item-title-row">
-                    <h4><%= product.productName %></h4>
-                    <span class="item-total-price">₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
+                  <div class="item-title-row" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <h4 style="margin: 0; font-size: 15px; color: #0f172a;"><%= product.productName %></h4>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                      <% if (variant.regularPrice && variant.regularPrice > item.price) { %>
+                        <span style="text-decoration: line-through; color: #94a3b8; font-size: 12px; margin-bottom: 2px;">₹<%= parseInt(variant.regularPrice * item.quantity).toLocaleString('en-IN') %></span>
+                      <% } %>
+                      <span class="item-total-price" style="font-weight: bold; font-size: 16px; color: #10b981;">₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
+                    </div>
                   </div>
                   
-                  <div class="item-meta">
-                    <p class="variant-color">Variant: <%= variant.color %></p>
-                    <p class="item-calc">₹<%= parseInt(item.price).toLocaleString('en-IN') %> × <%= item.quantity %></p>
+                  <div class="item-meta" style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <p class="variant-color" style="margin: 0; font-size: 13px; color: #64748b;">Color: <%= variant.color %></p>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                       <% if (variant.regularPrice && variant.regularPrice > item.price) { %>
+                          <span style="text-decoration: line-through; color: #94a3b8; font-size: 12px;">₹<%= parseInt(variant.regularPrice).toLocaleString('en-IN') %></span>
+                       <% } %>
+                       <span class="item-calc" style="font-weight: 600; color: #334155; font-size: 13px;">₹<%= parseInt(item.price).toLocaleString('en-IN') %> × <%= item.quantity %></span>
+                    </div>
                   </div>
 
                   <div class="item-stock-status">
@@ -151,6 +161,15 @@
         </div>
 
         <div class="payment-methods" style="display: flex; gap: 15px; margin-top: 20px;">
+          <!-- RAZORPAY -->
+<label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+    <input type="radio" name="paymentMethod" value="Razorpay" form="addressForm" style="transform: scale(1.2);">
+    <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Razorpay (Cards/UPI)</span>
+  </div>
+  <p style="font-size: 13px; color: #64748b; margin-left: 25px;">Pay securely via Stripe & UPI.</p>
+</label>
+
           <!-- COD -->
           <label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
@@ -241,7 +260,8 @@
           <span class="value">₹<%= parseInt(total).toLocaleString('en-IN') %></span>
         </div>
 
-        <button form="addressForm" type="submit" class="btn-checkout-primary">
+        <button type="button" onclick="handleCheckout()" class="btn-checkout-primary">
+
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           Complete Order
         </button>
@@ -292,7 +312,93 @@ async function removeCoupon() {
     }
   } catch(e) { console.error(e) }
 }
+
+async function handleCheckout() {
+  const form = document.getElementById("addressForm");
+  const addressChecked = document.querySelector('input[name="addressId"]:checked');
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+  if (!addressChecked) {
+    return Swal.fire("Address Required", "Please select a delivery address", "warning");
+  }
+
+  // COD or Wallet,just submit the form normally 
+  if (paymentMethod === "COD" || paymentMethod === "Wallet") {
+    form.submit();
+    return;
+  }
+
+  // IF RAZORPAY:
+  try {
+    // Ask Backend to Generate the Order
+    const res = await fetch("/checkout/razorpay-create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ addressId: addressChecked.value })
+    });
+    
+    const data = await res.json();
+    
+    if (!data.success) {
+      return Swal.fire("Checkout Failed", data.message, "error");
+    }
+
+    // Open the Razorpay Popup
+    const options = {
+      key: data.key, 
+      amount: Math.round(data.amount * 100),
+      currency: "INR",
+      name: "DumbPhones",
+      description: "Order Payment",
+      order_id: data.razorpayOrderId,
+      
+      handler: async function (response) {
+        //User typed card successfully! Verify the signature quietly on the backend
+        const verifyRes = await fetch("/checkout/razorpay-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            systemOrderId: data.systemOrderId
+          })
+        });
+
+        const verifyData = await verifyRes.json();
+        
+        if (verifyData.success) {
+           // Payment is 100% verified! Send them to the Success page
+           window.location.href = `/order-success?orderId=${data.systemOrderId}`;
+        } else {
+           Swal.fire("Verification Failed", "Payment was tampered with.", "error");
+           window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+        }
+      },
+      prefill: {
+        name: "User", // can pass actual user details if you want
+        email: "user@example.com" 
+      },
+      theme: { color: "#0f172a" } // Matches your dark UI theme
+    };
+
+    const rzp = new Razorpay(options);
+    
+    rzp.on('payment.failed', function (response){
+      // User closed popup or card declined
+      window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+    });
+
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire("System Error", "Could not initialize payment module.", "error");
+  }
+}
+
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 </body>
 </html>

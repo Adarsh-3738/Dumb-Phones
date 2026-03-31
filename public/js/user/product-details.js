@@ -31,6 +31,17 @@ function updateVariantUI(index) {
   regularPrice.innerText = `₹ ${variant.regularPrice}`;
   salesPrice.innerText = `₹ ${variant.salesPrice}`;
 
+  const discountBadge = document.getElementById("discountBadge");
+  if (variant.regularPrice > variant.salesPrice) {
+    const pct = Math.round(((variant.regularPrice - variant.salesPrice) / variant.regularPrice) * 100);
+    discountBadge.innerText = `${pct}% OFF`;
+    discountBadge.style.display = "inline-block";
+    regularPrice.style.display = "inline-block";
+  } else {
+    discountBadge.style.display = "none";
+    regularPrice.style.display = "none";
+  }
+
   // Stock
   if (variant.quantity > 0) {
     stockText.innerText = `In Stock: ${variant.quantity}`;

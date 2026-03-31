@@ -5,7 +5,7 @@ import Order from "../../models/orderSchema.js";
 import Settings from "../../models/settingsSchema.js";
 import Wallet from "../../models/walletSchema.js";
 import Coupon from "../../models/couponSchema.js";
-
+import Razorpay from "razorpay";
 const SHIPPING_COST = 0;
 
 
@@ -110,29 +110,61 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     throw new Error("Cart empty");
   }
 
-  // STOCK CHECK
-  for (const item of cart.items) {
-    const variant = await Variant.findById(item.variantId._id);
-
-    if (!variant || variant.quantity < item.quantity) {
-      throw new Error("Stock mismatch");
-    }
-  }
-
-  // CALCULATIONS
+// CALCULATIONS
   let subtotal = 0; // Regular price sum
   let salePriceSubtotal = 0; // Sale price sum
   let totalSavings = 0;
 
-  cart.items.forEach(item => {
-    if (item.variantId && item.variantId.regularPrice && item.variantId.regularPrice > item.price) {
-      subtotal += item.variantId.regularPrice * item.quantity;
-      totalSavings += (item.variantId.regularPrice - item.price) * item.quantity;
-    } else {
-      subtotal += item.price * item.quantity;
+  // ATOMIC STOCK REDUCTION TO PREVENT RACE CONDITIONS
+  const reservedStock = [];
+  try {
+    for (const item of cart.items) {
+      // Deduct atomically only if enough quantity exists
+      const variant = await Variant.findOneAndUpdate(
+        { _id: item.variantId._id, quantity: { $gte: item.quantity } },
+        { $inc: { quantity: -item.quantity } },
+        { new: true }
+      );
+
+      if (!variant) {
+        throw new Error(`Item "${item.productId.productName}" is out of stock! Someone just bought the last one.`);
+      }
+
+      // If quantity drops to exactly 0, automatically toggle status to 'out of stock'
+      if (variant.quantity === 0) {
+        variant.status = "out of stock";
+        await variant.save();
+      }
+
+      reservedStock.push({ variantId: item.variantId._id, quantity: item.quantity });
     }
-    salePriceSubtotal += item.price * item.quantity;
-  });
+  } catch (err) {
+    // If one item fails, safely rollback any previously reserved items in the loop
+    for (const reserved of reservedStock) {
+      const v = await Variant.findById(reserved.variantId);
+      if (v) {
+        v.quantity += reserved.quantity;
+        if (v.status === "out of stock" && v.quantity > 0) {
+          v.status = "Available";
+        }
+        await v.save();
+      }
+    }
+    throw err;
+  }
+
+  let order;
+
+  try {
+    cart.items.forEach(item => {
+      if (item.variantId && item.variantId.regularPrice && item.variantId.regularPrice > item.price) {
+        subtotal += item.variantId.regularPrice * item.quantity;
+        totalSavings += (item.variantId.regularPrice - item.price) * item.quantity;
+      } else {
+        subtotal += item.price * item.quantity;
+      }
+      salePriceSubtotal += item.price * item.quantity;
+    });
 
   const settings = await Settings.findOne();
   const taxRate = settings ? settings.taxRate / 100 : 0.05;
@@ -211,7 +243,7 @@ const selectedAddress = addressDoc.address.id(addressId);
 if (!selectedAddress) throw new Error("Invalid address");
 
 // CREATE ORDER
-const order = await Order.create({
+order = await Order.create({
   userId,
 
   orderedItems: orderedItems,   
@@ -237,12 +269,19 @@ const order = await Order.create({
   paymentStatus: paymentStatus,
   status: "Pending"
 });
-  // REDUCE STOCK
-  for (const item of cart.items) {
-    await Variant.updateOne(
-      { _id: item.variantId._id },
-      { $inc: { quantity: -item.quantity } }
-    );
+  } catch (error) {
+    // FATAL Rollback: If Wallet fails, DB fails, etc. we must return the atomic stock back
+    for (const reserved of reservedStock) {
+      const v = await Variant.findById(reserved.variantId);
+      if (v) {
+        v.quantity += reserved.quantity;
+        if (v.status === "out of stock" && v.quantity > 0) {
+          v.status = "Available";
+        }
+        await v.save();
+      }
+    }
+    throw error;
   }
 
   // CLEAR CART
@@ -250,4 +289,26 @@ const order = await Order.create({
   await cart.save();
 
   return order;
+};
+
+//razorpay payment
+
+export const generateRazorpay = async (orderId, total) => {
+  try {
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+      amount: Math.round(total * 100), // convert to paise
+      currency: "INR",
+      receipt: "" + orderId
+    };
+
+    const order = await razorpay.orders.create(options);
+    return order;
+  } catch (error) {
+    throw new Error("Razorpay generation failed");
+  }
 };

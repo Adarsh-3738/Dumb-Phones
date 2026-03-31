@@ -3,7 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <title>Referrals Dashboard</title>
-  <link rel="stylesheet" href="/css/admin/referrals.css">
+  <link rel="stylesheet" href="/css/admin/category.css">
+  <style>
+    th { background: #f8f9fa; font-weight: 600; color: #333; }
+    td { vertical-align: top; color: #444; }
+    small { color: #888; }
+    .ref-code {
+      background: #eef2ff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      color: #2a55ff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .referred-user {
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
 
@@ -15,6 +41,18 @@
       <h2>Referrals Dashboard</h2>
       <p>Track your platform's most active referrers and their invited users.</p>
     </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <form method="GET" action="/admin/referrals">
+      <input type="text" name="search" placeholder="Search referrer..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+      <button class="btn-add" type="submit">Search</button>
+    </form>
+
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+      <a href="/admin/referrals"><button class="clear-btn">Clear</button></a>
+    <% } %>
   </div>
 
   <table>
@@ -63,17 +101,17 @@
   <!-- Pagination -->
   <div class="pagination">
     <% if (currentPage > 1) { %>
-      <a href="/admin/referrals?page=<%= currentPage - 1 %>"><button class="page-btn">Prev</button></a>
+      <a href="/admin/referrals?page=<%= currentPage - 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Prev</button></a>
     <% } %>
 
     <% for(let i = 1; i <= totalPages; i++) { %>
-      <a href="/admin/referrals?page=<%= i %>">
+      <a href="/admin/referrals?page=<%= i %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
         <button class="page-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></button>
       </a>
     <% } %>
 
     <% if (currentPage < totalPages) { %>
-      <a href="/admin/referrals?page=<%= currentPage + 1 %>"><button class="page-btn">Next</button></a>
+      <a href="/admin/referrals?page=<%= currentPage + 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Next</button></a>
     <% } %>
   </div>
 </div>

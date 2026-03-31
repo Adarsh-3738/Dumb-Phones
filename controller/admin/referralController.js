@@ -7,10 +7,16 @@ export const getReferrals = async (req, res) => {
     const limit = 10;
     const skip = (page - 1) * limit;
 
+    const searchQuery = req.query.search || "";
+
     // Find users who have actually referred at least one person
     const query = {
       redeemedUsers: { $exists: true, $not: { $size: 0 } }
     };
+
+    if (searchQuery) {
+      query.name = { $regex: searchQuery, $options: "i" };
+    }
 
     const totalReferrers = await User.countDocuments(query);
     const totalPages = Math.ceil(totalReferrers / limit);
@@ -24,7 +30,8 @@ export const getReferrals = async (req, res) => {
     res.render("admin/referrals", {
       referrers,
       currentPage: page,
-      totalPages
+      totalPages,
+      searchQuery
     });
   } catch (error) {
     logger.error("Error fetching referrals", { error });

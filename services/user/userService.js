@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import Variant from "../../models/variantSchema.js";
 import Offer from "../../models/offerSchema.js";
 import Coupon from "../../models/couponSchema.js";
+import { addMoneyToWallet } from "./walletService.js";
 dotenv.config();
 
 // PASSWORD & OTP
@@ -68,19 +69,21 @@ export const createUser = async ({ name, email, phone, password, referralCode })
       referrer.redeemedUsers.push(user._id);
       await referrer.save();
 
-      const activeReferralOffer = await Offer.findOne({ type: "Referral", status: "Active" });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const activeReferralOffer = await Offer.findOne({ 
+          type: "Referral", 
+          status: "Active",
+          startDate: { $lte: new Date() },
+          endDate: { $gte: today }
+      });
       if (activeReferralOffer) {
-        // Generate a new unique coupon for the referrer
-        const uniqueCouponCode = "REF-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+        // Reward the Referrer
+        await addMoneyToWallet(referrer._id, activeReferralOffer.discountValue, "Referral Bonus (Referrer)");
         
-        const newCoupon = new Coupon({
-          name: uniqueCouponCode,
-          expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days valid
-          offerPrice: activeReferralOffer.discountValue,
-          minimumPrice: 0,
-          userId: [referrer._id]
-        });
-        await newCoupon.save();
+        // Reward the new User (Referee)
+        await addMoneyToWallet(user._id, activeReferralOffer.discountValue, "Referral Signup Bonus");
       }
     }
   }

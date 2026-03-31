@@ -44,8 +44,10 @@
             <div class="product-card">
               
               <div class="card-img-wrap">
-                <% if(product.defaultVariant?.salesPrice < product.defaultVariant?.regularPrice){ %>
-                  <span class="sale-badge">SALE</span>
+                <% if(product.defaultVariant?.salesPrice < product.defaultVariant?.regularPrice){ 
+                     const discountPct = Math.round(((product.defaultVariant.regularPrice - product.defaultVariant.salesPrice) / product.defaultVariant.regularPrice) * 100);
+                %>
+                  <span class="sale-badge">-<%= discountPct %>%</span>
                 <% } %>
                 
                 <a href="/product/<%= product._id %>" class="img-link">

@@ -71,19 +71,35 @@ export const changeOrderStatus = async (orderId, status) => {
     throw new Error("Order not found");
   }
 
+  // Strict transition blocks
+  if (order.status === "Cancelled" && status !== "Cancelled") {
+    throw new Error("Cannot change the status of a cancelled order.");
+  }
+  if (order.status === "Delivered" && status === "Cancelled") {
+    throw new Error("Cannot cancel an order that has already been delivered.");
+  }
+  if (order.status === "Returned" && status !== "Returned") {
+    throw new Error("Cannot change the status of a returned order.");
+  }
+
   // If approving a return
   if (status === "Returned" && order.status !== "Returned") {
     
-    // Add amount back to user's wallet safely
+    // Add amount back to user's wallet safely (excluding discounts applied)
     await addMoneyToWallet(order.userId, order.finalAmount, "Refund for Returned Order");
+    order.paymentStatus = "Refunded";
 
     // Restore inventory and mark items as cancelled/returned
     for (const item of order.orderedItems) {
       if (item.itemStatus !== "Cancelled") {
-        await Variant.findByIdAndUpdate(
-          item.variant,
-          { $inc: { quantity: item.quantity } }
-        );
+        const variant = await Variant.findById(item.variant);
+        if (variant) {
+          variant.quantity += item.quantity;
+          if (variant.status === "out of stock" && variant.quantity > 0) {
+            variant.status = "Available";
+          }
+          await variant.save();
+        }
         item.itemStatus = "Cancelled";
       }
     }
@@ -91,15 +107,23 @@ export const changeOrderStatus = async (orderId, status) => {
 
   // If admin is cancelling the entire order that hasn't been cancelled/returned yet
   if (status === "Cancelled" && order.status !== "Cancelled" && order.status !== "Returned") {
-    // If payment was already made, we should refund, 
-    // but typically only Online/Wallet payments would require a refund upon pre delivery cancellation. 
-    // Assuming for now it's requested to refund on cancelled orders too if paid but safe to just restore inventory.
+    
+    // Refund to Wallet only if the user actually paid 
+    if (order.paymentMethod !== "COD" || order.paymentStatus === "Paid") {
+      await addMoneyToWallet(order.userId, order.finalAmount, "Refund for Admin Cancelled Order");
+      order.paymentStatus = "Refunded";
+    }
+
     for (const item of order.orderedItems) {
       if (item.itemStatus !== "Cancelled") {
-        await Variant.findByIdAndUpdate(
-          item.variant,
-          { $inc: { quantity: item.quantity } }
-        );
+        const variant = await Variant.findById(item.variant);
+        if (variant) {
+          variant.quantity += item.quantity;
+          if (variant.status === "out of stock" && variant.quantity > 0) {
+            variant.status = "Available";
+          }
+          await variant.save();
+        }
         item.itemStatus = "Cancelled";
       }
     }

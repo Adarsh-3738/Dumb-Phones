@@ -15,7 +15,22 @@
       <h2>Offers Management</h2>
       <p>Create and manage product and category offers.</p>
     </div>
-    <button class="btn-add" onclick="openAddModal()">+ Add Offer</button>
+    <div style="display: flex; gap: 15px;">
+      <button class="btn-add" style="background:#368d07;" onclick="syncAllOffers()">Sync All Prices</button>
+      <button class="btn-add" onclick="openAddModal()">+ Add Offer</button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <form method="GET" action="/admin/offers">
+      <input type="text" name="search" placeholder="Search offers..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+      <button class="btn-add" type="submit">Search</button>
+    </form>
+
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+      <a href="/admin/offers"><button class="clear-btn">Clear</button></a>
+    <% } %>
   </div>
 
   <!-- Offers Table -->
@@ -25,8 +40,8 @@
         <th>Name</th>
         <th>Type</th>
         <th>Target</th>
-        <th>Discount (%)</th>
-        <th>End Date</th>
+        <th>Discount</th>
+        <th>Validity</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -47,8 +62,17 @@
             N/A
           <% } %>
         </td>
-        <td><%= offer.discountValue %>%</td>
-        <td><%= offer.endDate ? offer.endDate.toDateString() : 'N/A' %></td>
+        <td>
+          <% if (offer.discountType === "Fixed Amount") { %>
+            ₹<%= offer.discountValue %> (Fixed)
+          <% } else { %>
+            <%= offer.discountValue %>%
+          <% } %>
+        </td>
+        <td style="font-size: 13px;">
+          <div style="color: #64748b;">Starts: <%= offer.startDate ? offer.startDate.toDateString() : 'N/A' %></div>
+          <div>Ends: <%= offer.endDate ? offer.endDate.toDateString() : 'N/A' %></div>
+        </td>
         <td>
           <% if(offer.status === "Active") { %>
             <span class="status-active" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Active</span>
@@ -57,7 +81,7 @@
           <% } %>
         </td>
         <td>
-          <button class="action-btn" style="background:#e0f2fe; color:#0369a1" onclick="openEditModal('<%= offer._id %>', '<%= offer.name %>', '<%= offer.type %>', '<%= offer.target ? offer.target._id : '' %>', '<%= offer.discountValue %>', '<%= offer.endDate ? offer.endDate.toISOString().split('T')[0] : '' %>')">Edit</button>
+          <button class="action-btn" style="background:#e0f2fe; color:#0369a1" onclick="openEditModal('<%= offer._id %>', '<%= offer.name %>', '<%= offer.type %>', '<%= offer.target ? offer.target._id : '' %>', '<%= offer.discountType %>', '<%= offer.discountValue %>', '<%= (offer.maxDiscountAmount != null) ? offer.maxDiscountAmount : '' %>', '<%= offer.startDate ? offer.startDate.toISOString().split('T')[0] : '' %>', '<%= offer.endDate ? offer.endDate.toISOString().split('T')[0] : '' %>')">Edit</button>
           <button class="action-btn btn-delete" onclick="deleteOffer('<%= offer._id %>')">Delete</button>
         </td>
       </tr>
@@ -83,11 +107,26 @@
 
     <label id="targetLabel">Select Target</label>
     <select id="offerTarget">
-      <!-- Options populated via JS depending on type -->
+      <!-- Options populated  JS depending on type -->
     </select>
 
-    <label>Discount Value (%)</label>
-    <input type="number" id="discountValue" min="1" max="99" placeholder="Discount percentage">
+    <label>Discount Type</label>
+    <select id="discountType" onchange="toggleDiscountType(false)">
+      <option value="Percentage">Percentage (%)</option>
+      <option value="Fixed Amount">Fixed Amount (₹)</option>
+    </select>
+
+    <label>Discount Value</label>
+    <input type="number" id="discountValue" min="1" placeholder="Amount or %" style="margin-bottom: 10px;">
+
+    <div id="maxDiscountContainer" style="margin-bottom: 15px;">
+      <label>Maximum Discount (₹)</label>
+      <input type="number" id="maxDiscountAmount" min="1" placeholder="e.g. 2000 (Optional)">
+      <small style="color: #64748b; font-size: 12px; display: block; margin-top: 4px;">Leave empty for no limit</small>
+    </div>
+
+    <label>Start Date</label>
+    <input type="date" id="startDate">
 
     <label>End Date</label>
     <input type="date" id="endDate">
@@ -117,11 +156,26 @@
 
     <label id="editTargetLabel">Select Target</label>
     <select id="editOfferTarget">
-      <!-- Options populated via JS depending on type -->
+      <!-- Options populated depending on type -->
     </select>
 
-    <label>Discount Value (%)</label>
-    <input type="number" id="editDiscountValue" min="1" max="99" placeholder="Discount percentage">
+    <label>Discount Type</label>
+    <select id="editDiscountType" onchange="toggleDiscountType(true)">
+      <option value="Percentage">Percentage (%)</option>
+      <option value="Fixed Amount">Fixed Amount (₹)</option>
+    </select>
+
+    <label>Discount Value</label>
+    <input type="number" id="editDiscountValue" min="1" placeholder="Amount or %" style="margin-bottom: 10px;">
+
+    <div id="editMaxDiscountContainer" style="margin-bottom: 15px;">
+      <label>Maximum Discount (₹)</label>
+      <input type="number" id="editMaxDiscountAmount" min="1" placeholder="e.g. 2000 (Optional)">
+      <small style="color: #64748b; font-size: 12px; display: block; margin-top: 4px;">Leave empty for no limit</small>
+    </div>
+
+    <label>Start Date</label>
+    <input type="date" id="editStartDate">
 
     <label>End Date</label>
     <input type="date" id="editEndDate">

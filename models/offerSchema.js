@@ -12,11 +12,20 @@ const offerSchema = new mongoose.Schema(
       enum: ["Product", "Category", "Referral"],
       required: true
     },
+    discountType: {
+      type: String,
+      enum: ["Percentage", "Fixed Amount"],
+      default: "Percentage"
+    },
     discountValue: {
       type: Number,
       required: true,
+      min: 1
+    },
+    maxDiscountAmount: {
+      type: Number,
       min: 1,
-      max: 99
+      default: null
     },
     target: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +39,10 @@ const offerSchema = new mongoose.Schema(
       type: String,
       enum: ["Active", "Inactive"],
       default: "Active"
+    },
+    startDate: {
+      type: Date,
+      required: true
     },
     endDate: {
       type: Date,

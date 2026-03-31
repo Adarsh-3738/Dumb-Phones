@@ -50,10 +50,14 @@ export const cancelUserOrder = async (orderId, userId, reason) => {
 
     if (item.itemStatus === "Active") {
 
-      await Variant.findByIdAndUpdate(
-        item.variant,
-        { $inc: { quantity: item.quantity } }
-      );
+      const variant = await Variant.findById(item.variant);
+      if (variant) {
+        variant.quantity += item.quantity;
+        if (variant.status === "out of stock" && variant.quantity > 0) {
+          variant.status = "Available";
+        }
+        await variant.save();
+      }
 
       item.itemStatus = "Cancelled";
     }
@@ -103,10 +107,14 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
     throw new Error("Item is already cancelled");
 
   // Restore inventory
-  await Variant.findByIdAndUpdate(
-    item.variant,
-    { $inc: { quantity: item.quantity } }
-  );
+  const variantObj = await Variant.findById(item.variant);
+  if (variantObj) {
+    variantObj.quantity += item.quantity;
+    if (variantObj.status === "out of stock" && variantObj.quantity > 0) {
+      variantObj.status = "Available";
+    }
+    await variantObj.save();
+  }
 
   // Mark item as cancelled
   item.itemStatus = "Cancelled";

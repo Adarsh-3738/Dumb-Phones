@@ -121,7 +121,6 @@ export const downloadInvoice = async (req, res) => {
 
     if (!order) return res.redirect("/orders");
 
-    // Increased margins for better layout
     const doc = new PDFDocument({ margin: 50, size: 'A4' });
 
     res.setHeader("Content-Type", "application/pdf");
@@ -167,12 +166,15 @@ export const downloadInvoice = async (req, res) => {
        .font("Helvetica").text(order.orderId, 330, 120, { width: 215, align: "right" })
 
        .font("Helvetica-Bold").text("Order Date:", 200, 140, { width: 120, align: "right" })
-       .font("Helvetica").text(order.createdOn.toLocaleDateString("en-IN"), 330, 140, { width: 215, align: "right" });
+       .font("Helvetica").text(order.createdOn.toLocaleDateString("en-IN"), 330, 140, { width: 215, align: "right" })
 
-    generateHr(170);
+       .font("Helvetica-Bold").text("Payment Method:", 200, 160, { width: 120, align: "right" })
+       .font("Helvetica").text(`${order.paymentMethod || 'COD'} [${order.paymentStatus}]`, 330, 160, { width: 215, align: "right" });
+
+    generateHr(185);
 
     //  BILLING & SHIPPING DETAILS
-    const customerTop = 185;
+    const customerTop = 200;
     
     doc.fillColor("#000000").fontSize(12).font("Helvetica-Bold").text("Billing Address", 50, customerTop);
     doc.fillColor("#444444").fontSize(10).font("Helvetica-Bold")
@@ -189,10 +191,10 @@ export const downloadInvoice = async (req, res) => {
        .text(`${order.address?.city}, ${order.address?.state} - ${order.address?.pincode || order.address?.zipCode}`, 300, customerTop + 50)
        .text(`Phone: ${order.address?.phone}`, 300, customerTop + 65);
 
-    generateHr(255);
+    generateHr(270);
 
     // TABLE HEADERS
-    const tableTop = 280;
+    const tableTop = 295;
     doc.fillColor("#f3f4f6").rect(50, tableTop - 5, 500, 25).fill();
     doc.fillColor("#000000").fontSize(10).font("Helvetica-Bold");
 
@@ -215,6 +217,7 @@ export const downloadInvoice = async (req, res) => {
 
     order.orderedItems.forEach((item) => {
       let isCancelled = item.itemStatus === "Cancelled";
+      let isReturned = order.status === "Returned";
       
       const variant = item.variant;
       const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
@@ -242,7 +245,9 @@ export const downloadInvoice = async (req, res) => {
       
       doc.text(formatCurrency(itemDiscount), 400, tableY, { width: 50, align: "right" });
       
-      if(isCancelled) {
+      if(isReturned) {
+        doc.fillColor("#ef4444").text("Returned", 460, tableY, { width: 80, align: "right" });
+      } else if(isCancelled) {
         doc.fillColor("#ef4444").text("Cancelled", 460, tableY, { width: 80, align: "right" });
       } else {
         const rowAmount = (unitPrice * item.quantity) - itemDiscount;

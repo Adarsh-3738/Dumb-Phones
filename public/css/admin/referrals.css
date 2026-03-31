@@ -1,4 +1,4 @@
-/* /css/admin/referrals.css */
+
 body {
   background: #f8fafc;
   margin-left: 250px;
@@ -22,6 +22,60 @@ p {
   color: #64748b;
   font-size: 14px;
   margin-top: 5px;
+}
+
+/* Search Bar Styles */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-bar form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-bar input {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 250px;
+}
+
+.btn-add {
+  background: #2563eb;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.btn-add:hover {
+  background: #1d4ed8;
+}
+
+.clear-btn {
+  background: #64748b;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #475569;
 }
 
 table {

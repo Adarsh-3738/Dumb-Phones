@@ -60,7 +60,7 @@
             <td><%= order.userId ? order.userId.email : 'N/A' %></td>
             <td><%= order.createdOn ? new Date(order.createdOn).toDateString() : 'N/A' %></td>
             <td>
-              <select onchange="updateStatus('<%= order._id %>', this.value)">
+              <select onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
                 <option value="Pending" <%= order.status==='Pending'?'selected':'' %>>Pending</option>
                 <option value="Processing" <%= order.status==='Processing'?'selected':'' %>>Processing</option>
                 <option value="Shipped" <%= order.status==='Shipped'?'selected':'' %>>Shipped</option>

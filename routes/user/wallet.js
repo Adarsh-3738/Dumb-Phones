@@ -5,6 +5,7 @@ import { userAuth } from "../../middlewares/auth.js";
 const router = express.Router();
 
 router.get("/wallet", walletController.loadWallet);
-router.post("/add", userAuth, walletController.addMoney);
+router.post("/wallet/add/razorpay-create", userAuth, walletController.createRazorpayTopUp);
+router.post("/wallet/add/razorpay-verify", userAuth, walletController.verifyRazorpayTopUp);
 
 export default router;

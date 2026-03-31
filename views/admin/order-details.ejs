@@ -28,6 +28,18 @@
       });
     %>
     <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %></p>
+    <p><strong>Payment Method:</strong> 
+      <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #334155;"><%= order.paymentMethod || 'Unknown' %></span>
+    </p>
+    <p><strong>Payment Status:</strong> 
+      <% if (order.paymentStatus === 'Paid') { %>
+        <span style="color: #10b981; font-weight: bold;"><%= order.paymentStatus %></span>
+      <% } else if (order.paymentStatus === 'Pending') { %>
+        <span style="color: #f59e0b; font-weight: bold;"><%= order.paymentStatus %></span>
+      <% } else { %>
+        <span style="color: #ef4444; font-weight: bold;"><%= order.paymentStatus %></span>
+      <% } %>
+    </p>
     <% if (order.cancelReason) { %>
       <div style="margin: 15px 0; padding: 10px; border-left: 4px solid #f59e0b; background-color: #fffbeb;">
         <strong>Cancel Reason:</strong> <%= order.cancelReason %>
@@ -45,13 +57,13 @@
         <h4 style="margin-top: 0; color: #b45309;">Verify Return Request</h4>
         <p style="font-size: 14px; color: #78350f; margin-bottom: 15px;">The user has requested to return this order. Approving it will automatically refund ₹<%= order.finalAmount %> into their Wallet and restore inventory.</p>
         <div style="display: flex; gap: 10px;">
-          <button onclick="updateStatus('<%= order._id %>', 'Returned')" style="background: #10b981; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Approve Return</button>
-          <button onclick="updateStatus('<%= order._id %>', 'Return Rejected')" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reject Return</button>
+          <button onclick="updateStatus('<%= order._id %>', 'Returned', '<%= order.status %>')" style="background: #10b981; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Approve Return</button>
+          <button onclick="updateStatus('<%= order._id %>', 'Return Rejected', '<%= order.status %>')" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reject Return</button>
         </div>
       </div>
     <% } else { %>
       <label>Change Status</label>
-      <select onchange="updateStatus('<%= order._id %>', this.value)">
+      <select onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
         <% ["Pending","Processing","Shipped","Out for Delivery","Delivered","Cancelled", "Return Request", "Returned", "Return Rejected"].forEach(s => { %>
           <option value="<%= s %>" <%= order.status === s ? "selected" : "" %>>
             <%= s %>
@@ -112,14 +124,7 @@
               ₹<%= item.price * item.quantity %>
             </td>
             <td>
-              <% if (item.itemStatus === 'Cancelled') { %>
-                <span style="color: red; font-weight: bold; font-size: 0.85em;">Cancelled</span>
-                <% if (item.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.cancelReason %></div>
-                <% } else if (order.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.cancelReason %></div>
-                <% } %>
-              <% } else if (order.status === 'Returned') { %>
+              <% if (order.status === 'Returned') { %>
                 <span style="color: #ef4444; font-weight: bold; font-size: 0.85em;">Returned</span>
                 <% if (order.returnReason) { %>
                   <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.returnReason %></div>
@@ -133,6 +138,13 @@
                 <span style="color: #f59e0b; font-weight: bold; font-size: 0.85em;">Return Requested</span>
                 <% if (order.returnReason) { %>
                   <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.returnReason %></div>
+                <% } %>
+              <% } else if (item.itemStatus === 'Cancelled') { %>
+                <span style="color: red; font-weight: bold; font-size: 0.85em;">Cancelled</span>
+                <% if (item.cancelReason) { %>
+                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.cancelReason %></div>
+                <% } else if (order.cancelReason) { %>
+                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.cancelReason %></div>
                 <% } %>
               <% } else { %>
                 <span style="color: green; font-size: 0.85em;">Active</span>
@@ -149,7 +161,16 @@
       <strong>Discount:</strong> - ₹<%= order.discount %>
     </div>
     <div style="margin-top: 10px; text-align: right; font-size: 1.25em;">
-      <strong>Total Paid:</strong> ₹<%= order.finalAmount %>
+      <% if (order.status === 'Cancelled') { %>
+        <strong>Amount Paid:</strong> ₹<%= (order.paymentMethod !== 'COD' || order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded') ? order.finalAmount : 0 %><br>
+        <span style="font-size: 14px; color: #64748b;">(Original Order Total: ₹<%= order.finalAmount %>)</span>
+      <% } else if (order.paymentStatus === 'Pending' && order.paymentMethod === 'COD') { %>
+        <strong>To Pay (COD):</strong> ₹<%= order.finalAmount %>
+      <% } else if (order.paymentStatus === 'Refunded') { %>
+        <strong>Refunded to Wallet:</strong> ₹<%= order.finalAmount %>
+      <% } else { %>
+        <strong>Total Paid:</strong> ₹<%= order.finalAmount %>
+      <% } %>
     </div>
   </div>
 

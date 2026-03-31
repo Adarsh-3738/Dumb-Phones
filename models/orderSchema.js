@@ -118,7 +118,7 @@ userId: {
   },
   paymentMethod: {
     type: String,
-    enum: ["COD", "Wallet"],
+    enum: ["COD", "Wallet", "Razorpay"],
     default: "COD",
     required: true
   },

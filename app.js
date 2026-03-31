@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 
 
 import methodOverride from "method-override";
+import { initCronJobs } from "./utils/cronJobs.js";
 
 
 
@@ -160,6 +161,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Server
 app.listen(process.env.PORT, () => {
   console.log("Server running on port", process.env.PORT);
+  initCronJobs();
 });
 
 export default app;

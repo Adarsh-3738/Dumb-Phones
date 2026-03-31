@@ -3,8 +3,13 @@ import Coupon from "../../models/couponSchema.js";
 // Load Coupons Page
 export const getCoupons = async (req, res) => {
   try {
-    const coupons = await Coupon.find().sort({ createdOn: -1 });
-    res.render("admin/coupons", { coupons });
+    const searchQuery = req.query.search || "";
+    let filter = {};
+    if (searchQuery) {
+      filter.name = { $regex: searchQuery, $options: "i" };
+    }
+    const coupons = await Coupon.find(filter).sort({ createdOn: -1 });
+    res.render("admin/coupons", { coupons, searchQuery: searchQuery || "" });
   } catch (error) {
     console.error("Error fetching coupons:", error);
     res.status(500).render("admin/admin-error");
@@ -14,10 +19,10 @@ export const getCoupons = async (req, res) => {
 // Create New Coupon
 export const addCoupon = async (req, res) => {
   try {
-    const { name, expireOn, offerPrice, minimumPrice } = req.body;
+    const { name, expireOn, offerPrice, minimumPrice, startDate } = req.body;
 
     // Validation
-    if (!name || !expireOn || !offerPrice || !minimumPrice) {
+    if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
@@ -40,13 +45,21 @@ export const addCoupon = async (req, res) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (new Date(expireOn) < today) {
+    const sDate = new Date(startDate);
+    const eDate = new Date(expireOn);
+    
+    if (eDate < today) {
       return res.status(400).json({ success: false, message: "Expiry date cannot be in the past" });
+    }
+
+    if (eDate <= sDate) {
+      return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
     }
 
     const newCoupon = new Coupon({
       name: nameUpper,
-      expireOn: new Date(expireOn),
+      startDate: sDate,
+      expireOn: eDate,
       offerPrice: offerVal,
       minimumPrice: minVal,
     });
@@ -57,6 +70,73 @@ export const addCoupon = async (req, res) => {
   } catch (error) {
     console.error("Error adding coupon:", error);
     res.status(500).json({ success: false, message: "Failed to create coupon" });
+  }
+};
+
+// Edit Coupon
+export const editCoupon = async (req, res) => {
+  try {
+    const { name, expireOn, offerPrice, minimumPrice, startDate } = req.body;
+    const { id } = req.params;
+
+    // Validation
+    if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    const nameUpper = name.toUpperCase().trim();
+    
+    // Check if another coupon has the same name
+    const existing = await Coupon.findOne({ name: nameUpper, _id: { $ne: id } });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+    }
+
+    const offerVal = Number(offerPrice);
+    const minVal = Number(minimumPrice);
+
+    if (offerVal <= 0 || minVal <= 0) {
+      return res.status(400).json({ success: false, message: "Prices must be greater than 0" });
+    }
+
+    if (offerVal >= minVal) {
+      return res.status(400).json({ success: false, message: "Offer price must be less than Minimum price" });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sDate = new Date(startDate);
+    const eDate = new Date(expireOn);
+
+    if (eDate < today) {
+      return res.status(400).json({ success: false, message: "Expiry date cannot be in the past" });
+    }
+    
+    if (eDate <= sDate) {
+      return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
+    }
+
+    const updatedCoupon = await Coupon.findByIdAndUpdate(
+      id,
+      {
+        name: nameUpper,
+        startDate: sDate,
+        expireOn: eDate,
+        offerPrice: offerVal,
+        minimumPrice: minVal,
+      },
+      { new: true }
+    );
+
+    if (!updatedCoupon) {
+      return res.status(404).json({ success: false, message: "Coupon not found" });
+    }
+
+    res.json({ success: true, message: "Coupon updated successfully!" });
+
+  } catch (error) {
+    console.error("Error editing coupon:", error);
+    res.status(500).json({ success: false, message: "Failed to update coupon" });
   }
 };
 

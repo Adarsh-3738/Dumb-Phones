@@ -2,6 +2,8 @@ import { getCheckoutData, placeOrderService } from "../../services/user/checkout
 import { getOrCreateWallet } from "../../services/user/walletService.js";
 import Coupon from "../../models/couponSchema.js";
 import Cart from "../../models/cartSchema.js";
+import crypto from "crypto";
+import Order from "../../models/orderSchema.js"; // make sure Order is imported
 
 
 // LOAD CHECKOUT
@@ -122,5 +124,110 @@ export const removeCoupon = async (req, res) => {
   } catch (error) {
     console.error("Remove coupon error:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+//payment integration
+export const createRazorpayOrder = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { addressId } = req.body;
+
+    
+    const order = await placeOrderService(userId, addressId, "Razorpay");
+
+    
+    const { generateRazorpay } = await import("../../services/user/checkoutService.js");
+    const razorpayData = await generateRazorpay(order.orderId, order.finalAmount);
+
+    res.json({
+      success: true,
+      razorpayOrderId: razorpayData.id,
+      systemOrderId: order._id,
+      amount: order.finalAmount,
+      key: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const verifyRazorpayPayment = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, systemOrderId } = req.body;
+
+    // Hash the details using your secret key from the .env file
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest("hex");
+
+    // Check if the hashes exactly match
+    if (razorpay_signature === expectedSign) {
+    
+      // Find the pending order we created in Step 2, and mark it as Paid
+      await Order.findByIdAndUpdate(systemOrderId, { paymentStatus: "Paid" });
+      
+      res.json({ success: true, message: "Payment verified successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid payment signature" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error during verification" });
+  }
+};
+
+export const orderSuccessPage = async (req, res) => {
+  try {
+    const { orderId } = req.query;
+    const order = await Order.findById(orderId);
+    if (!order) return res.redirect("/");
+    res.render("user/order-success", { user: req.user, order });
+  } catch (error) {
+    res.redirect("/");
+  }
+};
+
+export const orderFailedPage = async (req, res) => {
+  try {
+    const { orderId } = req.query;
+
+    if (orderId) {
+      const order = await Order.findById(orderId);
+      
+      // If the order is still pending payment, it means they closed Razorpay or card declined.
+      if (order && order.paymentStatus === "Pending" && order.status !== "Cancelled") {
+        order.status = "Cancelled";
+        order.paymentStatus = "Failed";
+        order.cancelReason = "Payment Gateway Abandoned/Declined";
+
+        // Import Variant Model to restore the locked inventory
+        const { default: Variant } = await import("../../models/variantSchema.js");
+
+        for (const item of order.orderedItems) {
+          if (item.itemStatus !== "Cancelled") {
+            const variant = await Variant.findById(item.variant);
+            if (variant) {
+              variant.quantity += item.quantity;
+              if (variant.status === "out of stock" && variant.quantity > 0) {
+                variant.status = "Available";
+              }
+              await variant.save();
+            }
+            item.itemStatus = "Cancelled";
+          }
+        }
+        await order.save();
+      }
+    }
+
+    res.render("user/order-failed", { user: req.user });
+  } catch (error) {
+    console.error("Failed Page Inventory Release Error:", error);
+    res.redirect("/");
   }
 };

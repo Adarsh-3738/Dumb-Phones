@@ -55,7 +55,9 @@
                     <div class="item-meta">
                       <span class="meta-qty">Qty: <strong><%= item.quantity %></strong></span>
                       <span class="meta-calc">₹<%= parseInt(item.price).toLocaleString('en-IN') %> × <%= item.quantity %></span>
-                      <% if (item.itemStatus === 'Cancelled') { %>
+                      <% if (order.status === 'Returned') { %>
+                        <span class="status-badge" style="margin-left:8px; font-size:0.75rem; background:#ef4444; color:white; padding: 2px 6px; border-radius: 4px;">Returned</span>
+                      <% } else if (item.itemStatus === 'Cancelled') { %>
                         <span class="status-badge cancelled" style="margin-left:8px;font-size:0.75rem;">Cancelled</span>
                       <% } %>
                     </div>
@@ -113,6 +115,20 @@
               <div class="summary-line discount-line">
                 <span class="label">Discount Applied</span>
                 <span class="value">- ₹<%= parseInt(order.discount).toLocaleString('en-IN') %></span>
+              </div>
+              <div class="summary-line" style="margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px;">
+                <span class="label">Payment Method</span>
+                <span class="value" style="font-weight: 600;"><%= order.paymentMethod || 'Unknown' %></span>
+              </div>
+              <div class="summary-line">
+                <span class="label">Payment Status</span>
+                <% if (order.paymentStatus === 'Paid') { %>
+                  <span class="value" style="color: #10b981; font-weight: bold;"><%= order.paymentStatus %></span>
+                <% } else if (order.paymentStatus === 'Pending') { %>
+                  <span class="value" style="color: #f59e0b; font-weight: bold;"><%= order.paymentStatus %></span>
+                <% } else { %>
+                  <span class="value" style="color: #ef4444; font-weight: bold;"><%= order.paymentStatus %></span>
+                <% } %>
               </div>
             </div>
 

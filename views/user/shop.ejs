@@ -131,6 +131,12 @@
                   <span class="stock-badge absolute-badge">Out of Stock</span>
                 <% } %>
 
+                <% if (product.defaultVariant && product.defaultVariant.quantity > 0 && product.defaultVariant.salesPrice < product.defaultVariant.regularPrice) { 
+                     const discountPct = Math.round(((product.defaultVariant.regularPrice - product.defaultVariant.salesPrice) / product.defaultVariant.regularPrice) * 100);
+                %>
+                  <span class="sale-badge absolute-badge" style="top: 10px; left: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; position: absolute; z-index: 10;">-<%= discountPct %>% OFF</span>
+                <% } %>
+
                 <% if (product.defaultVariant?.variantImages?.length) { %>
                   <img src="<%= product.defaultVariant.variantImages[0].url %>" alt="<%= product.productName %>" loading="lazy">
                 <% } else { %>

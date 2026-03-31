@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Failed | DumbPhones</title>
+  <link rel="stylesheet" href="/css/user/order-success.css">
+  <style>
+    .failure-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #fef2f2;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <main class="order-success-wrapper">
+    <div class="order-success-container">
+      
+      <div class="failure-icon-wrap">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+      </div>
+      
+      <h2 style="color: #ef4444;">Payment Failed</h2>
+      <p>We could not process your transaction. Please try again or use a different payment method.</p>
+
+      <div class="success-actions" style="margin-top: 30px;">
+        <a href="/checkout" class="btn btn-view-order" style="background: #ef4444; color: white;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+          Retry Payment
+        </a>
+        <a href="/orders" class="btn btn-continue">
+          View My Orders
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <%- include("../partials/user/footer") %>
+</body>
+</html>
