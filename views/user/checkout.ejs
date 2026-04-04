@@ -218,6 +218,28 @@
             <input type="text" id="couponCodeInput" placeholder="Enter offer code" style="flex: 1; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; font-size: 14px; text-transform: uppercase;">
             <button type="button" onclick="applyCoupon()" style="padding: 10px 22px; background: #0f172a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s;">Apply</button>
           </div>
+          <% if (typeof availableCoupons !== 'undefined' && availableCoupons.length > 0) { %>
+            <div style="margin-top: 15px;">
+              <h4 style="font-size: 13px; color: #64748b; margin-bottom: 10px; text-transform: uppercase; font-weight: 700;">Available Coupons</h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <% availableCoupons.forEach(c => { %>
+                  <div style="border: 1px dashed #cbd5e1; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; transition: all 0.2s;">
+                    <div>
+                      <div style="font-weight: 800; color: #0f172a; font-size: 14px; letter-spacing: 0.5px;"><%= c.name %></div>
+                      <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                        <% if (c.discountType === 'Percentage') { %>
+                          Get <%= c.offerPrice %>% OFF (Min: ₹<%= c.minimumPrice %>)
+                        <% } else { %>
+                          Save ₹<%= c.offerPrice %> (Min: ₹<%= c.minimumPrice %>)
+                        <% } %>
+                      </div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('couponCodeInput').value='<%= c.name %>'; applyCoupon()" style="background: white; border: 1px solid #cbd5e1; color: #0f172a; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#0f172a'" onmouseout="this.style.borderColor='#cbd5e1'">Use</button>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
         <% } %>
       </div>
 
@@ -379,7 +401,12 @@ async function handleCheckout() {
         name: "User", // can pass actual user details if you want
         email: "user@example.com" 
       },
-      theme: { color: "#0f172a" } // Matches your dark UI theme
+      theme: { color: "#0f172a" }, // Matches your dark UI theme
+      modal: {
+        ondismiss: function() {
+           window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+        }
+      }
     };
 
     const rzp = new Razorpay(options);

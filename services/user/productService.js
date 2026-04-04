@@ -64,7 +64,7 @@ import Variant from "../../models/variantSchema.js";
   }
 
   // QUERY 
-  const [products, totalProducts] = await Promise.all([
+  const [rawProducts, totalProducts] = await Promise.all([
     Product.find(filter)
       .populate("brand", "name")
       .populate("category", "name")
@@ -75,6 +75,23 @@ import Variant from "../../models/variantSchema.js";
 
     Product.countDocuments(filter)
   ]);
+
+  // ATTACH DEFAULT VARIANT
+  const products = await Promise.all(
+    rawProducts.map(async (p) => {
+      const variant = await Variant.findOne({
+        productId: p._id,
+        isBlocked: false
+      })
+      .sort({ createdAt: 1 })
+      .lean();
+
+      return {
+        ...p,
+        defaultVariant: variant
+      };
+    })
+  );
 
   const totalPages = Math.ceil(totalProducts / limit) || 1;
 

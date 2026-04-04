@@ -123,8 +123,9 @@
               
               <div class="card-img-wrap">
                 <!-- Wishlist Button -->
+                <% const isWishlisted = typeof wishlistedProducts !== 'undefined' && wishlistedProducts.includes(product._id.toString()); %>
                 <button type="button" class="wishlist-btn-shop" onclick="toggleWishlist('<%= product._id %>', event)" aria-label="Add to Wishlist" style="position: absolute; top: 10px; right: 10px; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="<%= isWishlisted ? '#ef4444' : 'none' %>" stroke="<%= isWishlisted ? '#ef4444' : '#64748b' %>" stroke-width="2" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                 </button>
 
                 <% if (product.defaultVariant && product.defaultVariant.quantity <= 0) { %>
@@ -146,7 +147,28 @@
 
               <div class="card-info">
                 <p class="brand"><%= product.brand?.name || "Brand" %></p>
-                <h4 class="product-title"><%= product.productName %></h4>
+                <h4 class="product-title" style="margin-bottom: 6px;"><%= product.productName %></h4>
+                
+                <% if (product.description) { %>
+                  <p class="product-desc" style="font-size: 13px; color: #64748b; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;">
+                    <%= product.description %>
+                  </p>
+                <% } %>
+
+                <% if (product.attributes && product.attributes.colors && product.attributes.colors.length > 0) { %>
+                  <div class="product-colors" style="display: flex; gap: 6px; margin-bottom: 10px; align-items: center;">
+                    <% product.attributes.colors.slice(0, 4).forEach(color => { 
+                         // Basic mapping for colors to standard CSS if needed
+                         let cssColor = color.toLowerCase();
+                         if (cssColor === 'navy') cssColor = '#000080';
+                    %>
+                      <span style="width: 14px; height: 14px; border-radius: 50%; background-color: <%= cssColor %>; border: 1px solid #cbd5e1; display: inline-block;" title="<%= color %>"></span>
+                    <% }) %>
+                    <% if (product.attributes.colors.length > 4) { %>
+                      <span style="font-size: 11px; color: #64748b; line-height: 14px; font-weight: 600;">+<%= product.attributes.colors.length - 4 %></span>
+                    <% } %>
+                  </div>
+                <% } %>
                 
                 <% if (product.defaultVariant) { %>
                   <div class="price-wrap">

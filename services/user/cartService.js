@@ -38,6 +38,12 @@ export const getCartData = async (userId) => {
         return false;
       }
 
+      // SYNC STALE PRICE - Ensure users cannot checkout with an old cached price
+      if (item.price !== variant.salesPrice) {
+        item.price = variant.salesPrice;
+        item.totalPrice = item.quantity * variant.salesPrice;
+      }
+
       return true;
     });
 

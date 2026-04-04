@@ -7,5 +7,6 @@ const router = express.Router();
 router.get("/orders", adminAuth, orderController.loadOrders);
 router.get("/orders/:orderId", adminAuth, orderController.loadOrderDetails);
 router.post("/orders/:orderId/status", adminAuth, orderController.updateOrderStatus);
+router.patch("/orders/:orderId/item/:itemId/status", adminAuth, orderController.updateOrderItemStatus);
 
 export default router;

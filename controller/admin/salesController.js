@@ -19,6 +19,12 @@ const getDatesByRange = (range, startDate, endDate) => {
   } else if (range === "custom" && startDate && endDate) {
     start = new Date(startDate);
     end = new Date(endDate);
+    if (start > end) {
+      // Auto-swap if accidentally inverted
+      const temp = start;
+      start = end;
+      end = temp;
+    }
     end.setHours(23, 59, 59, 999);
   } else {
     start = new Date(0); // All time if unspecified 
@@ -112,7 +118,8 @@ export const downloadPdf = async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="DumbPhones_Official_Sales_Report.pdf"');
 
-    const doc = new PDFDocument({ margin: 40, size: 'A4' });
+    // Make layout landscape so the 9 columns don't aggressively overlap
+    const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
     doc.pipe(res);
 
     // --- CORPORATE LETTERHEAD ---
@@ -124,6 +131,7 @@ export const downloadPdf = async (req, res) => {
     doc.fontSize(10).font("Helvetica")
        .text("Official Sales & Revenue Report", doc.page.width - 250, 30, { align: 'right', width: 210 });
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, doc.page.width - 250, 45, { align: 'right', width: 210 });
+    doc.text(`Period: ${start.toLocaleDateString()} to ${end.toLocaleDateString()}`, doc.page.width - 250, 60, { align: 'right', width: 210 });
 
     // --- BUSINESS INFO & REPORT SUMMARY ---
     doc.fillColor('#000000'); // Reset text color from white header
@@ -151,15 +159,16 @@ export const downloadPdf = async (req, res) => {
 
     // --- TABLE HEADER ---
     const tableTop = doc.y;
-    const col1 = 40;  // Order ID
-    const col2 = 120; // Date
-    const col3 = 160; // Customer
-    const col4 = 210; // Products
-    const col_sub = 300; // Subtotal
-    const col_tax = 345; // Tax
-    const col5 = 390; // Deductions
-    const col6 = 445; // Payment
-    const col7 = 495; // Final Price
+    // Spread columns generously across the 841px landscape width
+    const col1 = 40;   // Order ID 
+    const col2 = 150;  // Date
+    const col3 = 210;  // Customer
+    const col4 = 300;  // Products
+    const col_sub = 470; // Subtotal
+    const col_tax = 530; // Tax
+    const col5 = 580;  // Deductions
+    const col6 = 670;  // Payment
+    const col7 = 740;  // Final Price
 
     doc.rect(40, tableTop - 5, doc.page.width - 80, 25).fill('#f1f5f9');
     doc.fillColor('#0f172a').fontSize(8).font("Helvetica-Bold");
@@ -167,9 +176,9 @@ export const downloadPdf = async (req, res) => {
     doc.text("Date", col2, tableTop);
     doc.text("Customer", col3, tableTop);
     doc.text("Items", col4, tableTop);
-    doc.text("Subtotal", col_sub, tableTop, { width: 40, align: 'center' });
-    doc.text("Tax", col_tax, tableTop, { width: 35, align: 'center' });
-    doc.text("Deductions", col5, tableTop, { width: 50, align: 'center' });
+    doc.text("Subtotal", col_sub, tableTop, { width: 50, align: 'center' });
+    doc.text("Tax", col_tax, tableTop, { width: 40, align: 'center' });
+    doc.text("Deductions", col5, tableTop, { width: 75, align: 'center' });
     doc.text("Payment", col6, tableTop);
     doc.text("Paid", col7, tableTop);
 
@@ -190,23 +199,23 @@ export const downloadPdf = async (req, res) => {
       const paymentText = `${o.paymentMethod || 'COD'}\n[${o.paymentStatus}]`;
       
       doc.fontSize(8);
-      doc.text(o.orderId.toUpperCase(), col1, y, { width: 75, lineBreak: true });
-      doc.text(new Date(o.createdOn).toLocaleDateString(), col2, y, { width: 35 });
-      doc.text(o.userId?.name || 'Guest', col3, y, { width: 45 });
-      doc.text(itemsStr, col4, y, { width: 85, lineBreak: true });
-      doc.text(o.totalPrice.toString(), col_sub, y, { width: 40, align: 'center' });
-      doc.text(o.tax ? o.tax.toString() : '0', col_tax, y, { width: 35, align: 'center' });
-      doc.text(discountText, col5, y, { width: 50, align: 'center' });
-      doc.text(paymentText, col6, y, { width: 45 });
-      doc.font("Helvetica-Bold").fillColor('#10b981').text(`Rs. ${o.finalAmount.toLocaleString()}`, col7, y, { width: 55 });
+      doc.text(o.orderId.toUpperCase(), col1, y, { width: 100, lineBreak: true });
+      doc.text(new Date(o.createdOn).toLocaleDateString(), col2, y, { width: 50 });
+      doc.text(o.userId?.name || 'Guest', col3, y, { width: 80, lineBreak: true });
+      doc.text(itemsStr, col4, y, { width: 160, lineBreak: true });
+      doc.text(o.totalPrice.toString(), col_sub, y, { width: 50, align: 'center' });
+      doc.text(o.tax ? o.tax.toString() : '0', col_tax, y, { width: 40, align: 'center' });
+      doc.text(discountText, col5, y, { width: 75, align: 'center', lineBreak: true });
+      doc.text(paymentText, col6, y, { width: 60, lineBreak: true });
+      doc.font("Helvetica-Bold").fillColor('#10b981').text(`Rs. ${o.finalAmount.toLocaleString()}`, col7, y, { width: 60 });
       doc.font("Helvetica").fillColor('#334155'); // Reset
       
       const textHeight = Math.max(
-        doc.heightOfString(itemsStr, { width: 85, fontSize: 8 }),
-        doc.heightOfString(o.orderId, { width: 75, fontSize: 8 }),
-        doc.heightOfString(discountText, { width: 50, fontSize: 8 })
+        doc.heightOfString(itemsStr, { width: 160, fontSize: 8 }),
+        doc.heightOfString(o.orderId, { width: 100, fontSize: 8 }),
+        doc.heightOfString(discountText, { width: 75, fontSize: 8 })
       );
-      y += Math.max(textHeight, 30) + 10;
+      y += Math.max(textHeight, 25) + 10;
       
       doc.moveTo(40, y - 5).lineTo(doc.page.width - 40, y - 5).lineWidth(0.5).strokeColor("#e2e8f0").stroke();
     });
@@ -243,7 +252,7 @@ export const downloadExcel = async (req, res) => {
     const worksheet = workbook.addWorksheet("Sales Report");
 
     // Style Excel Grid
-    worksheet.mergeCells('A1:I1');
+    worksheet.mergeCells('A1:J1'); // Merged to J because there are 10 columns
     const titleCell = worksheet.getCell('A1');
     titleCell.value = 'DUMBPHONES - OFFICIAL REVENUE REPORT';
     titleCell.font = { size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
@@ -251,8 +260,8 @@ export const downloadExcel = async (req, res) => {
     titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.getRow(1).height = 30;
 
-    worksheet.mergeCells('A2:I2');
-    worksheet.getCell('A2').value = `Generated on: ${new Date().toLocaleString()} | Contains Confirmed Orders Only`;
+    worksheet.mergeCells('A2:J2');
+    worksheet.getCell('A2').value = `Period: ${start.toLocaleDateString()} to ${end.toLocaleDateString()} | Generated on: ${new Date().toLocaleString()}`;
     worksheet.getCell('A2').font = { italic: true };
     worksheet.getCell('A2').alignment = { horizontal: 'center' };
 

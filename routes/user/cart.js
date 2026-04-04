@@ -19,6 +19,7 @@ router.post("/checkout/remove-coupon", protect, checkoutController.removeCoupon)
 
 router.post("/checkout/razorpay-create", protect, checkoutController.createRazorpayOrder);
 router.post("/checkout/razorpay-verify", protect, checkoutController.verifyRazorpayPayment);
+router.post("/checkout/razorpay-retry", protect, checkoutController.retryRazorpayPayment);
 
 router.get("/order-success", protect, checkoutController.orderSuccessPage);
 router.get("/order-failed", protect, checkoutController.orderFailedPage);

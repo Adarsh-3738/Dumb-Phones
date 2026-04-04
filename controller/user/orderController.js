@@ -6,6 +6,7 @@ import {
   cancelUserOrder,
   cancelUserOrderItem,
   returnUserOrder,
+  returnUserOrderItem,
   searchUserOrders,
   getOrderForInvoice
 } from "../../services/user/orderService.js";
@@ -113,6 +114,20 @@ export const returnOrder = async (req, res) => {
   }
 };
 
+// RETURN SINGLE ITEM
+export const returnOrderItem = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    const { reason } = req.body;
+
+    await returnUserOrderItem(orderId, req.user._id, itemId, reason);
+
+    res.json({ success: true, message: "Item return requested successfully" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 
 //order invoice 
 export const downloadInvoice = async (req, res) => {
@@ -217,7 +232,7 @@ export const downloadInvoice = async (req, res) => {
 
     order.orderedItems.forEach((item) => {
       let isCancelled = item.itemStatus === "Cancelled";
-      let isReturned = order.status === "Returned";
+      let isReturned = item.itemStatus === "Returned";
       
       const variant = item.variant;
       const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
@@ -268,8 +283,8 @@ export const downloadInvoice = async (req, res) => {
     generateHr(tableY);
 
     // TOTALS CALCULATION 
-    // If order was fully cancelled, show 0
-    const isActive = order.orderedItems.some(i => i.itemStatus !== "Cancelled");
+    // If order was fully cancelled/returned, show 0
+    const isActive = order.orderedItems.some(i => i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned");
     
     const tax = isActive ? (order.tax !== undefined ? order.tax : 0) : 0;
     const shipping = isActive ? (order.shipping !== undefined ? order.shipping : 0) : 0;

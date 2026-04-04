@@ -216,6 +216,35 @@ export const returnUserOrder = async (orderId, userId, reason) => {
 };
 
 
+// RETURN SINGLE ORDER ITEM
+export const returnUserOrderItem = async (orderId, userId, itemId, reason) => {
+  if (!reason) throw new Error("Return reason required");
+
+  const order = await Order.findOne({ orderId, userId });
+  if (!order || order.status !== "Delivered") {
+    throw new Error("Invalid return request. Order must be delivered.");
+  }
+
+  const item = order.orderedItems.find(i => i._id.toString() === itemId);
+  if (!item) throw new Error("Item not found in order");
+
+  if (item.itemStatus !== "Active") {
+    throw new Error(`Item is already ${item.itemStatus}`);
+  }
+
+  item.itemStatus = "Return Request";
+  item.returnReason = reason;
+
+  if (order.status !== "Return Request" && order.status !== "Returned") {
+    order.status = "Return Request";
+    order.returnReason = "Partial Return Requested";
+  }
+
+  await order.save();
+  return true;
+};
+
+
 
  //  SEARCH ORDERS
 

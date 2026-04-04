@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const orderSchema = new Schema({
   orderId: {
     type: String,
-    default: () => uuidv4(),
+    default: () => "ORD-" + uuidv4().replace(/-/g, "").substring(0, 10).toUpperCase(),
     unique: true
   },
 
@@ -38,13 +38,17 @@ userId: {
     },
     itemStatus: {
       type: String,
-      enum: ["Active", "Cancelled"],
+      enum: ["Active", "Cancelled", "Return Request", "Returned", "Return Rejected"],
       default: "Active"
     },
     cancelReason: {
-  type: String,
-  default: ""
-}
+      type: String,
+      default: ""
+    },
+    returnReason: {
+      type: String,
+      default: ""
+    }
 
   }
 ],
@@ -96,7 +100,8 @@ userId: {
       "Cancelled",
       "Return Request",
       "Returned",
-      "Return Rejected"
+      "Return Rejected",
+      "Payment Failed"
     ]
   },
   cancelReason: {
@@ -124,7 +129,7 @@ userId: {
   },
   paymentStatus: {
     type: String,
-    enum: ["Pending", "Paid", "Refunded"],
+    enum: ["Pending", "Paid", "Refunded", "Failed"],
     default: "Pending",
     required: true
   }

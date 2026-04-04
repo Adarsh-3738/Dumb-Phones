@@ -1,7 +1,8 @@
 import {
   getOrders,
   getOrderDetails,
-  changeOrderStatus
+  changeOrderStatus,
+  changeOrderItemStatus
 } from "../../services/admin/orderService.js";
 
 
@@ -78,6 +79,28 @@ export const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
 
     await changeOrderStatus(orderId, status);
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// UPDATE SINGLE ITEM STATUS
+
+export const updateOrderItemStatus = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    const { status } = req.body;
+
+    await changeOrderItemStatus(orderId, itemId, status);
 
     res.json({ success: true });
 

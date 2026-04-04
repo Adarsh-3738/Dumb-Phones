@@ -23,6 +23,15 @@ export const loadCheckout = async (req, res) => {
     const wallet = await getOrCreateWallet(userId);
     const walletBalance = wallet ? wallet.balance : 0;
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const availableCoupons = await Coupon.find({
+      isList: true,
+      startDate: { $lte: new Date() },
+      expireOn: { $gte: today },
+      userId: { $ne: userId }
+    });
+
     res.render("user/checkout", {
       user: req.user,
       cartItems: data.cart.items,
@@ -35,7 +44,8 @@ export const loadCheckout = async (req, res) => {
       totalSavings: data.totalSavings,
       couponDeduction: data.couponDeduction,
       appliedCouponCode: data.appliedCouponCode,
-      walletBalance
+      walletBalance,
+      availableCoupons
     });
 
   } catch (error) {
@@ -169,8 +179,15 @@ export const verifyRazorpayPayment = async (req, res) => {
     // Check if the hashes exactly match
     if (razorpay_signature === expectedSign) {
     
-      // Find the pending order we created in Step 2, and mark it as Paid
-      await Order.findByIdAndUpdate(systemOrderId, { paymentStatus: "Paid" });
+      // Find the pending order and mark it as Paid cleanly
+      const order = await Order.findById(systemOrderId);
+      if (order) {
+        const newStatus = (order.status === "Payment Failed" || order.status === "Pending") ? "Processing" : order.status;
+        await Order.findByIdAndUpdate(systemOrderId, { 
+          paymentStatus: "Paid",
+          status: newStatus 
+        }, { runValidators: false });
+      }
       
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
@@ -196,38 +213,110 @@ export const orderFailedPage = async (req, res) => {
   try {
     const { orderId } = req.query;
 
+    // Store the custom string orderId for the frontend retry script
+    let customOrderId = null;
     if (orderId) {
       const order = await Order.findById(orderId);
       
+      if (order) {
+        customOrderId = order.orderId;
+      }
+      
       // If the order is still pending payment, it means they closed Razorpay or card declined.
       if (order && order.paymentStatus === "Pending" && order.status !== "Cancelled") {
-        order.status = "Cancelled";
         order.paymentStatus = "Failed";
-        order.cancelReason = "Payment Gateway Abandoned/Declined";
-
-        // Import Variant Model to restore the locked inventory
-        const { default: Variant } = await import("../../models/variantSchema.js");
-
+        order.status = "Payment Failed";
+        
+        // Restore stock to the variants
         for (const item of order.orderedItems) {
-          if (item.itemStatus !== "Cancelled") {
-            const variant = await Variant.findById(item.variant);
-            if (variant) {
-              variant.quantity += item.quantity;
-              if (variant.status === "out of stock" && variant.quantity > 0) {
-                variant.status = "Available";
-              }
-              await variant.save();
-            }
-            item.itemStatus = "Cancelled";
-          }
+           const { Variant } = await import("../../models/variantSchema.js").then(m => ({ Variant: m.default }));
+           const v = await Variant.findById(item.variant);
+           if (v) {
+             v.quantity += item.quantity;
+             if (v.status === "out of stock" && v.quantity > 0) {
+               v.status = "Available";
+             }
+             await v.save();
+           }
         }
         await order.save();
       }
     }
 
-    res.render("user/order-failed", { user: req.user });
+    res.render("user/order-failed", { user: req.user, orderId, customOrderId });
   } catch (error) {
-    console.error("Failed Page Inventory Release Error:", error);
+    console.error("Failed Page Error:", error);
     res.redirect("/");
+  }
+};
+
+export const retryRazorpayPayment = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { orderId } = req.body;
+
+    const order = await Order.findOne({ orderId: orderId, userId: userId });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (order.paymentStatus !== "Failed" && order.paymentStatus !== "Pending") {
+      return res.status(400).json({ success: false, message: "Payment cannot be retried for this order." });
+    }
+
+    if (order.status === "Cancelled") {
+      return res.status(400).json({ success: false, message: "This order has been cancelled and cannot be paid." });
+    }
+
+    // Re-reserve stock if the order was in 'Payment Failed' state and stock was restored
+    if (order.paymentStatus === "Failed") {
+      const reservedStock = [];
+      const { Variant } = await import("../../models/variantSchema.js").then(m => ({ Variant: m.default }));
+      
+      try {
+        for (const item of order.orderedItems) {
+          const variant = await Variant.findOneAndUpdate(
+            { _id: item.variant, quantity: { $gte: item.quantity } },
+            { $inc: { quantity: -item.quantity } },
+            { new: true }
+          );
+          if (!variant) throw new Error("One or more items in your order are now out of stock.");
+          if (variant.quantity === 0) variant.status = "out of stock";
+          await variant.save();
+          reservedStock.push({ variantId: item.variant, quantity: item.quantity });
+        }
+      } catch (error) {
+        // Rollback reserved stock if one of the items fails
+        for (const reserved of reservedStock) {
+           const v = await Variant.findById(reserved.variantId);
+           if (v) { 
+             v.quantity += reserved.quantity; 
+             if (v.status === "out of stock" && v.quantity > 0) v.status = "Available"; 
+             await v.save(); 
+           }
+        }
+        return res.status(400).json({ success: false, message: error.message });
+      }
+
+      // Reset to pending so if it fails again, it hits the /order-failed logic properly
+      order.paymentStatus = "Pending";
+      order.status = "Pending";
+      await order.save();
+    }
+
+    const { generateRazorpay } = await import("../../services/user/checkoutService.js");
+    const razorpayData = await generateRazorpay(order.orderId, order.finalAmount);
+
+    res.json({
+      success: true,
+      razorpayOrderId: razorpayData.id,
+      systemOrderId: order._id,
+      amount: order.finalAmount,
+      key: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.error("Retry Payment Error:", error);
+    res.status(500).json({ success: false, message: "Server error during payment retry" });
   }
 };

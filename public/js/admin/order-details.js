@@ -53,3 +53,45 @@ async function updateStatus(orderId, newStatus, currentStatus, selectElement) {
   }
 }
 
+async function updateItemStatus(orderId, itemId, newStatus) {
+    const result = await Swal.fire({
+      title: `Confirm Action`,
+      text: `Are you sure you want to mark this item as ${newStatus}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, proceed",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/admin/orders/${orderId}/item/${itemId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Item status updated successfully",
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: data.message || "Failed to update item status",
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong. Try again later.",
+        });
+      }
+    }
+}

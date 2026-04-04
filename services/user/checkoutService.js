@@ -67,7 +67,15 @@ export const getCheckoutData = async (userId) => {
       const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
 
       if (now <= expiry && salePriceSubtotal >= coupon.minimumPrice && !hasUsed) {
-        couponDeduction = coupon.offerPrice;
+        if (coupon.discountType === "Percentage") {
+          let calcDeduction = Math.floor((salePriceSubtotal * coupon.offerPrice) / 100);
+          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+            calcDeduction = coupon.maxDiscountAmount;
+          }
+          couponDeduction = calcDeduction;
+        } else {
+          couponDeduction = coupon.offerPrice;
+        }
         appliedCouponCode = coupon.name;
       } else {
         await Cart.findByIdAndUpdate(cart._id, { $set: { appliedCoupon: null } });
@@ -184,7 +192,15 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
       const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
 
       if (now <= expiry && salePriceSubtotal >= coupon.minimumPrice && !hasUsed) {
-        couponDeduction = coupon.offerPrice;
+        if (coupon.discountType === "Percentage") {
+          let calcDeduction = Math.floor((salePriceSubtotal * coupon.offerPrice) / 100);
+          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+            calcDeduction = coupon.maxDiscountAmount;
+          }
+          couponDeduction = calcDeduction;
+        } else {
+          couponDeduction = coupon.offerPrice;
+        }
         coupon.userId.push(userId);
         await coupon.save();
         couponApplied = true;
@@ -211,24 +227,27 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
 
   // SECURE WALLET TRANSACTION PROCESSING
   if (paymentMethod === "Wallet") {
-    const wallet = await Wallet.findOne({ userId });
+    // Atomic deduction to avoid double-spend race condition
+    const updatedWallet = await Wallet.findOneAndUpdate(
+      { userId, balance: { $gte: finalAmount } },
+      {
+        $inc: { balance: -finalAmount },
+        $push: {
+          transactions: {
+            amount: finalAmount,
+            type: "debit",
+            description: "Payment for Order",
+            status: "success"
+          }
+        }
+      },
+      { new: true }
+    );
     
-    if (!wallet || wallet.balance < finalAmount) {
+    if (!updatedWallet) {
       throw new Error("Insufficient Wallet Balance to complete this purchase.");
     }
 
-    // Mathematical Deduction
-    wallet.balance -= finalAmount;
-    
-    // Receipt Logging
-    wallet.transactions.push({
-      amount: finalAmount,
-      type: "debit",
-      description: `Payment for Order`,
-      status: "success"
-    });
-
-    await wallet.save();
     paymentStatus = "Paid";
   }
 

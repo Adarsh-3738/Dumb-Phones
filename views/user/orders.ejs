@@ -53,9 +53,13 @@
                 <span class="label">Order ID</span>
                 <strong>#<%= order.orderId %></strong>
               </div>
-              <span class="status-badge <%= order.status.toLowerCase() %>">
-                <%= order.status %>
-              </span>
+              <% if (order.paymentStatus === 'Failed' && order.status !== 'Cancelled') { %>
+                <span class="status-badge" style="background:#fef2f2; color:#ef4444; border:1px solid #ef4444;">Payment Failed</span>
+              <% } else { %>
+                <span class="status-badge <%= order.status.toLowerCase() %>">
+                  <%= order.status %>
+                </span>
+              <% } %>
             </div>
 
             <div class="order-card-body">
@@ -80,6 +84,12 @@
               <button class="btn btn-view" onclick="event.stopPropagation(); window.location.href='/orders/<%= order.orderId %>'">
                 View Details
               </button>
+
+              <% if ((order.paymentStatus === 'Failed' || order.paymentStatus === 'Pending') && order.status === 'Pending' && order.paymentMethod === 'Razorpay') { %>
+                <button class="btn btn-outline-primary" style="border-color:#10b981; color:#10b981;" onclick="event.stopPropagation(); retryPayment('<%= order.orderId %>')">
+                  Retry Payment
+                </button>
+              <% } %>
 
               <% if (order.status === 'Pending' || order.status === 'Processing') { %>
                 <button class="btn btn-cancel" onclick="event.stopPropagation(); cancelOrder('<%= order.orderId %>')">
@@ -106,5 +116,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/orders.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>

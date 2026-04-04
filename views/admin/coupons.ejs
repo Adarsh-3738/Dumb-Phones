@@ -48,15 +48,24 @@
       <% coupons.forEach(coupon => { 
         const sDate = coupon.startDate ? new Date(coupon.startDate).toISOString().split('T')[0] : new Date(coupon.createdOn).toISOString().split('T')[0];
         const eDate = new Date(coupon.expireOn).toISOString().split('T')[0];
+        const dType = coupon.discountType || 'Fixed Amount';
+        const mDiscount = coupon.maxDiscountAmount || '';
       %>
       <tr>
         <td><strong><%= coupon.name %></strong></td>
-        <td>₹<%= coupon.offerPrice %></td>
+        <td>
+          <% if (coupon.discountType === 'Percentage') { %>
+            <%= coupon.offerPrice %>%
+            <% if (coupon.maxDiscountAmount) { %> <br><small>(Max: ₹<%= coupon.maxDiscountAmount %>)</small> <% } %>
+          <% } else { %>
+            ₹<%= coupon.offerPrice %>
+          <% } %>
+        </td>
         <td>₹<%= coupon.minimumPrice %></td>
         <td><%= coupon.startDate ? new Date(coupon.startDate).toLocaleDateString() : new Date(coupon.createdOn).toLocaleDateString() %></td>
         <td><%= new Date(coupon.expireOn).toLocaleDateString() %></td>
         <td>
-          <button class="action-btn btn-edit" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.name %>', '<%= coupon.offerPrice %>', '<%= coupon.minimumPrice %>', '<%= sDate %>', '<%= eDate %>')">Edit</button>
+          <button class="action-btn btn-edit" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.name %>', '<%= coupon.offerPrice %>', '<%= coupon.minimumPrice %>', '<%= sDate %>', '<%= eDate %>', '<%= dType %>', '<%= mDiscount %>')">Edit</button>
           <button class="action-btn btn-delete" onclick="deleteCoupon('<%= coupon._id %>')">Delete</button>
         </td>
       </tr>
@@ -70,7 +79,15 @@
   <div class="modal-box">
     <h3>Create Coupon</h3>
     <input type="text" id="couponName" placeholder="Coupon Code (e.g. SUMMER50)">
-    <input type="number" id="offerPrice" placeholder="Discount Amount (₹)">
+    <select id="discountType" onchange="toggleMaxDiscount(this.value, 'maxDiscountContainer')" style="margin-bottom:10px; width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:6px;">
+      <option value="Fixed Amount">Fixed Amount (₹)</option>
+      <option value="Percentage">Percentage (%)</option>
+    </select>
+    <input type="number" id="offerPrice" placeholder="Discount Value (₹ or %)">
+    <div id="maxDiscountContainer" style="display:none; margin-bottom:10px;">
+      <input type="number" id="maxDiscountAmount" placeholder="Maximum Discount Amount (₹)">
+      <small style="color:#64748b; font-size:12px; display:block;">Leave blank for no limit</small>
+    </div>
     <input type="number" id="minPrice" placeholder="Minimum Purchase Required (₹)">
     
     <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Start Date</label>
@@ -92,7 +109,15 @@
     <h3>Edit Coupon</h3>
     <input type="hidden" id="editCouponId">
     <input type="text" id="editCouponName" placeholder="Coupon Code (e.g. SUMMER50)">
-    <input type="number" id="editOfferPrice" placeholder="Discount Amount (₹)">
+    <select id="editDiscountType" onchange="toggleMaxDiscount(this.value, 'editMaxDiscountContainer')" style="margin-bottom:10px; width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:6px;">
+      <option value="Fixed Amount">Fixed Amount (₹)</option>
+      <option value="Percentage">Percentage (%)</option>
+    </select>
+    <input type="number" id="editOfferPrice" placeholder="Discount Value (₹ or %)">
+    <div id="editMaxDiscountContainer" style="display:none; margin-bottom:10px;">
+      <input type="number" id="editMaxDiscountAmount" placeholder="Maximum Discount Amount (₹)">
+      <small style="color:#64748b; font-size:12px; display:block;">Leave blank for no limit</small>
+    </div>
     <input type="number" id="editMinPrice" placeholder="Minimum Purchase Required (₹)">
     
     <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Start Date</label>
@@ -117,20 +142,30 @@
   document.getElementById('editStartDate').min = new Date().toISOString().split("T")[0];
 
 
-  function openEditModal(id, name, offerPrice, minPrice, startOn, expireOn) {
+  function toggleMaxDiscount(type, containerId) {
+    document.getElementById(containerId).style.display = type === 'Percentage' ? 'block' : 'none';
+  }
+
+  function openEditModal(id, name, offerPrice, minPrice, startOn, expireOn, discountType, maxDiscountAmount) {
     document.getElementById('editCouponId').value = id;
     document.getElementById('editCouponName').value = name;
     document.getElementById('editOfferPrice').value = offerPrice;
     document.getElementById('editMinPrice').value = minPrice;
     document.getElementById('editStartDate').value = startOn;
     document.getElementById('editExpireDate').value = expireOn;
+    document.getElementById('editDiscountType').value = discountType;
+    document.getElementById('editMaxDiscountAmount').value = maxDiscountAmount;
+    
+    toggleMaxDiscount(discountType, 'editMaxDiscountContainer');
     document.getElementById('editModal').style.display = 'flex';
   }
 
   async function submitCoupon() {
     const payload = {
       name: document.getElementById('couponName').value,
+      discountType: document.getElementById('discountType').value,
       offerPrice: document.getElementById('offerPrice').value,
+      maxDiscountAmount: document.getElementById('maxDiscountAmount').value,
       minimumPrice: document.getElementById('minPrice').value,
       startDate: document.getElementById('startDate').value,
       expireOn: document.getElementById('expireDate').value
@@ -162,7 +197,9 @@
     const id = document.getElementById('editCouponId').value;
     const payload = {
       name: document.getElementById('editCouponName').value,
+      discountType: document.getElementById('editDiscountType').value,
       offerPrice: document.getElementById('editOfferPrice').value,
+      maxDiscountAmount: document.getElementById('editMaxDiscountAmount').value,
       minimumPrice: document.getElementById('editMinPrice').value,
       startDate: document.getElementById('editStartDate').value,
       expireOn: document.getElementById('editExpireDate').value

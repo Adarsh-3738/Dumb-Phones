@@ -19,11 +19,15 @@ export const getCoupons = async (req, res) => {
 // Create New Coupon
 export const addCoupon = async (req, res) => {
   try {
-    const { name, expireOn, offerPrice, minimumPrice, startDate } = req.body;
+    const { name, expireOn, offerPrice, minimumPrice, startDate, discountType, maxDiscountAmount } = req.body;
 
     // Validation
     if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
       return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+    
+    if (discountType === "Percentage" && Number(offerPrice) > 100) {
+      return res.status(400).json({ success: false, message: "Percentage discount cannot exceed 100%" });
     }
 
     const nameUpper = name.toUpperCase().trim();
@@ -62,6 +66,8 @@ export const addCoupon = async (req, res) => {
       expireOn: eDate,
       offerPrice: offerVal,
       minimumPrice: minVal,
+      discountType: discountType || "Fixed Amount",
+      maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
     });
 
     await newCoupon.save();
@@ -76,12 +82,16 @@ export const addCoupon = async (req, res) => {
 // Edit Coupon
 export const editCoupon = async (req, res) => {
   try {
-    const { name, expireOn, offerPrice, minimumPrice, startDate } = req.body;
+    const { name, expireOn, offerPrice, minimumPrice, startDate, discountType, maxDiscountAmount } = req.body;
     const { id } = req.params;
 
     // Validation
     if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
       return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    if (discountType === "Percentage" && Number(offerPrice) > 100) {
+      return res.status(400).json({ success: false, message: "Percentage discount cannot exceed 100%" });
     }
 
     const nameUpper = name.toUpperCase().trim();
@@ -124,6 +134,8 @@ export const editCoupon = async (req, res) => {
         expireOn: eDate,
         offerPrice: offerVal,
         minimumPrice: minVal,
+        discountType: discountType || "Fixed Amount",
+        maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
       },
       { new: true }
     );

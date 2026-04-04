@@ -16,6 +16,13 @@ async function toggleWishlist(productId, event) {
     const data = await response.json();
 
     if (data.success) {
+      if (event && event.currentTarget) {
+        const svg = event.currentTarget.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('fill', '#ef4444');
+          svg.setAttribute('stroke', '#ef4444');
+        }
+      }
       Swal.fire({
         title: "Added to Wishlist",
         text: "Item successfully added to your wishlist.",

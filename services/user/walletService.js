@@ -25,15 +25,22 @@ export const addMoneyToWallet = async (userId, amount, description = "Wallet Top
     if (!wallet) return null;
   }
 
-  wallet.balance += Number(amount);
-
-  wallet.transactions.push({
-    amount,
-    type: "credit",
-    description: description
-  });
-
-  await wallet.save();
+  // Use Atomic updating to eliminate double-adds on race conditions
+  wallet = await Wallet.findOneAndUpdate(
+    { userId },
+    {
+      $inc: { balance: Number(amount) },
+      $push: { 
+        transactions: {
+          amount: Number(amount),
+          type: "credit",
+          description: description,
+          status: "success"
+        } 
+      }
+    },
+    { new: true }
+  );
 
   return wallet;
 };

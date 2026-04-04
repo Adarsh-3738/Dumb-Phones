@@ -10,6 +10,7 @@ router.get("/orders/:orderId", protect, orderController.loadOrderDetails);
 router.post("/orders/:orderId/cancel", protect, orderController.cancelOrder);
 router.post("/orders/:orderId/item/:itemId/cancel", protect, orderController.cancelOrderItem);
 router.post("/orders/:orderId/return", protect, orderController.returnOrder);
+router.post("/orders/:orderId/item/:itemId/return", protect, orderController.returnOrderItem);
 router.get("/orders/:orderId/invoice", protect, orderController.downloadInvoice);
 
 export default router;

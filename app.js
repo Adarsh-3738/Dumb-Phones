@@ -84,6 +84,7 @@ app.use(async (req, res, next) => {
   res.locals.user = null;
   res.locals.cartCount = 0;
   res.locals.wishlistCount = 0;
+  res.locals.wishlistedProducts = [];
 
   if (sessionUser) {
     try {
@@ -128,6 +129,7 @@ app.use(async (req, res, next) => {
       const wishlist = await Wishlist.findOne({ userId: liveUser._id });
       if (wishlist) {
         res.locals.wishlistCount = wishlist.products.length;
+        res.locals.wishlistedProducts = wishlist.products.map(p => p.productId.toString());
       }
     } catch (err) {
       console.log("Error fetching user or cart status:", err);

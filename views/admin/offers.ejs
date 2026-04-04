@@ -74,7 +74,10 @@
           <div>Ends: <%= offer.endDate ? offer.endDate.toDateString() : 'N/A' %></div>
         </td>
         <td>
-          <% if(offer.status === "Active") { %>
+          <% const today = new Date(); today.setHours(0,0,0,0); %>
+          <% if(new Date(offer.endDate) < today) { %>
+            <span class="status-draft" style="cursor:not-allowed; background:#fee2e2; color:#ef4444; border-color:#fca5a5;">Expired</span>
+          <% } else if(offer.status === "Active") { %>
             <span class="status-active" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Active</span>
           <% } else { %>
             <span class="status-draft" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Inactive</span>
