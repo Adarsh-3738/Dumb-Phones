@@ -4,7 +4,7 @@
     const ctxRevenue = document.getElementById("revenueChart");
     
     // Chart configuration
-    new Chart(ctxRevenue, {
+    let revenueChartObj = new Chart(ctxRevenue, {
       type: "line",
       data: {
         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -58,6 +58,28 @@
         }
       }
     });
+
+    window.fetchChartData = async function() {
+      const filter = document.getElementById('chartFilter').value;
+      const title = document.getElementById('revenueChartTitle');
+      
+      if(filter === 'yearly') title.innerText = 'Yearly Revenue (Last 5 Years)';
+      else if(filter === 'weekly') title.innerText = 'Weekly Revenue (Last 7 Days)';
+      else title.innerText = 'Monthly Revenue (' + new Date().getFullYear() + ')';
+
+      try {
+        const response = await fetch('/admin/dashboard/chart-data?filter=' + filter);
+        const resData = await response.json();
+        
+        if(resData.success) {
+          revenueChartObj.data.labels = resData.labels;
+          revenueChartObj.data.datasets[0].data = resData.data;
+          revenueChartObj.update();
+        }
+      } catch (err) {
+        console.error('Failed to fetch chart data:', err);
+      }
+    };
 
     // Order Status Doughnut Chart
     const ctxStatus = document.getElementById("statusChart");

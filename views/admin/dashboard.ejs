@@ -74,8 +74,13 @@
       
       <!-- Revenue Chart -->
       <div class="chart-box">
-        <div class="chart-header">
-          <h3>Monthly Revenue (<%= new Date().getFullYear() %>)</h3>
+        <div class="chart-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 id="revenueChartTitle">Monthly Revenue (<%= new Date().getFullYear() %>)</h3>
+          <select id="chartFilter" class="filter-select" onchange="fetchChartData()">
+            <option value="monthly" selected>Monthly</option>
+            <option value="weekly">Weekly</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </div>
         <div class="chart-container-large">
           <canvas id="revenueChart"></canvas>
@@ -144,6 +149,75 @@
             <% } %>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Best Sellers Grids -->
+    <div class="best-sellers-grid animate-up delay-5" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; margin-bottom: 2rem;">
+      <!-- Products -->
+      <div class="best-seller-card chart-box" style="margin-bottom: 0;">
+        <div class="chart-header">
+          <h3>Top 10 Products</h3>
+        </div>
+        <ul class="best-seller-list" style="list-style: none; padding: 0; margin-top: 15px;">
+          <% if (topProducts && topProducts.length > 0) { %>
+            <% topProducts.forEach((item, index) => { %>
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="rank-badge" style="background: <%= index < 3 ? '#fef3c7' : '#f1f5f9' %>; color: <%= index < 3 ? '#d97706' : '#64748b' %>; font-weight: bold; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">#<%= index + 1 %></span>
+                  <span class="bs-name" style="font-weight: 500; color: #1e293b;"><%= item.name %></span>
+                </div>
+                <span class="bs-sales" style="font-size: 14px; color: #10b981; font-weight: 600;"><%= item.totalSold %> sold</span>
+              </li>
+            <% }) %>
+          <% } else { %>
+            <p style="padding: 15px 0; color: #64748b; text-align: center;">No products sold yet.</p>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Categories -->
+      <div class="best-seller-card chart-box" style="margin-bottom: 0;">
+        <div class="chart-header">
+          <h3>Top 10 Categories</h3>
+        </div>
+        <ul class="best-seller-list" style="list-style: none; padding: 0; margin-top: 15px;">
+          <% if (topCategories && topCategories.length > 0) { %>
+            <% topCategories.forEach((item, index) => { %>
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="rank-badge" style="background: <%= index < 3 ? '#fef3c7' : '#f1f5f9' %>; color: <%= index < 3 ? '#d97706' : '#64748b' %>; font-weight: bold; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">#<%= index + 1 %></span>
+                  <span class="bs-name" style="font-weight: 500; color: #1e293b;"><%= item.name %></span>
+                </div>
+                <span class="bs-sales" style="font-size: 14px; color: #10b981; font-weight: 600;"><%= item.totalSold %> sold</span>
+              </li>
+            <% }) %>
+          <% } else { %>
+            <p style="padding: 15px 0; color: #64748b; text-align: center;">No categories sold yet.</p>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Brands -->
+      <div class="best-seller-card chart-box" style="margin-bottom: 0;">
+        <div class="chart-header">
+          <h3>Top 10 Brands</h3>
+        </div>
+        <ul class="best-seller-list" style="list-style: none; padding: 0; margin-top: 15px;">
+          <% if (topBrands && topBrands.length > 0) { %>
+            <% topBrands.forEach((item, index) => { %>
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="rank-badge" style="background: <%= index < 3 ? '#fef3c7' : '#f1f5f9' %>; color: <%= index < 3 ? '#d97706' : '#64748b' %>; font-weight: bold; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">#<%= index + 1 %></span>
+                  <span class="bs-name" style="font-weight: 500; color: #1e293b;"><%= item.name %></span>
+                </div>
+                <span class="bs-sales" style="font-size: 14px; color: #10b981; font-weight: 600;"><%= item.totalSold %> sold</span>
+              </li>
+            <% }) %>
+          <% } else { %>
+            <p style="padding: 15px 0; color: #64748b; text-align: center;">No brands sold yet.</p>
+          <% } %>
+        </ul>
       </div>
     </div>
 

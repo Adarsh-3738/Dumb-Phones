@@ -214,6 +214,10 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
   let finalAmount = subtotal + tax + shipping - discount;
   if (finalAmount < 0) finalAmount = 0;
 
+  if (paymentMethod === "COD" && finalAmount > 15000) {
+    throw new Error("Cash on Delivery is not allowed for orders above ₹15,000. Please choose another payment method.");
+  }
+
   // COPY ITEMS BEFORE CLEARING CART
   const orderedItems = cart.items.map(item => ({
     product: item.productId._id,
@@ -251,7 +255,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     paymentStatus = "Paid";
   }
 
-  // CREATE ORDER 
+ 
   // Find address document
 const addressDoc = await Address.findOne({ userId });
 
@@ -289,7 +293,7 @@ order = await Order.create({
   status: "Pending"
 });
   } catch (error) {
-    // FATAL Rollback: If Wallet fails, DB fails, etc. we must return the atomic stock back
+    //  If Wallet fails, DB fails,must return the atomic stock back
     for (const reserved of reservedStock) {
       const v = await Variant.findById(reserved.variantId);
       if (v) {

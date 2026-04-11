@@ -12,7 +12,7 @@ router.get("/logout", userController.logout);
 router.get("/signup", alreadyLoggedIn, userController.loadSignup);
 
 router.get("/products", productController.getProducts);
-router.get("/shop", protect, userController.loadShopPage);
+router.get("/shop", userController.loadShopPage);
 router.get("/product/:id", productController.loadProductDetails);
 
 export default router;

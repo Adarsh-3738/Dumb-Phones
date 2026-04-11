@@ -488,8 +488,6 @@ export const loadAddAddress = (req, res) => {
 
 };
 
-// ADD ADDRESS
-
 export const addAddress = async (req, res) => {
 
   try {
@@ -501,7 +499,9 @@ export const addAddress = async (req, res) => {
     const { isValid, errors } = validateAddress(newAddress);
 
     if (!isValid) {
-
+      if (req.query.source === 'checkout') {
+        return res.status(400).json({ success: false, message: Object.values(errors).join(", ") });
+      }
       return res.render("user/add-address", {
         message: Object.values(errors).join(", ")
       });
@@ -512,12 +512,18 @@ export const addAddress = async (req, res) => {
 
     await addNewAddress(userId, newAddress);
 
+    if (req.query.source === 'checkout') {
+      return res.status(200).json({ success: true, message: "Address added successfully" });
+    }
     res.redirect("/address?success=added");
 
   } catch (error) {
 
     console.error(error);
 
+    if (req.query.source === 'checkout') {
+      return res.status(500).json({ success: false, message: "Failed to add address" });
+    }
     res.render("user/add-address", {
       message: "Failed to add address"
     });
@@ -552,8 +558,6 @@ export const loadEditAddress = async (req, res) => {
 
 };
 
-// UPDATE ADDRESS
-
 export const updateAddress = async (req, res) => {
 
   try {
@@ -565,7 +569,9 @@ export const updateAddress = async (req, res) => {
     const { isValid, errors } = validateAddress(updatedAddress);
 
     if (!isValid) {
-
+      if (req.query.source === 'checkout') {
+        return res.status(400).json({ success: false, message: Object.values(errors).join(", ") });
+      }
       return res.render("user/edit-address", {
         address: updatedAddress,
         message: Object.values(errors).join(", ")
@@ -577,12 +583,18 @@ export const updateAddress = async (req, res) => {
 
     await updateUserAddress(req.user._id, req.params.id, updatedAddress);
 
+    if (req.query.source === 'checkout') {
+      return res.status(200).json({ success: true, message: "Address updated successfully" });
+    }
     res.redirect("/address?success=updated");
 
   } catch (error) {
 
     console.error(error);
 
+    if (req.query.source === 'checkout') {
+      return res.status(500).json({ success: false, message: "Failed to update address" });
+    }
     res.render("user/edit-address", {
       address: req.body,
       message: "Failed to update address"

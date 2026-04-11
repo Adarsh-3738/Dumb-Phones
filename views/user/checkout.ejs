@@ -54,9 +54,6 @@
                     <div class="address-info">
                       <div class="address-top">
                         <span class="addr-type"><%= addr.addressType || "Home" %></span>
-                        <% if (addr.isDefault) { %>
-                          <span class="default-badge">Optimal</span>
-                        <% } %>
                       </div>
                       <p class="addr-name"><%= addr.name || "No Name" %></p>
                       <p class="addr-lines">
@@ -69,7 +66,8 @@
                     <button
                       type="button"
                       class="btn-edit-action"
-                      onclick="editAddress('<%= addr._id %>')"
+                      data-address="<%= encodeURIComponent(JSON.stringify(addr)) %>"
+                      onclick="openAddressModal(this)"
                       aria-label="Edit Address">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
@@ -83,7 +81,7 @@
               </div>
             <% } %>
 
-            <button type="button" class="btn-add-address" onclick="addNewAddress()">
+            <button type="button" class="btn-add-address" onclick="openAddressModal()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Add New Address
             </button>
@@ -162,21 +160,26 @@
 
         <div class="payment-methods" style="display: flex; gap: 15px; margin-top: 20px;">
           <!-- RAZORPAY -->
-<label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-    <input type="radio" name="paymentMethod" value="Razorpay" form="addressForm" style="transform: scale(1.2);">
-    <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Razorpay (Cards/UPI)</span>
-  </div>
-  <p style="font-size: 13px; color: #64748b; margin-left: 25px;">Pay securely via Stripe & UPI.</p>
-</label>
-
-          <!-- COD -->
           <label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-              <input type="radio" name="paymentMethod" value="COD" form="addressForm" checked style="transform: scale(1.2);">
+              <input type="radio" name="paymentMethod" value="Razorpay" form="addressForm" <%= total > 15000 ? 'checked' : '' %> style="transform: scale(1.2);">
+              <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Razorpay (Cards/UPI)</span>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-left: 25px;">Pay securely via Stripe & UPI.</p>
+          </label>
+
+          <!-- COD -->
+          <label class="payment-card" style="flex: 1; padding: 20px; border: 2px solid <%= total > 15000 ? '#f87171' : '#e2e8f0' %>; border-radius: 12px; cursor: <%= total > 15000 ? 'not-allowed' : 'pointer' %>; opacity: <%= total > 15000 ? 0.6 : 1 %>; transition: all 0.2s; background: <%= total > 15000 ? '#fef2f2' : '#ffffff' %>;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <input type="radio" name="paymentMethod" value="COD" form="addressForm" <%= total > 15000 ? 'disabled' : 'checked' %> style="transform: scale(1.2);">
               <span style="font-weight: bold; color: #1e293b; font-size: 16px;">Cash on Delivery</span>
             </div>
-            <p style="font-size: 13px; color: #64748b; margin-left: 25px;">Pay with cash when your order arrives.</p>
+            <div style="margin-left: 25px;">
+              <span style="font-size: 13px; color: #64748b; margin-bottom: 0;">Pay with cash when your order arrives.</span>
+              <% if (total > 15000) { %>
+                <div style="color: #ef4444; font-size: 12px; margin-top: 4px; font-weight: bold;">Not available for orders above ₹15,000.</div>
+              <% } %>
+            </div>
           </label>
 
           <!-- WALLET -->
@@ -293,6 +296,76 @@
     </aside>
 
   </div>
+
+  <!-- ADDRESS MODAL -->
+  <div class="modal-overlay" id="addressModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New Address</h3>
+        <button class="close-modal-btn" onclick="closeAddressModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="modalAddressForm">
+        <input type="hidden" id="modalAddressId" name="addressId">
+        
+        <div class="form-group">
+          <label>Address Type</label>
+          <input type="text" name="addressType" id="modalAddressType" placeholder="Home / Office" required>
+          <div class="error-message" id="error-addressType"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" id="modalName" placeholder="John Doe" required>
+          <div class="error-message" id="error-name"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" name="phone" id="modalPhone" placeholder="1234567890" required>
+          <div class="error-message" id="error-phone"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Alternate Phone</label>
+          <input type="text" name="altPhone" id="modalAltPhone" placeholder="0987654321">
+          <div class="error-message" id="error-altPhone"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Landmark</label>
+          <input type="text" name="landmark" id="modalLandmark" placeholder="Near Park / Mall" required>
+          <div class="error-message" id="error-landmark"></div>
+        </div>
+
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" name="city" id="modalCity" placeholder="City Name" required>
+          <div class="error-message" id="error-city"></div>
+        </div>
+
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" name="state" id="modalState" placeholder="State Name" required>
+          <div class="error-message" id="error-state"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Pincode</label>
+          <input type="number" name="pincode" id="modalPincode" placeholder="123456" required>
+          <div class="error-message" id="error-pincode"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeAddressModal()">Cancel</button>
+          <button type="submit" class="btn-primary" id="modalSubmitBtn">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </main>
 
 <%- include("../partials/user/footer") %>

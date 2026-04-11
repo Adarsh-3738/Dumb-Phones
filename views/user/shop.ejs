@@ -119,6 +119,7 @@
       <% } else { %>
         <div class="product-grid">
           <% products.forEach(product => { %>
+          
             <a href="/product/<%= product._id %>" class="product-card">
               
               <div class="card-img-wrap">
@@ -183,6 +184,7 @@
               </div>
 
             </a>
+
           <% }) %>
         </div>
       <% } %>

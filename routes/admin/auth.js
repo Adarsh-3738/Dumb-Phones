@@ -10,6 +10,7 @@ router.get("/pageerror", adminController.pageerror);
 router.get("/login", adminAlreadyLoggedin, adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/dashboard", adminAuth, adminController.loadDashboard);
+router.get("/dashboard/chart-data", adminAuth, adminController.filterChartData);
 router.get("/logout", adminController.logout);
 
 router.get("/forgot-password", adminAlreadyLoggedin, adminController.loadForgotPassword);

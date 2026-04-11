@@ -134,7 +134,8 @@ export const downloadInvoice = async (req, res) => {
   try {
     const order = await getOrderForInvoice(req.params.orderId, req.user._id);
 
-    if (!order) return res.redirect("/orders");
+    const validStatuses = ['Delivered', 'Return Request', 'Returned', 'Return Rejected'];
+    if (!order || !validStatuses.includes(order.status)) return res.redirect("/orders");
 
     const doc = new PDFDocument({ margin: 50, size: 'A4' });
 

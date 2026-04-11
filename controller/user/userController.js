@@ -213,7 +213,7 @@ export const login = async (req, res) => {
       logger.warn("Blocked user login attempt", { email });
       return res.render("user/login", { message: "User blocked" });
     }
-
+    
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
       logger.warn("Incorrect password attempt", { email });

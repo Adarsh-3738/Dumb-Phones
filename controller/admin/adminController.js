@@ -299,6 +299,99 @@ export const loadDashboard = async (req, res) => {
       statusCounts.push(item.count);
     });
 
+    // Top 10 Best Selling Products
+    const topProducts = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      { $group: { _id: "$orderedItems.product", totalSold: { $sum: "$orderedItems.quantity" } } },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      { $unwind: "$productInfo" },
+      {
+        $project: {
+          name: "$productInfo.productName",
+          totalSold: 1
+        }
+      }
+    ]);
+
+    // Top 10 Best Selling Categories
+    const topCategories = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      { $unwind: "$productInfo" },
+      { $group: { _id: "$productInfo.category", totalSold: { $sum: "$orderedItems.quantity" } } },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryInfo"
+        }
+      },
+      { $unwind: "$categoryInfo" },
+      {
+        $project: {
+          name: "$categoryInfo.name",
+          totalSold: 1
+        }
+      }
+    ]);
+
+    // Top 10 Best Selling Brands
+    const topBrands = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      { $unwind: "$productInfo" },
+      { $group: { _id: "$productInfo.brand", totalSold: { $sum: "$orderedItems.quantity" } } },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "_id",
+          foreignField: "_id",
+          as: "brandInfo"
+        }
+      },
+      { $unwind: "$brandInfo" },
+      {
+        $project: {
+          name: "$brandInfo.name",
+          totalSold: 1
+        }
+      }
+    ]);
+
     logger.info("Admin dashboard loaded", {
       adminId: req.session.admin.id,
     });
@@ -309,6 +402,9 @@ export const loadDashboard = async (req, res) => {
       usersCount,
       productsCount,
       recentOrders,
+      topProducts,
+      topCategories,
+      topBrands,
       monthlyData: JSON.stringify(monthlyData), // pass as JSON string for easy parsing in EJS script
       statusLabels: JSON.stringify(statusLabels),
       statusCounts: JSON.stringify(statusCounts)
@@ -350,5 +446,104 @@ export const logout = async (req, res) => {
       stack: error.stack,
     });
     res.redirect("/pageerror");
+  }
+};
+// FILTER CHART DATA (API Endpoint)
+export const filterChartData = async (req, res) => {
+  try {
+    const filter = req.query.filter || 'monthly';
+    let matchCondition = { status: "Delivered" };
+    
+    let labels = [];
+    let data = [];
+
+    if (filter === 'yearly') {
+      const currentYear = new Date().getFullYear();
+      matchCondition.createdOn = { 
+        $gte: new Date(`${currentYear - 4}-01-01`), 
+        $lte: new Date(`${currentYear}-12-31`) 
+      };
+
+      const yearlyRevenue = await Order.aggregate([
+        { $match: matchCondition },
+        {
+          $group: {
+            _id: { $year: "$createdOn" },
+            revenue: { $sum: "$finalAmount" }
+          }
+        },
+        { $sort: { "_id": 1 } }
+      ]);
+
+      const baseYear = currentYear - 4;
+      labels = Array.from({length: 5}, (_, i) => (baseYear + i).toString());
+      data = new Array(5).fill(0);
+      
+      yearlyRevenue.forEach(item => {
+        const index = item._id - baseYear;
+        if (index >= 0 && index < 5) {
+          data[index] = item.revenue;
+        }
+      });
+    } else if (filter === 'weekly') {
+      const today = new Date();
+      const pastWeek = new Date(today);
+      pastWeek.setDate(pastWeek.getDate() - 6);
+      pastWeek.setHours(0, 0, 0, 0);
+
+      matchCondition.createdOn = { 
+        $gte: pastWeek, 
+        $lte: today 
+      };
+
+      const weeklyRevenue = await Order.aggregate([
+        { $match: matchCondition },
+        {
+          $group: {
+            _id: { $dayOfWeek: "$createdOn" },
+            revenue: { $sum: "$finalAmount" }
+          }
+        }
+      ]);
+
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      for(let i=6; i>=0; i--) {
+        let d = new Date(today);
+        d.setDate(d.getDate() - i);
+        labels.push(dayNames[d.getDay()]);
+        
+        let match = weeklyRevenue.find(r => r._id === (d.getDay() + 1));
+        data.push(match ? match.revenue : 0);
+      }
+    } else {
+      const currentYear = new Date().getFullYear();
+      matchCondition.createdOn = { 
+        $gte: new Date(`${currentYear}-01-01`), 
+        $lte: new Date(`${currentYear}-12-31T23:59:59.999Z`) 
+      };
+
+      const monthlyRevenue = await Order.aggregate([
+        { $match: matchCondition },
+        {
+          $group: {
+            _id: { $month: "$createdOn" },
+            revenue: { $sum: "$finalAmount" }
+          }
+        },
+        { $sort: { "_id": 1 } }
+      ]);
+
+      labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      data = new Array(12).fill(0);
+      monthlyRevenue.forEach(item => {
+        data[item._id - 1] = item.revenue;
+      });
+    }
+
+    res.json({ success: true, labels, data });
+
+  } catch (error) {
+    logger.error("Chart filter error", { message: error.message, stack: error.stack });
+    res.status(500).json({ success: false, message: "Error fetching chart data" });
   }
 };
