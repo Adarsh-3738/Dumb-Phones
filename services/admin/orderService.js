@@ -78,6 +78,9 @@ export const changeOrderStatus = async (orderId, status) => {
   if (order.status === "Delivered" && status === "Cancelled") {
     throw new Error("Cannot cancel an order that has already been delivered.");
   }
+  if (order.status === "Delivered" && ["Pending", "Processing", "Shipped", "Out for Delivery"].includes(status)) {
+    throw new Error("Cannot rollback a Delivered order to a previous status.");
+  }
   if (order.status === "Returned" && status !== "Returned") {
     throw new Error("Cannot change the status of a returned order.");
   }

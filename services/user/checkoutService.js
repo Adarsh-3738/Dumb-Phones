@@ -23,11 +23,21 @@ export const getCheckoutData = async (userId) => {
     const product = item.productId;
     const variant = item.variantId;
 
-    return product &&
-      !product.isBlocked &&
-      variant &&
-      !variant.isBlocked &&
-      variant.quantity > 0;
+    if (!product || product.isBlocked || !variant || variant.isBlocked || variant.quantity <= 0) {
+      return false;
+    }
+
+    if (item.quantity > variant.quantity) {
+      item.quantity = variant.quantity;
+    }
+
+    if (item.price !== variant.salesPrice) {
+      item.price = variant.salesPrice;
+    }
+
+    item.totalPrice = item.quantity * item.price;
+
+    return true;
   });
 
   await cart.save();

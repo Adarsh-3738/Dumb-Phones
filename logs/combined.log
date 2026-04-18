@@ -9077,3 +9077,120 @@
 {"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-04-11 16:17:54"}
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 16:17:55"}
 {"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 17:20:40"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 18:25:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin logged out successfully","timestamp":"2026-04-11 18:25:47"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-11 18:25:53"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 18:25:57"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 19:06:08"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-11 19:06:40"}
+{"email":"admin@gmail.com","level":"warn","message":"Admin login failed: incorrect password","timestamp":"2026-04-11 19:06:40"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-11 19:07:00"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-04-11 19:07:00"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-04-11 19:07:01"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-04-11 19:07:01"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-11 19:07:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/add","timestamp":"2026-04-11 19:08:06"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/add","timestamp":"2026-04-11 19:08:12"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-11 19:08:16"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-04-11 19:08:18"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-11 19:08:33"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-04-11 19:08:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-04-11 19:08:33"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-04-11 19:08:34"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-04-11 19:08:36"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers/add","timestamp":"2026-04-11 19:09:35"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/offers","timestamp":"2026-04-11 19:09:39"}
+{"level":"info","message":"Loading signup page","timestamp":"2026-04-11 19:09:57"}
+{"email":"joju@gmail.com","level":"info","message":"User signup attempt","timestamp":"2026-04-11 19:10:27"}
+{"email":"joju@gmail.com","level":"info","message":"OTP sent successfully","timestamp":"2026-04-11 19:10:30"}
+{"email":"joju@gmail.com","level":"info","message":"User created successfully","timestamp":"2026-04-11 19:10:46"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-11 19:10:48"}
+{"email":"joju@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-04-11 19:10:56"}
+{"email":"joju@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-04-11 19:10:56"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 19:10:56"}
+{"level":"info","message":"Loading shop page","query":{},"timestamp":"2026-04-11 19:11:07"}
+{"level":"info","message":"Loading shop page","query":{"brand":"","category":"","page":"2","price":"","search":"","sort":""},"timestamp":"2026-04-11 19:11:15"}
+{"level":"info","message":"Loading product details page","productId":"69aa2ae94e08a9bcc1095447","timestamp":"2026-04-11 19:11:21"}
+{"level":"info","message":"Loading product details page","productId":"69aa2ae94e08a9bcc1095447","timestamp":"2026-04-11 19:11:30"}
+{"body":{"brand":"69467a06985247d67affaa91","category":"69284f9a1d5087a9abcd1577","description":"The Sunbeam F1 Pro is a rugged, flip-style feature phone designed to be a reliable everyday device that strips away unnecessary smartphone distractions while still offering essential capabilities for modern life. It combines durability with practical tools — perfect if you want a simple phone with useful extras like messaging, navigation, and media without social media or full web browsing. \r\nSunbeam Wireless\r\nBuilt to handle daily use, the F1 Pro features a larger battery, improved water resistance, and a clear, easy-to-use interface. It offers fast USB-C charging, a dependable camera, and long-lasting performance — ideal for users looking for simplicity, durability, and dependable basic functionality. \r\nSunbeam Wireless\r\nKey Highlights\r\nEssential Communication\r\n• Text and picture messaging (without complex messaging standards)\r\n• Voice calls and visual voicemail support\r\n• Optional text-only email (on select models) \r\nSunbeam Wireless\r\nSmart, Useful Features (without distractions)\r\n• Camera for photos\r\n• Offline music player & sound recorder\r\n• Weather updates and GPS navigation like Waze (on select models)\r\n• Bluetooth and Wi-Fi for data transfer\r\n• Hotspot support on some variants to share connectivity \r\nSunbeam Wireless\r\nSimplicity Over Complexity\r\nUnlike a smartphone, the F1 Pro won’t run a web browser, social media apps, or an app store. This keeps you focused on core communication and utility without digital clutter.","productName":"sunbeam F1 pro","variants":[{"_id":"69aa2ae94e08a9bcc1095449","color":"black","quantity":"3","regularPrice":"19000","salesPrice":"7600"}]},"fileCount":0,"level":"info","message":"Updating product","productId":"69aa2ae94e08a9bcc1095447","timestamp":"2026-04-11 19:12:23"}
+{"level":"info","message":"Product updated successfully","productId":"69aa2ae94e08a9bcc1095447","timestamp":"2026-04-11 19:12:23"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 19:29:24"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-11 19:29:41"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-04-11 19:29:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-04-11 19:29:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-04-11 19:29:41"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report","timestamp":"2026-04-11 19:29:48"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?search=&range=weekly&startDate=&endDate=","timestamp":"2026-04-11 19:29:59"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report?search=&range=monthly&startDate=&endDate=","timestamp":"2026-04-11 19:30:02"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-11 19:30:14"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/pdf?range=monthly&startDate=&endDate=&search=","timestamp":"2026-04-11 19:30:21"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/sales-report/excel?range=monthly&startDate=&endDate=&search=","timestamp":"2026-04-11 19:30:41"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-04-11 19:30:46"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-04-11 19:30:46"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 19:30:46"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-11 19:32:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/edit/69da4ec4838ba163319974b5","timestamp":"2026-04-11 19:32:58"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-11 19:33:00"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-11 19:33:51"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-04-11 19:34:01"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-04-11 19:34:01"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 19:34:01"}
+{"level":"info","message":"Loading product details page","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-04-11 19:34:15"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/referrals","timestamp":"2026-04-11 19:34:18"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-11 19:34:30"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-04-11 19:34:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-04-11 19:34:30"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-04-11 19:34:31"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 19:35:43"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5/status","timestamp":"2026-04-11 19:35:49"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 19:35:50"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5/status","timestamp":"2026-04-11 19:35:56"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 19:35:57"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5/status","timestamp":"2026-04-11 19:36:27"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 19:36:29"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-04-11 19:37:01"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-04-11 19:37:01"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-11 19:37:02"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5","timestamp":"2026-04-11 19:37:09"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5/status","timestamp":"2026-04-11 19:37:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da5508cbdbfe5c5f2ee9d5","timestamp":"2026-04-11 19:37:16"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-11 20:25:15"}
+{"level":"info","message":"Loading product details page","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-04-11 20:25:20"}
+{"body":{"brand":"692a7c52b03fa404e11802e8","category":"69284f9a1d5087a9abcd1577","description":"descsdfasdf","productName":"89 pro","variants":[{"_id":"69b355e607fb6b31dec1c6cf","color":"black","quantity":"1","regularPrice":"20000","salesPrice":"8000"}]},"fileCount":0,"level":"info","message":"Updating product","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-04-11 20:26:17"}
+{"level":"info","message":"Product updated successfully","productId":"69b355e607fb6b31dec1c6cd","timestamp":"2026-04-11 20:26:17"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-18 05:53:14"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-18 05:53:24"}
+{"level":"info","message":"Loading login page","timestamp":"2026-04-18 05:53:45"}
+{"level":"warn","message":"Admin access denied - no session","path":"/admin/dashboard","timestamp":"2026-04-18 05:53:51"}
+{"email":"krishnan@gmail.com","level":"info","message":"User login attempt","timestamp":"2026-04-18 05:54:21"}
+{"email":"krishnan@gmail.com","level":"info","message":"User logged in successfully","timestamp":"2026-04-18 05:54:21"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-18 05:54:21"}
+{"email":"admin@gmail.com","level":"info","message":"Admin login attempt","timestamp":"2026-04-18 05:54:39"}
+{"adminId":"6923ed5618113778bba998a8","email":"admin@gmail.com","level":"info","message":"Admin login successful","timestamp":"2026-04-18 05:54:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-04-18 05:54:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-04-18 05:54:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-18 05:54:45"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da549ec780e2821eca335f","timestamp":"2026-04-18 05:55:01"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da549ec780e2821eca335f/status","timestamp":"2026-04-18 05:55:07"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da549ec780e2821eca335f","timestamp":"2026-04-18 05:55:08"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da549ec780e2821eca335f/status","timestamp":"2026-04-18 05:55:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders/69da549ec780e2821eca335f/status","timestamp":"2026-04-18 05:55:19"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-04-18 05:55:37"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-18 05:55:40"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-18 05:55:40"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-18 05:55:40"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-18 05:55:48"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:55:58"}
+{"level":"info","message":"Loading shop page","query":{"category":"6931107587e5f293b7569451"},"timestamp":"2026-04-18 05:56:08"}
+{"level":"info","message":"Loading product details page","productId":"69aa2e814e08a9bcc10954d5","timestamp":"2026-04-18 05:56:10"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/add","timestamp":"2026-04-18 05:57:12"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-18 05:57:13"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons/edit/69e2cfe0efb41c1e9f6d89ed","timestamp":"2026-04-18 05:57:35"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/coupons","timestamp":"2026-04-18 05:57:36"}
+{"body":{"brand":"692a7c52b03fa404e11802e8","category":"6931107587e5f293b7569451","description":"The Qin F21 Pro is a compact and versatile Android-powered mobile phone that blends the simplicity of a traditional keypad device with modern smartphone functionality. Featuring a 2.8-inch touchscreen alongside a physical T9 keypad, it offers intuitive navigation and efficient control for everyday tasks. Running on Android 11 with a quad-core processor and up to 4 GB RAM + 64 GB storage, this phone supports essential apps like WhatsApp, Facebook, TikTok, and more, making it ideal as a reliable backup device or a minimalist primary phone. Equipped with both a 5 MP rear camera and a 2 MP front camera, 4G LTE connectivity, Wi-Fi, and Bluetooth, the Qin F21 Pro keeps you connected while maintaining long battery life from its built-in 2120 mAh battery. Its lightweight, durable design makes it perfect for users who want basic smart features without the complexity of a full-size smartphone.","productName":"qin F21 pro","variants":[{"_id":"69aa30854e08a9bcc109550a","color":"black","quantity":"10","regularPrice":"10000","salesPrice":"10000"}]},"fileCount":0,"level":"info","message":"Updating product","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:58:31"}
+{"level":"info","message":"Product updated successfully","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:58:31"}
+{"level":"info","message":"Loading product details page","productId":"69aa2e814e08a9bcc10954d5","timestamp":"2026-04-18 05:58:38"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-04-18 05:58:44"}
+{"level":"info","message":"Loading product details page","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:58:47"}
+{"body":{"brand":"692a7c52b03fa404e11802e8","category":"6931107587e5f293b7569451","description":"The Qin F21 Pro is a compact and versatile Android-powered mobile phone that blends the simplicity of a traditional keypad device with modern smartphone functionality. Featuring a 2.8-inch touchscreen alongside a physical T9 keypad, it offers intuitive navigation and efficient control for everyday tasks. Running on Android 11 with a quad-core processor and up to 4 GB RAM + 64 GB storage, this phone supports essential apps like WhatsApp, Facebook, TikTok, and more, making it ideal as a reliable backup device or a minimalist primary phone. Equipped with both a 5 MP rear camera and a 2 MP front camera, 4G LTE connectivity, Wi-Fi, and Bluetooth, the Qin F21 Pro keeps you connected while maintaining long battery life from its built-in 2120 mAh battery. Its lightweight, durable design makes it perfect for users who want basic smart features without the complexity of a full-size smartphone.","productName":"qin F21 pro","variants":[{"_id":"69aa30854e08a9bcc109550a","color":"black","quantity":"3","regularPrice":"10000","salesPrice":"10000"}]},"fileCount":0,"level":"info","message":"Updating product","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:59:13"}
+{"level":"info","message":"Product updated successfully","productId":"69aa30854e08a9bcc1095508","timestamp":"2026-04-18 05:59:13"}

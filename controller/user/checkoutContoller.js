@@ -25,11 +25,16 @@ export const loadCheckout = async (req, res) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    
+    let currentSubtotal = 0;
+    data.cart.items.forEach(i => { currentSubtotal += i.price * i.quantity; });
+    
     const availableCoupons = await Coupon.find({
       isList: true,
       startDate: { $lte: new Date() },
       expireOn: { $gte: today },
-      userId: { $ne: userId }
+      userId: { $ne: userId },
+      minimumPrice: { $lte: currentSubtotal }
     });
 
     res.render("user/checkout", {
@@ -67,7 +72,6 @@ export const placeOrder = async (req, res) => {
     if (!addressId) return res.redirect("/checkout");
 
     const order = await placeOrderService(userId, addressId, paymentMethod);
-
     res.render("user/order-success", {
       user: req.user,
       order
