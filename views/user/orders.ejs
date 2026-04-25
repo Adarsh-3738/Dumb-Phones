@@ -85,7 +85,7 @@
                 View Details
               </button>
 
-              <% if (order.paymentStatus === 'Failed' && order.status === 'Pending') { %>
+              <% if (order.paymentStatus === 'Failed' && (order.status === 'Pending' || order.status === 'Payment Failed')) { %>
                 <button class="btn btn-outline-primary" style="border-color:#10b981; color:#10b981;" onclick="event.stopPropagation(); retryPayment('<%= order.orderId %>')">
                   Retry Payment
                 </button>

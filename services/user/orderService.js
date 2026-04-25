@@ -133,6 +133,21 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
     discountToRemove = (regularPrice - item.price) * item.quantity;
   }
 
+  let currentSaleSubtotal = 0;
+  order.orderedItems.forEach(i => {
+    if (i._id.toString() === itemId || (i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned")) {
+       currentSaleSubtotal += i.price * i.quantity;
+    }
+  });
+
+  const currentProductSavings = Math.max(0, order.totalPrice - currentSaleSubtotal);
+  const currentCouponDeduction = Math.max(0, order.discount - currentProductSavings);
+
+  if (currentSaleSubtotal > 0 && currentCouponDeduction > 0) {
+     const couponReduction = Math.round((saleItemTotal / currentSaleSubtotal) * currentCouponDeduction);
+     discountToRemove += couponReduction;
+  }
+
   // don't deduct more discount than what's available
   discountToRemove = Math.min(discountToRemove, order.discount);
 
@@ -221,8 +236,9 @@ export const returnUserOrderItem = async (orderId, userId, itemId, reason) => {
   if (!reason) throw new Error("Return reason required");
 
   const order = await Order.findOne({ orderId, userId });
-  if (!order || order.status !== "Delivered") {
-    throw new Error("Invalid return request. Order must be delivered.");
+  const allowedStatuses = ["Delivered", "Return Request", "Returned", "Return Rejected"];
+  if (!order || !allowedStatuses.includes(order.status)) {
+    throw new Error("Invalid return request. Order must be in a post-delivery state.");
   }
 
   const item = order.orderedItems.find(i => i._id.toString() === itemId);

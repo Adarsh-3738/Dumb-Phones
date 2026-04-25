@@ -164,6 +164,22 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
       discountToRemove = (regularPrice - item.price) * item.quantity;
     }
     
+    const saleItemTotal = item.price * item.quantity;
+    let currentSaleSubtotal = 0;
+    order.orderedItems.forEach(i => {
+      if (i._id.toString() === itemId || (i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned")) {
+         currentSaleSubtotal += i.price * i.quantity;
+      }
+    });
+
+    const currentProductSavings = Math.max(0, order.totalPrice - currentSaleSubtotal);
+    const currentCouponDeduction = Math.max(0, order.discount - currentProductSavings);
+
+    if (currentSaleSubtotal > 0 && currentCouponDeduction > 0) {
+       const couponReduction = Math.round((saleItemTotal / currentSaleSubtotal) * currentCouponDeduction);
+       discountToRemove += couponReduction;
+    }
+    
     // Safeguard order totals
     discountToRemove = Math.min(discountToRemove, Math.max(0, order.discount));
 
@@ -210,23 +226,23 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
 
     item.itemStatus = "Returned";
 
-    // Detect if ALL items are resolved now
-    const allItemsResolved = order.orderedItems.every(i => 
-       i.itemStatus === "Returned" || i.itemStatus === "Cancelled" || i.itemStatus === "Return Rejected"
-    );
-    if (allItemsResolved) {
-       // If every single item is eventually returned or cancelled, mark the entire order
-       const everythingReturned = order.orderedItems.every(i => i.itemStatus === "Returned" || i.itemStatus === "Cancelled");
-       if (everythingReturned) {
-         order.status = "Returned";
-       }
-    }
-
   } else if (status === "Return Rejected") {
     item.itemStatus = "Return Rejected";
   } else {
     throw new Error("Invalid status transition for item");
   }
+
+  // Resolve order status if no items are pending return
+  const hasPendingReturns = order.orderedItems.some(i => i.itemStatus === "Return Request");
+  if (!hasPendingReturns) {
+     const everythingReturnedOrCancelled = order.orderedItems.every(i => i.itemStatus === "Returned" || i.itemStatus === "Cancelled");
+     if (everythingReturnedOrCancelled) {
+       order.status = "Returned";
+     } else {
+       order.status = "Delivered";
+     }
+  }
+
 
   await order.save();
   return item;

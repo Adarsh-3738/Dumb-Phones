@@ -87,7 +87,7 @@
                           <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:12px; height:auto;" onclick="cancelOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Cancel Item
                           </button>
-                        <% } else if (order.status === 'Delivered' && item.itemStatus === 'Active') { %>
+                        <% } else if (['Delivered', 'Return Request', 'Returned', 'Return Rejected'].includes(order.status) && item.itemStatus === 'Active') { %>
                           <button type="button" class="btn btn-warning" style="padding:4px 8px; font-size:12px; height:auto; color:#b45309; border-color:#b45309;" onclick="returnOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Return Item
                           </button>

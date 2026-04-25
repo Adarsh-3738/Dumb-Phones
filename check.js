@@ -5,9 +5,25 @@ dotenv.config();
 import Order from "./models/orderSchema.js";
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/DumbPhones").then(async () => {
-    const statuses = await Order.aggregate([
-      { $group: { _id: "$status", count: { $sum: 1 } } }
-    ]);
-    console.log("Order statuses found:", statuses);
-    process.exit(0);
+    try {
+      console.log("Connected to MongoDB, searching for Delivered orders in Kollam...\n");
+
+      // Running the aggregation pipeline
+      const orders = await Order.aggregate([
+        {
+          $match: {
+            status: "Delivered",
+            "address.city": { $regex: /^kollam$/i }
+          }
+        }
+      ]);
+      
+      console.log(`Found ${orders.length} Delivered orders in Kollam:`);
+      console.dir(orders, { depth: null });
+      
+    } catch (error) {
+      console.error("Query failed:", error);
+    } finally {
+      process.exit(0);
+    }
 });

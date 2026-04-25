@@ -82,9 +82,9 @@ export const getCheckoutData = async (userId) => {
           if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
             calcDeduction = coupon.maxDiscountAmount;
           }
-          couponDeduction = calcDeduction;
+          couponDeduction = Math.min(calcDeduction, salePriceSubtotal);
         } else {
-          couponDeduction = coupon.offerPrice;
+          couponDeduction = Math.min(coupon.offerPrice, salePriceSubtotal);
         }
         appliedCouponCode = coupon.name;
       } else {
@@ -97,8 +97,9 @@ export const getCheckoutData = async (userId) => {
     }
   }
 
-  // Tax is calculated on the sale price the actual amount paid for items
-  const tax = Math.round(salePriceSubtotal * taxRate);
+  // Tax is calculated on the actual amount paid for items after coupon deduction
+  const taxableAmount = Math.max(0, salePriceSubtotal - couponDeduction);
+  const tax = Math.round(taxableAmount * taxRate);
   const discount = totalSavings + couponDeduction;
   const shipping = SHIPPING_COST;
   
@@ -207,9 +208,9 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
           if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
             calcDeduction = coupon.maxDiscountAmount;
           }
-          couponDeduction = calcDeduction;
+          couponDeduction = Math.min(calcDeduction, salePriceSubtotal);
         } else {
-          couponDeduction = coupon.offerPrice;
+          couponDeduction = Math.min(coupon.offerPrice, salePriceSubtotal);
         }
         coupon.userId.push(userId);
         await coupon.save();
@@ -218,7 +219,8 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     }
   }
 
-  const tax = Math.round(salePriceSubtotal * taxRate);
+  const taxableAmount = Math.max(0, salePriceSubtotal - couponDeduction);
+  const tax = Math.round(taxableAmount * taxRate);
   const discount = totalSavings + couponDeduction;
   const shipping = SHIPPING_COST;
   let finalAmount = subtotal + tax + shipping - discount;

@@ -53,14 +53,21 @@
     <% } %>
 
     <% if (order.status === "Return Request") { %>
-      <div style="margin-top: 20px; padding: 15px; border: 1px solid #fcd34d; background: #fffbeb; border-radius: 8px;">
-        <h4 style="margin-top: 0; color: #b45309;">Verify Return Request</h4>
-        <p style="font-size: 14px; color: #78350f; margin-bottom: 15px;">The user has requested to return this order. Approving it will automatically refund ₹<%= order.finalAmount %> into their Wallet and restore inventory.</p>
-        <div style="display: flex; gap: 10px;">
-          <button onclick="updateStatus('<%= order._id %>', 'Returned', '<%= order.status %>')" style="background: #10b981; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Approve Return</button>
-          <button onclick="updateStatus('<%= order._id %>', 'Return Rejected', '<%= order.status %>')" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reject Return</button>
+      <% if (order.returnReason === "Partial Return Requested") { %>
+        <div style="margin-top: 20px; padding: 15px; border: 1px solid #93c5fd; background: #eff6ff; border-radius: 8px;">
+          <h4 style="margin-top: 0; color: #1e3a8a;">Partial Return Requested</h4>
+          <p style="font-size: 14px; color: #1e40af; margin-bottom: 0;">One or more items have been requested for return. Please scroll down to the <b>Ordered Products</b> section to approve or reject individual item returns.</p>
         </div>
-      </div>
+      <% } else { %>
+        <div style="margin-top: 20px; padding: 15px; border: 1px solid #fcd34d; background: #fffbeb; border-radius: 8px;">
+          <h4 style="margin-top: 0; color: #b45309;">Verify Entire Order Return Request</h4>
+          <p style="font-size: 14px; color: #78350f; margin-bottom: 15px;">The user has requested to return this entire order. Approving it will automatically refund ₹<%= order.finalAmount %> into their Wallet and restore inventory for all active items.</p>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="updateStatus('<%= order._id %>', 'Returned', '<%= order.status %>')" style="background: #10b981; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Approve Order Return</button>
+            <button onclick="updateStatus('<%= order._id %>', 'Return Rejected', '<%= order.status %>')" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reject Order Return</button>
+          </div>
+        </div>
+      <% } %>
     <% } else { %>
       <label>Change Status</label>
       <select onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">

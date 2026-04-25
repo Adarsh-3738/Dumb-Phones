@@ -3,29 +3,53 @@
 async function cancelOrder(orderId) {
   const { value: reason } = await Swal.fire({
     title: "Cancel Order?",
-    text: "Please select a reason for cancellation",
-    input: "select",
-    inputOptions: {
-      "Changed my mind": "Changed my mind",
-      "Found a better price elsewhere": "Found a better price elsewhere",
-      "Ordered by mistake": "Ordered by mistake",
-      "Shipping time is too long": "Shipping time is too long",
-      "Other": "Other"
-    },
-    inputPlaceholder: "Select a reason",
+    html: `
+      <p style="margin-bottom: 15px;">Please select a reason for cancellation</p>
+      <select id="swal-select" class="swal2-select" style="display: flex; margin: 10px auto; width: 80%;">
+        <option value="" disabled selected>Select a reason</option>
+        <option value="Changed my mind">Changed my mind</option>
+        <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+        <option value="Ordered by mistake">Ordered by mistake</option>
+        <option value="Shipping time is too long">Shipping time is too long</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your reason here..." style="display: none; margin: 10px auto; width: 80%;"></textarea>
+    `,
     showCancelButton: true,
     confirmButtonText: "Cancel Order",
     confirmButtonColor: "#1e40af",
     cancelButtonColor: "#d33",
-    inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value) resolve();
-        else resolve("You need to select a reason");
+    didOpen: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      select.addEventListener('change', () => {
+        if (select.value === 'Other') {
+          textarea.style.display = 'flex';
+          textarea.focus();
+        } else {
+          textarea.style.display = 'none';
+        }
       });
+    },
+    preConfirm: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      if (!select.value) {
+        Swal.showValidationMessage("You need to select a reason");
+        return false;
+      }
+      if (select.value === 'Other') {
+        if (!textarea.value.trim()) {
+          Swal.showValidationMessage("You need to write something!");
+          return false;
+        }
+        return textarea.value.trim();
+      }
+      return select.value;
     }
   });
 
-  if (reason === undefined) return;
+  if (!reason) return;
 
   await fetch(`/orders/${orderId}/cancel`, {
     method: "POST",
@@ -47,29 +71,53 @@ async function cancelOrder(orderId) {
 async function cancelOrderItem(orderId, itemId) {
   const { value: reason } = await Swal.fire({
     title: "Cancel Item?",
-    text: "Please select a reason to cancel this item",
-    input: "select",
-    inputOptions: {
-      "Changed my mind": "Changed my mind",
-      "Found a better price elsewhere": "Found a better price elsewhere",
-      "Ordered by mistake": "Ordered by mistake",
-      "Shipping time is too long": "Shipping time is too long",
-      "Other": "Other"
-    },
-    inputPlaceholder: "Select a reason",
+    html: `
+      <p style="margin-bottom: 15px;">Please select a reason to cancel this item</p>
+      <select id="swal-select" class="swal2-select" style="display: flex; margin: 10px auto; width: 80%;">
+        <option value="" disabled selected>Select a reason</option>
+        <option value="Changed my mind">Changed my mind</option>
+        <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+        <option value="Ordered by mistake">Ordered by mistake</option>
+        <option value="Shipping time is too long">Shipping time is too long</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your reason here..." style="display: none; margin: 10px auto; width: 80%;"></textarea>
+    `,
     showCancelButton: true,
     confirmButtonText: "Cancel Item",
     confirmButtonColor: "#1e40af",
     cancelButtonColor: "#d33",
-    inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value) resolve();
-        else resolve("You need to select a reason");
+    didOpen: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      select.addEventListener('change', () => {
+        if (select.value === 'Other') {
+          textarea.style.display = 'flex';
+          textarea.focus();
+        } else {
+          textarea.style.display = 'none';
+        }
       });
+    },
+    preConfirm: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      if (!select.value) {
+        Swal.showValidationMessage("You need to select a reason");
+        return false;
+      }
+      if (select.value === 'Other') {
+        if (!textarea.value.trim()) {
+          Swal.showValidationMessage("You need to write something!");
+          return false;
+        }
+        return textarea.value.trim();
+      }
+      return select.value;
     }
   });
 
-  if (reason === undefined) return;
+  if (!reason) return;
 
   try {
     const res = await fetch(`/orders/${orderId}/item/${itemId}/cancel`, {
@@ -99,25 +147,49 @@ async function cancelOrderItem(orderId, itemId) {
     async function returnOrder(orderId) {
       const { value: reason } = await Swal.fire({
         title: "Return Order",
-        text: "Please select a reason for returning this order",
-        input: "select",
-        inputOptions: {
-          "Defective or Damaged product": "Defective or Damaged product",
-          "Received wrong item": "Received wrong item",
-          "Product doesn't match description": "Product doesn't match description",
-          "Performance or Quality issues": "Performance or Quality issues",
-          "Other": "Other"
-        },
-        inputPlaceholder: "Select a reason",
+        html: `
+          <p style="margin-bottom: 15px;">Please select a reason for returning this order</p>
+          <select id="swal-select" class="swal2-select" style="display: flex; margin: 10px auto; width: 80%;">
+            <option value="" disabled selected>Select a reason</option>
+            <option value="Defective or Damaged product">Defective or Damaged product</option>
+            <option value="Received wrong item">Received wrong item</option>
+            <option value="Product doesn't match description">Product doesn't match description</option>
+            <option value="Performance or Quality issues">Performance or Quality issues</option>
+            <option value="Other">Other</option>
+          </select>
+          <textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your reason here..." style="display: none; margin: 10px auto; width: 80%;"></textarea>
+        `,
         showCancelButton: true,
         confirmButtonText: "Submit Return",
         confirmButtonColor: "#1d4ed8",
         cancelButtonText: "Cancel",
-        inputValidator: (value) => {
-          return new Promise((resolve) => {
-            if (value) resolve();
-            else resolve("You need to select a reason");
+        didOpen: () => {
+          const select = document.getElementById('swal-select');
+          const textarea = document.getElementById('swal-textarea');
+          select.addEventListener('change', () => {
+            if (select.value === 'Other') {
+              textarea.style.display = 'flex';
+              textarea.focus();
+            } else {
+              textarea.style.display = 'none';
+            }
           });
+        },
+        preConfirm: () => {
+          const select = document.getElementById('swal-select');
+          const textarea = document.getElementById('swal-textarea');
+          if (!select.value) {
+            Swal.showValidationMessage("You need to select a reason");
+            return false;
+          }
+          if (select.value === 'Other') {
+            if (!textarea.value.trim()) {
+              Swal.showValidationMessage("You need to write something!");
+              return false;
+            }
+            return textarea.value.trim();
+          }
+          return select.value;
         }
       });
 
@@ -153,25 +225,49 @@ async function cancelOrderItem(orderId, itemId) {
 async function returnOrderItem(orderId, itemId) {
   const { value: reason } = await Swal.fire({
     title: "Return Item?",
-    text: "Please select a reason for returning this specific item",
-    input: "select",
-    inputOptions: {
-      "Defective or Damaged product": "Defective or Damaged product",
-      "Received wrong item": "Received wrong item",
-      "Product doesn't match description": "Product doesn't match description",
-      "Performance or Quality issues": "Performance or Quality issues",
-      "Other": "Other"
-    },
-    inputPlaceholder: "Select a reason",
+    html: `
+      <p style="margin-bottom: 15px;">Please select a reason for returning this specific item</p>
+      <select id="swal-select" class="swal2-select" style="display: flex; margin: 10px auto; width: 80%;">
+        <option value="" disabled selected>Select a reason</option>
+        <option value="Defective or Damaged product">Defective or Damaged product</option>
+        <option value="Received wrong item">Received wrong item</option>
+        <option value="Product doesn't match description">Product doesn't match description</option>
+        <option value="Performance or Quality issues">Performance or Quality issues</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="swal-textarea" class="swal2-textarea" placeholder="Type your reason here..." style="display: none; margin: 10px auto; width: 80%;"></textarea>
+    `,
     showCancelButton: true,
     confirmButtonText: "Return Item",
     confirmButtonColor: "#b45309",
     cancelButtonText: "Cancel",
-    inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value) resolve();
-        else resolve("You need to select a reason to return.");
+    didOpen: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      select.addEventListener('change', () => {
+        if (select.value === 'Other') {
+          textarea.style.display = 'flex';
+          textarea.focus();
+        } else {
+          textarea.style.display = 'none';
+        }
       });
+    },
+    preConfirm: () => {
+      const select = document.getElementById('swal-select');
+      const textarea = document.getElementById('swal-textarea');
+      if (!select.value) {
+        Swal.showValidationMessage("You need to select a reason to return.");
+        return false;
+      }
+      if (select.value === 'Other') {
+        if (!textarea.value.trim()) {
+          Swal.showValidationMessage("You need to write something!");
+          return false;
+        }
+        return textarea.value.trim();
+      }
+      return select.value;
     }
   });
 
