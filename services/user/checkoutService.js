@@ -6,6 +6,7 @@ import Settings from "../../models/settingsSchema.js";
 import Wallet from "../../models/walletSchema.js";
 import Coupon from "../../models/couponSchema.js";
 import Razorpay from "razorpay";
+import { v4 as uuidv4 } from "uuid";
 const SHIPPING_COST = 0;
 
 
@@ -241,6 +242,8 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
 
   let paymentStatus = "Pending";
 
+  const newOrderId = "ORD-" + uuidv4().replace(/-/g, "").substring(0, 10).toUpperCase();
+
   // SECURE WALLET TRANSACTION PROCESSING
   if (paymentMethod === "Wallet") {
     // Atomic deduction to avoid double-spend race condition
@@ -252,7 +255,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
           transactions: {
             amount: finalAmount,
             type: "debit",
-            description: "Payment for Order",
+            description: `Payment for Order ${newOrderId}`,
             status: "success"
           }
         }
@@ -279,6 +282,7 @@ if (!selectedAddress) throw new Error("Invalid address");
 
 // CREATE ORDER
 order = await Order.create({
+  orderId: newOrderId,
   userId,
 
   orderedItems: orderedItems,   

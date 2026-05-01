@@ -2,7 +2,7 @@ import {
   getOrders,
   getOrderDetails,
   changeOrderStatus,
-  changeOrderItemStatus
+  changeOrderItemStatus,
 } from "../../services/admin/orderService.js";
 
 
@@ -27,6 +27,7 @@ export const loadOrders = async (req, res) => {
       status,
       sort
     });
+
 
     res.render("admin/orders", {
       orders,

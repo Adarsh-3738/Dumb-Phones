@@ -207,10 +207,10 @@ export const downloadInvoice = async (req, res) => {
        .text(`${order.address?.city}, ${order.address?.state} - ${order.address?.pincode || order.address?.zipCode}`, 300, customerTop + 50)
        .text(`Phone: ${order.address?.phone}`, 300, customerTop + 65);
 
-    generateHr(270);
+    generateHr(290);
 
     // TABLE HEADERS
-    const tableTop = 295;
+    const tableTop = 315;
     doc.fillColor("#f3f4f6").rect(50, tableTop - 5, 500, 25).fill();
     doc.fillColor("#000000").fontSize(10).font("Helvetica-Bold");
 

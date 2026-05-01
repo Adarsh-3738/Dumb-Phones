@@ -51,6 +51,7 @@ export const getOrders = async ({ page, limit, search, status, sort }) => {
 };
 
 
+
 // GET SINGLE ORDER
 export const getOrderDetails = async (orderId) => {
 
@@ -89,7 +90,7 @@ export const changeOrderStatus = async (orderId, status) => {
   if (status === "Returned" && order.status !== "Returned") {
     
     // Add amount back to user's wallet safely (excluding discounts applied)
-    await addMoneyToWallet(order.userId, order.finalAmount, "Refund for Returned Order");
+    await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Returned Order ${order.orderId}`);
     order.paymentStatus = "Refunded";
 
     // Restore inventory and mark items as cancelled/returned
@@ -113,7 +114,7 @@ export const changeOrderStatus = async (orderId, status) => {
     
     // Refund to Wallet only if the user actually paid 
     if (order.paymentMethod !== "COD" || order.paymentStatus === "Paid") {
-      await addMoneyToWallet(order.userId, order.finalAmount, "Refund for Admin Cancelled Order");
+      await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Admin Cancelled Order ${order.orderId}`);
       order.paymentStatus = "Refunded";
     }
 
