@@ -9,16 +9,42 @@ import crypto from "crypto";
 
 // Load wallet page
 export const loadWallet = async (req, res) => {
+  try {
+    const userId = req.session.user?._id || req.user?._id;
+    if (!userId) return res.redirect('/login');
 
-  const userId = req.session.user?._id || req.user?._id;
+    const wallet = await getOrCreateWallet(userId);
 
-  if (!userId) return res.redirect('/login');
+    // PAGINATION LOGIC
+    const page = parseInt(req.query.page) || 1; // Get current page, default is 1
+    const limit = 10; // Show 10 transactions per page
+    
+    //Copy and sort all transactions by date (newest first)
+    let allTransactions = [...wallet.transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const wallet = await getOrCreateWallet(userId);
+    //Calculate Total Pages
+    const totalTransactions = allTransactions.length;
+    const totalPages = Math.ceil(totalTransactions / limit);
+    
+    //Slice the array for the current page
+    const skip = (page - 1) * limit;
+    const paginatedTransactions = allTransactions.slice(skip, skip + limit);
+    
 
-  res.render("user/wallet", { wallet });
+    
+    res.render("user/wallet", { 
+      wallet, 
+      paginatedTransactions, 
+      currentPage: page, 
+      totalPages 
+    });
 
+  } catch (error) {
+    console.error("Wallet Load Error:", error);
+    res.redirect("/");
+  }
 };
+
 
 
 // Initiate Razorpay Top-Up

@@ -57,7 +57,8 @@
                 </tr>
               </thead>
               <tbody>
-                <% [...wallet.transactions].reverse().forEach(txn => { %>
+                <% paginatedTransactions.forEach(txn => { %>
+
                   <tr>
                     <td><%= new Date(txn.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                     <td><%= txn.description %></td>
@@ -72,6 +73,31 @@
               </tbody>
             </table>
           </div>
+
+<% if (totalPages > 1) { %>
+  <div class="pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;">
+    
+    <!-- Previous Button -->
+    <% if (currentPage > 1) { %>
+      <a href="/wallet?page=<%= currentPage - 1 %>" style="padding: 8px 16px; border: 1px solid #e2e8f0; border-radius: 6px; color: #0f172a; text-decoration: none;">Prev</a>
+    <% } %>
+
+    <!-- Page Numbers -->
+    <% for(let i = 1; i <= totalPages; i++) { %>
+      <a href="/wallet?page=<%= i %>" style="padding: 8px 16px; border-radius: 6px; text-decoration: none; <%= currentPage === i ? 'background-color: #2750AB; color: white;' : 'border: 1px solid #e2e8f0; color: #0f172a;' %>">
+        <%= i %>
+      </a>
+    <% } %>
+
+    <!-- Next Button -->
+    <% if (currentPage < totalPages) { %>
+      <a href="/wallet?page=<%= currentPage + 1 %>" style="padding: 8px 16px; border: 1px solid #e2e8f0; border-radius: 6px; color: #0f172a; text-decoration: none;">Next</a>
+    <% } %>
+    
+  </div>
+<% } %>
+
+
         <% } else { %>
           <div class="empty-state">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>

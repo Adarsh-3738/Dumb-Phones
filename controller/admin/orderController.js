@@ -6,7 +6,6 @@ import {
 } from "../../services/admin/orderService.js";
 
 
-
 // LOAD ORDERS PAGE
 
 export const loadOrders = async (req, res) => {
@@ -40,7 +39,7 @@ export const loadOrders = async (req, res) => {
 
   } catch (error) {
     console.error("Admin loadOrders error:", error);
-    res.render("admin/error", { message: "Failed to load orders. " + error.message });
+    res.render("admin/admin-error", { message: "Failed to load orders. " + error.message });
   }
 };
 
