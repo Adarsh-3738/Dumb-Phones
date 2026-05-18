@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Admin | Order Details</title>
-  <link rel="stylesheet" href="/css/admin/order-details.css">
+  <link rel="stylesheet" href="/css/admin/order-details.css?v=2">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -11,174 +11,199 @@
 
 <div class="container">
 
-  <h2>Order Details</h2>
+  <div class="page-header">
+    <h2>Order Details: #<%= order.orderId %></h2>
+    <a href="/admin/orders" class="btn btn-primary btn-sm">← Back to Orders</a>
+  </div>
 
-  <!-- Order Summary -->
-  <div class="card">
-    <h3>Order Summary</h3>
-    <p><strong>Order ID:</strong> <%= order.orderId %></p>
-    <p><strong>Status:</strong> <span class="status"><%= order.status %></span></p>
-    <p><strong>Date:</strong> <%= order.createdOn.toDateString() %></p>
-    <%
-      let topActiveSubtotal = 0;
-      order.orderedItems.forEach(item => {
-        if (item.itemStatus !== 'Cancelled') {
-          topActiveSubtotal += (item.price * item.quantity);
-        }
-      });
-    %>
-    <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %></p>
-    <p><strong>Payment Method:</strong> 
-      <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #334155;"><%= order.paymentMethod || 'Unknown' %></span>
-    </p>
-    <p><strong>Payment Status:</strong> 
-      <% if (order.paymentStatus === 'Paid') { %>
-        <span style="color: #10b981; font-weight: bold;"><%= order.paymentStatus %></span>
-      <% } else if (order.paymentStatus === 'Pending') { %>
-        <span style="color: #f59e0b; font-weight: bold;"><%= order.paymentStatus %></span>
-      <% } else { %>
-        <span style="color: #ef4444; font-weight: bold;"><%= order.paymentStatus %></span>
-      <% } %>
-    </p>
-    <% if (order.cancelReason) { %>
-      <div style="margin: 15px 0; padding: 10px; border-left: 4px solid #f59e0b; background-color: #fffbeb;">
-        <strong>Cancel Reason:</strong> <%= order.cancelReason %>
-      </div>
-    <% } %>
+  <div class="grid-container">
+    <!-- Order Summary -->
+    <div class="card">
+      <h3><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Order Summary</h3>
+      <p><strong>Order ID:</strong> <%= order.orderId %></p>
+      <p><strong>Date:</strong> <%= order.createdOn.toDateString() %></p>
+      <p><strong>Status:</strong> <span class="status-badge"><%= order.status %></span></p>
+      <%
+        let topActiveSubtotal = 0;
+        order.orderedItems.forEach(item => {
+          if (item.itemStatus !== 'Cancelled') {
+            topActiveSubtotal += (item.price * item.quantity);
+          }
+        });
+      %>
+      <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %></p>
+      <p><strong>Payment Method:</strong> 
+        <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 13px; color: #475569;"><%= order.paymentMethod || 'Unknown' %></span>
+      </p>
+      <p><strong>Payment Status:</strong> 
+        <% if (order.paymentStatus === 'Paid') { %>
+          <span class="status-badge badge-paid"><%= order.paymentStatus %></span>
+        <% } else if (order.paymentStatus === 'Pending') { %>
+          <span class="status-badge badge-pending"><%= order.paymentStatus %></span>
+        <% } else { %>
+          <span class="status-badge badge-failed"><%= order.paymentStatus %></span>
+        <% } %>
+      </p>
 
-    <% if (order.returnReason) { %>
-      <div style="margin: 15px 0; padding: 10px; border-left: 4px solid #ef4444; background-color: #fef2f2;">
-        <strong>Return Reason:</strong> <%= order.returnReason %>
-      </div>
-    <% } %>
-
-    <% if (order.status === "Return Request") { %>
-      <% if (order.returnReason === "Partial Return Requested") { %>
-        <div style="margin-top: 20px; padding: 15px; border: 1px solid #93c5fd; background: #eff6ff; border-radius: 8px;">
-          <h4 style="margin-top: 0; color: #1e3a8a;">Partial Return Requested</h4>
-          <p style="font-size: 14px; color: #1e40af; margin-bottom: 0;">One or more items have been requested for return. Please scroll down to the <b>Ordered Products</b> section to approve or reject individual item returns.</p>
+      <% if (order.cancelReason) { %>
+        <div class="info-box info-warning">
+          <strong>Cancel Reason:</strong> <%= order.cancelReason %>
         </div>
-      <% } else { %>
-        <div style="margin-top: 20px; padding: 15px; border: 1px solid #fcd34d; background: #fffbeb; border-radius: 8px;">
-          <h4 style="margin-top: 0; color: #b45309;">Verify Entire Order Return Request</h4>
-          <p style="font-size: 14px; color: #78350f; margin-bottom: 15px;">The user has requested to return this entire order. Approving it will automatically refund ₹<%= order.finalAmount %> into their Wallet and restore inventory for all active items.</p>
-          <div style="display: flex; gap: 10px;">
-            <button onclick="updateStatus('<%= order._id %>', 'Returned', '<%= order.status %>')" style="background: #10b981; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Approve Order Return</button>
-            <button onclick="updateStatus('<%= order._id %>', 'Return Rejected', '<%= order.status %>')" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reject Order Return</button>
+      <% } %>
+
+      <% if (order.returnReason) { %>
+        <div class="info-box info-danger">
+          <strong>Return Reason:</strong> <%= order.returnReason %>
+        </div>
+      <% } %>
+
+      <% if (order.status === "Return Request") { %>
+        <% if (order.returnReason === "Partial Return Requested") { %>
+          <div class="info-box info-primary" style="margin-top: 15px;">
+            <h4 style="margin-top: 0; margin-bottom: 5px;">Partial Return Requested</h4>
+            <p style="font-size: 13px; margin: 0;">One or more items have been requested for return. Please check the <b>Ordered Products</b> section below.</p>
           </div>
+        <% } else { %>
+          <div class="info-box info-warning" style="margin-top: 15px;">
+            <h4 style="margin-top: 0; margin-bottom: 10px;">Verify Entire Order Return</h4>
+            <p style="font-size: 13px; margin-bottom: 15px;">Approving this will refund ₹<%= order.finalAmount %> into Wallet and restore inventory.</p>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-success btn-sm" onclick="updateStatus('<%= order._id %>', 'Returned', '<%= order.status %>')">Approve Return</button>
+              <button class="btn btn-danger btn-sm" onclick="updateStatus('<%= order._id %>', 'Return Rejected', '<%= order.status %>')">Reject Return</button>
+            </div>
+          </div>
+        <% } %>
+      <% } else { %>
+        <div style="margin-top: 20px;">
+          <label style="font-size: 14px; font-weight: 600; color: #475569; display: block;">Change Status</label>
+          <select class="custom-select" onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
+            <% ["Pending","Processing","Shipped","Out for Delivery","Delivered","Cancelled", "Return Request", "Returned", "Return Rejected"].forEach(s => { %>
+              <option value="<%= s %>" <%= order.status === s ? "selected" : "" %>>
+                <%= s %>
+              </option>
+            <% }) %>
+          </select>
         </div>
       <% } %>
-    <% } else { %>
-      <label>Change Status</label>
-      <select onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
-        <% ["Pending","Processing","Shipped","Out for Delivery","Delivered","Cancelled", "Return Request", "Returned", "Return Rejected"].forEach(s => { %>
-          <option value="<%= s %>" <%= order.status === s ? "selected" : "" %>>
-            <%= s %>
-          </option>
-        <% }) %>
-      </select>
-    <% } %>
-  </div>
-
-  <!-- User Info -->
-  <div class="card">
-    <h3>User Details</h3>
-    <p><strong>Name:</strong> <%= order.userId?.name || "N/A" %></p>
-    <p><strong>Email:</strong> <%= order.userId?.email || "N/A" %></p>
-  </div>
-
-  
-  <!-- Address -->
-<div class="card">
-  <h3>Delivery Address</h3>
-
-  <% if (order.address) { %>
-    <p><strong>Name:</strong> <%= order.address.name %></p>
-    <p><strong>Phone:</strong> <%= order.address.phone %></p>
-    <p>
-      <strong>Address:</strong><br>
-      <%= order.address.addressType %>,<br>
-      <%= order.address.landmark %>,<br>
-      <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
-    </p>
-  <% } else { %>
-    <p style="color:red;">Address not found for this order</p>
-  <% } %>
-</div>
-
-
-  <!-- Ordered Items -->
-  <div class="card">
-    <h3>Ordered Products</h3>
-
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Qty</th>
-          <th>Price</th>
-          <th>Total</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% order.orderedItems.forEach(item => { %>
-          <tr>
-            <td><%= item.product?.productName || "Product Unavailable" %></td>
-            <td><%= item.quantity %></td>
-            <td>₹<%= item.price %></td>
-            <td style="<%= item.itemStatus === 'Cancelled' ? 'text-decoration: line-through; color: #999;' : '' %>">
-              ₹<%= item.price * item.quantity %>
-            </td>
-            <td>
-              <% if (item.itemStatus === 'Returned') { %>
-                <span style="color: #ef4444; font-weight: bold; font-size: 0.85em;">Returned</span>
-                <% if (item.returnReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.returnReason %></div>
-                <% } %>
-              <% } else if (item.itemStatus === 'Return Rejected') { %>
-                <span style="color: #ef4444; font-weight: bold; font-size: 0.85em; text-decoration: line-through;">Return Rejected</span>
-                <% if (item.returnReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.returnReason %></div>
-                <% } %>
-              <% } else if (item.itemStatus === 'Return Request') { %>
-                <span style="color: #f59e0b; font-weight: bold; font-size: 0.85em;">Return Requested</span>
-                <% if (item.returnReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.returnReason %></div>
-                <% } %>
-                <div style="margin-top: 8px; display: flex; gap: 4px; flex-direction: column;">
-                  <button onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>', 'Returned')" style="background: #10b981; color: white; padding: 4px 8px; font-size: 0.75em; border: none; border-radius: 4px; cursor: pointer;">Approve Return</button>
-                  <button onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>', 'Return Rejected')" style="background: #ef4444; color: white; padding: 4px 8px; font-size: 0.75em; border: none; border-radius: 4px; cursor: pointer;">Reject Return</button>
-                </div>
-              <% } else if (item.itemStatus === 'Cancelled') { %>
-                <span style="color: red; font-weight: bold; font-size: 0.85em;">Cancelled</span>
-                <% if (item.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= item.cancelReason %></div>
-                <% } else if (order.cancelReason) { %>
-                  <div style="font-size: 0.75em; color: #b45309; margin-top: 4px;">Reason: <%= order.cancelReason %></div>
-                <% } %>
-              <% } else { %>
-                <span style="color: green; font-size: 0.85em;">Active</span>
-              <% } %>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-    
-    <div style="margin-top: 5px; text-align: right; font-size: 1.1em; color: #555;">
-      <strong>Tax:</strong> ₹<%= order.tax %><br>
-      <strong>Shipping:</strong> <%= order.shipping === 0 ? "Free" : `₹${order.shipping}` %><br>
-      <strong>Discount:</strong> - ₹<%= order.discount %>
     </div>
-    <div style="margin-top: 10px; text-align: right; font-size: 1.25em;">
-        <strong>Subtotal:</strong> ₹<%= topActiveSubtotal %><br>
-        <strong>Amount Paid:</strong> ₹<%= (order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded') ? order.finalAmount : 0 %><br>
-        <strong>Payment Method:</strong> <%= order.paymentMethod %>
+
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <!-- User Info -->
+      <div class="card" style="margin-bottom: 0;">
+        <h3><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> User Details</h3>
+        <p><strong>Name:</strong> <%= order.userId?.name || "N/A" %></p>
+        <p><strong>Email:</strong> <%= order.userId?.email || "N/A" %></p>
+      </div>
+
+      <!-- Address -->
+      <div class="card" style="margin-bottom: 0;">
+        <h3><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Delivery Address</h3>
+        <% if (order.address) { %>
+          <p><strong><%= order.address.name %></strong></p>
+          <p>Phone: <%= order.address.phone %></p>
+          <p style="color: #64748b; line-height: 1.5;">
+            <%= order.address.addressType %>,<br>
+            <%= order.address.landmark ? order.address.landmark + ',' : '' %>
+            <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
+          </p>
+        <% } else { %>
+          <p style="color:red;">Address not found for this order</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Ordered Items -->
+    <div class="card full-width">
+      <h3><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> Ordered Products</h3>
+
+      <div style="overflow-x: auto;">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% order.orderedItems.forEach(item => { %>
+              <tr>
+                <td style="font-weight: 500; display: flex; align-items: center; gap: 12px;">
+                  <% if (item.variant && item.variant.variantImages && item.variant.variantImages.length > 0) { %>
+                    <img src="<%= item.variant.variantImages[0].url %>" alt="Product Image" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0;">
+                  <% } else { %>
+                    <div style="width: 44px; height: 44px; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #94a3b8; border: 1px solid #e2e8f0;">No Img</div>
+                  <% } %>
+                  <%= item.product?.productName || "Product Unavailable" %>
+                </td>
+                <td><%= item.quantity %></td>
+                <td>₹<%= item.price %></td>
+                <td style="<%= item.itemStatus === 'Cancelled' ? 'text-decoration: line-through; color: #94a3b8;' : 'font-weight: 600;' %>">
+                  ₹<%= item.price * item.quantity %>
+                </td>
+                <td>
+                  <% if (item.itemStatus === 'Returned') { %>
+                    <span class="status-badge badge-rejected">Returned</span>
+                    <% if (item.returnReason) { %>
+                      <div style="font-size: 0.85em; color: #b45309; margin-top: 6px;">Reason: <%= item.returnReason %></div>
+                    <% } %>
+                  <% } else if (item.itemStatus === 'Return Rejected') { %>
+                    <span class="status-badge badge-rejected" style="text-decoration: line-through;">Return Rejected</span>
+                    <% if (item.returnReason) { %>
+                      <div style="font-size: 0.85em; color: #b45309; margin-top: 6px;">Reason: <%= item.returnReason %></div>
+                    <% } %>
+                  <% } else if (item.itemStatus === 'Return Request') { %>
+                    <span class="status-badge badge-return-request">Return Requested</span>
+                    <% if (item.returnReason) { %>
+                      <div style="font-size: 0.85em; color: #9a3412; margin-top: 6px;">Reason: <%= item.returnReason %></div>
+                    <% } %>
+                    <div style="margin-top: 10px; display: flex; gap: 6px; flex-direction: column;">
+                      <button class="btn btn-success btn-sm" onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>', 'Returned')">Approve Return</button>
+                      <button class="btn btn-danger btn-sm" onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>', 'Return Rejected')">Reject Return</button>
+                    </div>
+                  <% } else if (item.itemStatus === 'Cancelled') { %>
+                    <span class="status-badge badge-rejected">Cancelled</span>
+                    <% if (item.cancelReason) { %>
+                      <div style="font-size: 0.85em; color: #b45309; margin-top: 6px;">Reason: <%= item.cancelReason %></div>
+                    <% } else if (order.cancelReason) { %>
+                      <div style="font-size: 0.85em; color: #b45309; margin-top: 6px;">Reason: <%= order.cancelReason %></div>
+                    <% } %>
+                  <% } else { %>
+                    <span class="status-badge badge-active">Active</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="summary-totals">
+        <div class="row">
+          <span>Subtotal:</span>
+          <span style="font-weight: 600; color: #334155;">₹<%= topActiveSubtotal %></span>
+        </div>
+        <div class="row">
+          <span>Tax:</span>
+          <span>₹<%= order.tax || 0 %></span>
+        </div>
+        <div class="row">
+          <span>Shipping:</span>
+          <span><%= order.shipping === 0 ? "Free" : `₹${order.shipping}` %></span>
+        </div>
+        <div class="row" style="color: #10b981;">
+          <span>Discount:</span>
+          <span>- ₹<%= order.discount || 0 %></span>
+        </div>
+        <div class="row grand-total">
+          <span>Amount Paid:</span>
+          <span style="color: #1d4ed8;">₹<%= (order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded') ? order.finalAmount : 0 %></span>
+        </div>
+      </div>
     </div>
   </div>
-
-  <a href="/admin/orders" class="back-btn">← Back to Orders</a>
 
 </div>
 <script src="/js/admin/order-details.js"></script>

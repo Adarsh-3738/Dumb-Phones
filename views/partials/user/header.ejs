@@ -283,11 +283,23 @@
     <div class="nav-right" id="navRight">
       <!-- SEARCH -->
       <form class="search-form" action="/shop" method="GET" id="searchForm">
+        <% if (typeof category !== 'undefined' && category) { %><input type="hidden" name="category" value="<%= category %>"><% } %>
+        <% if (typeof brand !== 'undefined' && brand) { %><input type="hidden" name="brand" value="<%= brand %>"><% } %>
+        <% if (typeof sort !== 'undefined' && sort) { %><input type="hidden" name="sort" value="<%= sort %>"><% } %>
+        <% if (typeof price !== 'undefined' && price) { %><input type="hidden" name="price" value="<%= price %>"><% } %>
         <div style="position: relative; display: flex; align-items: center;">
           <input type="text" name="search" id="searchInput" placeholder="Search products..." value="<%= typeof search !== 'undefined' ? search : '' %>" style="width: 260px; padding-right: 32px;">
           
+          <%
+            let clearSearchHref = "/shop?";
+            if (typeof category !== 'undefined' && category) clearSearchHref += `category=${category}&`;
+            if (typeof brand !== 'undefined' && brand) clearSearchHref += `brand=${brand}&`;
+            if (typeof sort !== 'undefined' && sort) clearSearchHref += `sort=${sort}&`;
+            if (typeof price !== 'undefined' && price) clearSearchHref += `price=${price}&`;
+            clearSearchHref = clearSearchHref.endsWith('?') ? "/shop" : clearSearchHref.slice(0, -1);
+          %>
           <!-- CLEAR BUTTON -->
-          <a href="/shop" id="clearSearchBtn" style="position: absolute; right: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; display: <%= (typeof search !== 'undefined' && search && search.trim() !== '') ? 'block' : 'none' %>;" title="Clear Search">
+          <a href="<%= clearSearchHref %>" id="clearSearchBtn" style="position: absolute; right: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; display: <%= (typeof search !== 'undefined' && search && search.trim() !== '') ? 'block' : 'none' %>;" title="Clear Search">
             <i class="fa-solid fa-xmark"></i>
           </a>
         </div>

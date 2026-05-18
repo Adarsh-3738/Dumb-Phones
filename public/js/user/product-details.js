@@ -214,6 +214,22 @@ async function toggleWishlist(productId) {
           svg.setAttribute('stroke', '#ef4444');
         }
       }
+      
+      // Update the wishlist count badge in the header
+      const wishlistLink = document.querySelector('a[href="/wishlist"]');
+      if (wishlistLink) {
+        let badge = wishlistLink.querySelector('.cart-badge');
+        if (badge) {
+          let currentCount = parseInt(badge.innerText) || 0;
+          badge.innerText = currentCount + 1;
+        } else {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          badge.innerText = '1';
+          wishlistLink.appendChild(badge);
+        }
+      }
+
       Swal.fire({
         title: "Added to Wishlist",
         text: "Item successfully added to your wishlist.",

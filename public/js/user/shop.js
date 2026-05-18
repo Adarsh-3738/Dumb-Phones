@@ -1,7 +1,9 @@
 async function toggleWishlist(productId, event) {
+  let targetBtn = null;
   if (event) {
     event.preventDefault(); // Prevent navigating to product details
     event.stopPropagation();
+    targetBtn = event.currentTarget; // Capture it synchronously
   }
   
   try {
@@ -16,13 +18,29 @@ async function toggleWishlist(productId, event) {
     const data = await response.json();
 
     if (data.success) {
-      if (event && event.currentTarget) {
-        const svg = event.currentTarget.querySelector('svg');
+      if (targetBtn) {
+        const svg = targetBtn.querySelector('svg');
         if (svg) {
           svg.setAttribute('fill', '#ef4444');
           svg.setAttribute('stroke', '#ef4444');
         }
       }
+      
+      // Update the wishlist count badge in the header
+      const wishlistLink = document.querySelector('a[href="/wishlist"]');
+      if (wishlistLink) {
+        let badge = wishlistLink.querySelector('.cart-badge');
+        if (badge) {
+          let currentCount = parseInt(badge.innerText) || 0;
+          badge.innerText = currentCount + 1;
+        } else {
+          badge = document.createElement('span');
+          badge.className = 'cart-badge';
+          badge.innerText = '1';
+          wishlistLink.appendChild(badge);
+        }
+      }
+
       Swal.fire({
         title: "Added to Wishlist",
         text: "Item successfully added to your wishlist.",

@@ -57,7 +57,8 @@ export const getOrderDetails = async (orderId) => {
 
   const order = await Order.findById(orderId)
     .populate("userId", "name email phone")
-    .populate("orderedItems.product");
+    .populate("orderedItems.product")
+    .populate("orderedItems.variant");
 
   return order;
 };

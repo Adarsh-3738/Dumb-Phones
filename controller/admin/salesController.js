@@ -116,7 +116,10 @@ export const downloadPdf = async (req, res) => {
     const reportStats = stats[0] || { count: 0, amount: 0, discount: 0 };
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="DumbPhones_Official_Sales_Report.pdf"');
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Content-Disposition", `attachment; filename="DumbPhones_Sales_Report_${Date.now()}.pdf"`);
 
     // Make layout landscape so the 9 columns don't aggressively overlap
     const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
@@ -194,7 +197,13 @@ export const downloadPdf = async (req, res) => {
         y = 50; 
       }
       
-      const itemsStr = o.orderedItems.map(i => `${i.product?.productName || 'Unknown Item'} (x${i.quantity})`).join("\n");
+      const itemsStr = o.orderedItems.map(i => {
+        let text = `${i.product?.productName || 'Unknown Item'} (x${i.quantity})`;
+        if (i.itemStatus === 'Returned' || i.itemStatus === 'Cancelled') {
+          text += ` [${i.itemStatus}]`;
+        }
+        return text;
+      }).join("\n");
       const discountText = `${o.discount}\n${o.couponApplied ? '[Coupon Applied]' : (o.discount > 0 ? '[Product Category Offers]' : '')}`;
       const paymentText = `${o.paymentMethod || 'COD'}\n[${o.paymentStatus}]`;
       
@@ -203,11 +212,20 @@ export const downloadPdf = async (req, res) => {
       doc.text(new Date(o.createdOn).toLocaleDateString(), col2, y, { width: 50 });
       doc.text(o.userId?.name || 'Guest', col3, y, { width: 80, lineBreak: true });
       doc.text(itemsStr, col4, y, { width: 160, lineBreak: true });
-      doc.text(o.totalPrice.toString(), col_sub, y, { width: 50, align: 'center' });
+      
+      const subtotalText = (o.totalPrice === 0 || !o.totalPrice) ? "Returned" : o.totalPrice.toString();
+      if (subtotalText === "Returned") {
+        doc.text(subtotalText, col_sub, y, { align: 'center' });
+      } else {
+        doc.text(subtotalText, col_sub, y, { width: 50, align: 'center' });
+      }
+      
       doc.text(o.tax ? o.tax.toString() : '0', col_tax, y, { width: 40, align: 'center' });
       doc.text(discountText, col5, y, { width: 75, align: 'center', lineBreak: true });
       doc.text(paymentText, col6, y, { width: 60, lineBreak: true });
-      doc.font("Helvetica-Bold").fillColor('#10b981').text(`Rs. ${o.finalAmount.toLocaleString()}`, col7, y, { width: 60 });
+      
+      const amountPaidText = (o.finalAmount === 0 || !o.finalAmount) ? "Returned" : `Rs. ${o.finalAmount.toLocaleString()}`;
+      doc.font("Helvetica-Bold").fillColor(o.finalAmount === 0 ? '#ef4444' : '#10b981').text(amountPaidText, col7, y, { width: 60 });
       doc.font("Helvetica").fillColor('#334155'); // Reset
       
       const textHeight = Math.max(
@@ -288,19 +306,25 @@ export const downloadExcel = async (req, res) => {
     ];
 
     orders.forEach(o => {
-      const itemsStr = o.orderedItems.map(i => `• ${i.product?.productName || 'Unknown'} (x${i.quantity})`).join("\n");
+      const itemsStr = o.orderedItems.map(i => {
+        let text = `• ${i.product?.productName || 'Unknown'} (x${i.quantity})`;
+        if (i.itemStatus === 'Returned' || i.itemStatus === 'Cancelled') {
+          text += ` [${i.itemStatus}]`;
+        }
+        return text;
+      }).join("\n");
       
       worksheet.addRow({
         orderId: o.orderId.toUpperCase(),
         date: new Date(o.createdOn).toLocaleDateString(),
         customer: o.userId?.name || "Guest",
         products: itemsStr,
-        regular: o.totalPrice,
+        regular: (o.totalPrice === 0 || !o.totalPrice) ? "Returned" : o.totalPrice,
         tax: o.tax || 0,
         coupon: o.couponApplied ? "Yes (Coupon Applied)" : (o.discount > 0 ? "No (Product Category Offers)" : "None"),
         discount: o.discount,
         payment: `${o.paymentMethod || 'Unknown'} (${o.paymentStatus})`,
-        amount: o.finalAmount
+        amount: (o.finalAmount === 0 || !o.finalAmount) ? "Returned" : o.finalAmount
       });
     });
 
@@ -312,7 +336,10 @@ export const downloadExcel = async (req, res) => {
     worksheet.getColumn('amount').font = { bold: true, color: { argb: 'FF10B981' } };
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", 'attachment; filename="DumbPhones_Official_Sales_Report.xlsx"');
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Content-Disposition", `attachment; filename="DumbPhones_Sales_Report_${Date.now()}.xlsx"`);
 
     await workbook.xlsx.write(res);
     res.end();

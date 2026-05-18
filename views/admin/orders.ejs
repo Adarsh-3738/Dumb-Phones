@@ -74,11 +74,11 @@
             </td>
             <td>
               <% if (order.paymentStatus === 'Failed') { %>
-                <span style="color:#ef4444; font-weight:bold; font-size:12px;">Failed</span>
+                <span class="status-badge badge-failed">Failed</span>
               <% } else if (order.paymentStatus === 'Paid') { %>
-                <span style="color:#10b981; font-weight:bold; font-size:12px;">Paid</span>
+                <span class="status-badge badge-paid">Paid</span>
               <% } else { %>
-                <span style="color:#f59e0b; font-weight:bold; font-size:12px;"><%= order.paymentStatus || 'Pending' %></span>
+                <span class="status-badge badge-pending"><%= order.paymentStatus || 'Pending' %></span>
               <% } %>
             </td>
             <td>₹<%= order.finalAmount || 0 %></td>

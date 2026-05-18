@@ -99,7 +99,7 @@
           <button type="submit" class="apply-btn">
             Apply Filters
           </button>
-          <a href="/shop" class="clear-btn">
+          <a href="/shop<%= (typeof search !== 'undefined' && search) ? '?search=' + search : '' %>" class="clear-btn">
             Clear All
           </a>
         </div>
@@ -114,7 +114,7 @@
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           <h3>No products found</h3>
           <p>We couldn't find anything matching your filter criteria. Try adjusting your filters.</p>
-          <a href="/shop" class="clear-btn mt-4">Clear Filters</a>
+          <a href="/shop<%= (typeof search !== 'undefined' && search) ? '?search=' + search : '' %>" class="clear-btn mt-4">Clear Filters</a>
         </div>
       <% } else { %>
         <div class="product-grid">
