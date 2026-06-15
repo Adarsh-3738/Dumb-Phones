@@ -284,16 +284,28 @@ export const downloadInvoice = async (req, res) => {
     generateHr(tableY);
 
     // TOTALS CALCULATION 
-    // If order was fully cancelled/returned, show 0
     const isActive = order.orderedItems.some(i => i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned");
     
+    const grossAmount = isActive ? (order.totalPrice !== undefined ? order.totalPrice : activeSubtotal) : 0;
     const tax = isActive ? (order.tax !== undefined ? order.tax : 0) : 0;
     const shipping = isActive ? (order.shipping !== undefined ? order.shipping : 0) : 0;
-    
-    // Use the newly computed exact discounts from active items for display rather than proportioning order.discount
-    const discount = isActive ? totalDiscount : 0;
-    
-    const finalAmt = isActive ? (order.finalAmount || (activeSubtotal + tax + shipping - discount)) : 0;
+    const totalDiscountInDb = isActive ? (order.discount !== undefined ? order.discount : totalDiscount) : 0;
+    const finalAmt = isActive ? (order.finalAmount !== undefined ? order.finalAmount : (grossAmount + tax + shipping - totalDiscountInDb)) : 0;
+
+    // Separate Offer Discount and Coupon Discount for display
+    let activeProductSavings = 0;
+    if (isActive) {
+      order.orderedItems.forEach(item => {
+        if (item.itemStatus !== "Cancelled" && item.itemStatus !== "Returned") {
+          const variant = item.variant;
+          const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+          activeProductSavings += (regularPrice - item.price) * item.quantity;
+        }
+      });
+    }
+
+    const offerDiscount = Math.min(totalDiscountInDb, activeProductSavings);
+    const couponDiscount = Math.max(0, totalDiscountInDb - offerDiscount);
 
     // TOTALS DISPLAY 
     const totalsY = tableY + 15;
@@ -303,7 +315,7 @@ export const downloadInvoice = async (req, res) => {
     doc.fillColor("#000000").fontSize(10).font("Helvetica");
     
     doc.text("Gross Amount:", totalsStartX, totalsY, { width: 100, align: "right" });
-    doc.text(formatCurrency(activeSubtotal), totalsValueX, totalsY, { width: 80, align: "right" });
+    doc.text(formatCurrency(grossAmount), totalsValueX, totalsY, { width: 80, align: "right" });
     
     doc.text(`Tax (${taxRateLabel}%):`, totalsStartX, totalsY + 20, { width: 100, align: "right" });
     doc.text(formatCurrency(tax), totalsValueX, totalsY + 20, { width: 80, align: "right" });
@@ -313,10 +325,17 @@ export const downloadInvoice = async (req, res) => {
 
     let finalLineY = totalsY + 60;
 
-    if (discount > 0) {
+    if (offerDiscount > 0) {
       doc.fillColor("#16a34a");
-      doc.text("Total Discount:", totalsStartX, finalLineY, { width: 100, align: "right" });
-      doc.text(`- ${formatCurrency(discount)}`, totalsValueX, finalLineY, { width: 80, align: "right" });
+      doc.text("Offer Discount:", totalsStartX, finalLineY, { width: 100, align: "right" });
+      doc.text(`- ${formatCurrency(offerDiscount)}`, totalsValueX, finalLineY, { width: 80, align: "right" });
+      finalLineY += 20;
+    }
+
+    if (couponDiscount > 0) {
+      doc.fillColor("#16a34a");
+      doc.text("Coupon Discount:", totalsStartX, finalLineY, { width: 100, align: "right" });
+      doc.text(`- ${formatCurrency(couponDiscount)}`, totalsValueX, finalLineY, { width: 80, align: "right" });
       finalLineY += 20;
     }
 

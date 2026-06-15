@@ -47,9 +47,9 @@ export const getSalesReport = async (req, res) => {
 
     const { start, end } = getDatesByRange(range, startDate, endDate);
 
-    // Only count completed/Delivered orders for financial accuracy
+    // Only count completed (Delivered/Returned) orders for financial accuracy
     const query = {
-      status: "Delivered", 
+      status: { $in: ["Delivered", "Returned"] }, 
       createdOn: { $gte: start, $lte: end }
     };
 
@@ -72,14 +72,17 @@ export const getSalesReport = async (req, res) => {
       { $match: query },
       { $group: {
           _id: null,
-          salesCount: { $sum: 1 },
-          orderAmount: { $sum: "$finalAmount" },
-          totalDiscount: { $sum: "$discount" } // Tracking all coupon/offer deductions
+          totalOrdersCount: { $sum: 1 },
+          deliveredCount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] } },
+          returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
+          netRevenue: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$finalAmount", 0] } },
+          totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
+          totalDiscount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$discount", 0] } }
         }
       }
     ]);
 
-    const reportStats = stats[0] || { salesCount: 0, orderAmount: 0, totalDiscount: 0 };
+    const reportStats = stats[0] || { totalOrdersCount: 0, deliveredCount: 0, returnedCount: 0, netRevenue: 0, totalRefunded: 0, totalDiscount: 0 };
 
     res.render("admin/sales-report", {
       orders,
@@ -103,17 +106,27 @@ export const downloadPdf = async (req, res) => {
   try {
     const { range, startDate, endDate } = req.query;
     const { start, end } = getDatesByRange(range, startDate, endDate);
-    const query = { status: "Delivered", createdOn: { $gte: start, $lte: end } };
+    const query = { status: { $in: ["Delivered", "Returned"] }, createdOn: { $gte: start, $lte: end } };
     
     const orders = await Order.find(query)
       .populate("userId", "name")
-      .populate("orderedItems.product", "productName");
+      .populate("orderedItems.product", "productName")
+      .sort({ createdOn: -1 });
     
     const stats = await Order.aggregate([
-       { $match: query },
-       { $group: { _id: null, count: { $sum: 1 }, amount: { $sum: "$finalAmount" }, discount: { $sum: "$discount" } } }
+      { $match: query },
+      { $group: {
+          _id: null,
+          totalOrdersCount: { $sum: 1 },
+          deliveredCount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] } },
+          returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
+          netRevenue: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$finalAmount", 0] } },
+          totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
+          totalDiscount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$discount", 0] } }
+        }
+      }
     ]);
-    const reportStats = stats[0] || { count: 0, amount: 0, discount: 0 };
+    const reportStats = stats[0] || { totalOrdersCount: 0, deliveredCount: 0, returnedCount: 0, netRevenue: 0, totalRefunded: 0, totalDiscount: 0 };
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -153,9 +166,10 @@ export const downloadPdf = async (req, res) => {
     // Right side: Report Summary
     doc.font("Helvetica-Bold").text("REPORT SUMMARY", doc.page.width - 250, infoY, { align: 'right', width: 210 });
     doc.font("Helvetica")
-       .text(`Total Completed Sales: ${reportStats.count}`, doc.page.width - 250, infoY + 15, { align: 'right', width: 210 })
-       .text(`Gross Revenue: Rs. ${reportStats.amount.toLocaleString()}`, doc.page.width - 250, infoY + 30, { align: 'right', width: 210 })
-       .text(`Total Deflected (Offers/Coupons): Rs. ${reportStats.discount.toLocaleString()}`, doc.page.width - 250, infoY + 45, { align: 'right', width: 210 });
+       .text(`Total Orders: ${reportStats.totalOrdersCount} (${reportStats.deliveredCount} Del, ${reportStats.returnedCount} Ret)`, doc.page.width - 250, infoY + 15, { align: 'right', width: 210 })
+       .text(`Net Revenue: Rs. ${reportStats.netRevenue.toLocaleString()}`, doc.page.width - 250, infoY + 30, { align: 'right', width: 210 })
+       .text(`Total Discounts: Rs. ${reportStats.totalDiscount.toLocaleString()}`, doc.page.width - 250, infoY + 45, { align: 'right', width: 210 })
+       .text(`Total Refunds: Rs. ${reportStats.totalRefunded.toLocaleString()}`, doc.page.width - 250, infoY + 60, { align: 'right', width: 210 });
 
     // Move cursor safely below the multi-line boxes
     doc.y = infoY + 90;
@@ -164,14 +178,15 @@ export const downloadPdf = async (req, res) => {
     const tableTop = doc.y;
     // Spread columns generously across the 841px landscape width
     const col1 = 40;   // Order ID 
-    const col2 = 150;  // Date
-    const col3 = 210;  // Customer
-    const col4 = 300;  // Products
-    const col_sub = 470; // Subtotal
-    const col_tax = 530; // Tax
-    const col5 = 580;  // Deductions
-    const col6 = 670;  // Payment
-    const col7 = 740;  // Final Price
+    const col2 = 135;  // Date
+    const col3 = 190;  // Customer
+    const col4 = 265;  // Products
+    const col_sub = 415; // Subtotal
+    const col_tax = 470; // Tax
+    const col5 = 515;  // Deductions
+    const col6 = 590;  // Payment
+    const col_status = 665; // Status
+    const col7 = 735;  // Final Price
 
     doc.rect(40, tableTop - 5, doc.page.width - 80, 25).fill('#f1f5f9');
     doc.fillColor('#0f172a').fontSize(8).font("Helvetica-Bold");
@@ -183,6 +198,7 @@ export const downloadPdf = async (req, res) => {
     doc.text("Tax", col_tax, tableTop, { width: 40, align: 'center' });
     doc.text("Deductions", col5, tableTop, { width: 75, align: 'center' });
     doc.text("Payment", col6, tableTop);
+    doc.text("Status", col_status, tableTop);
     doc.text("Paid", col7, tableTop);
 
     doc.moveTo(40, tableTop + 20).lineTo(doc.page.width - 40, tableTop + 20).lineWidth(1).strokeColor('#cbd5e1').stroke(); 
@@ -205,13 +221,13 @@ export const downloadPdf = async (req, res) => {
         return text;
       }).join("\n");
       const discountText = `${o.discount}\n${o.couponApplied ? '[Coupon Applied]' : (o.discount > 0 ? '[Product Category Offers]' : '')}`;
-      const paymentText = `${o.paymentMethod || 'COD'}\n[${o.paymentStatus}]`;
+      const paymentText = `${o.paymentMethod || 'COD'}`;
       
       doc.fontSize(8);
-      doc.text(o.orderId.toUpperCase(), col1, y, { width: 100, lineBreak: true });
+      doc.text(o.orderId.toUpperCase(), col1, y, { width: 90, lineBreak: true });
       doc.text(new Date(o.createdOn).toLocaleDateString(), col2, y, { width: 50 });
-      doc.text(o.userId?.name || 'Guest', col3, y, { width: 80, lineBreak: true });
-      doc.text(itemsStr, col4, y, { width: 160, lineBreak: true });
+      doc.text(o.userId?.name || 'Guest', col3, y, { width: 70, lineBreak: true });
+      doc.text(itemsStr, col4, y, { width: 140, lineBreak: true });
       
       const subtotalText = (o.totalPrice === 0 || !o.totalPrice) ? "Returned" : o.totalPrice.toString();
       if (subtotalText === "Returned") {
@@ -222,10 +238,14 @@ export const downloadPdf = async (req, res) => {
       
       doc.text(o.tax ? o.tax.toString() : '0', col_tax, y, { width: 40, align: 'center' });
       doc.text(discountText, col5, y, { width: 75, align: 'center', lineBreak: true });
-      doc.text(paymentText, col6, y, { width: 60, lineBreak: true });
+      doc.text(paymentText, col6, y, { width: 70, lineBreak: true });
+      doc.text(o.status.toUpperCase(), col_status, y, { width: 65, lineBreak: true });
       
-      const amountPaidText = (o.finalAmount === 0 || !o.finalAmount) ? "Returned" : `Rs. ${o.finalAmount.toLocaleString()}`;
-      doc.font("Helvetica-Bold").fillColor(o.finalAmount === 0 ? '#ef4444' : '#10b981').text(amountPaidText, col7, y, { width: 60 });
+      let amountPaidText = `Rs. ${o.finalAmount.toLocaleString()}`;
+      if (o.status === "Returned") {
+        amountPaidText = `Returned\n(Rs. ${o.finalAmount.toLocaleString()} ref)`;
+      }
+      doc.font("Helvetica-Bold").fillColor(o.status === "Returned" ? '#ef4444' : '#10b981').text(amountPaidText, col7, y, { width: 65 });
       doc.font("Helvetica").fillColor('#334155'); // Reset
       
       const textHeight = Math.max(
@@ -262,9 +282,10 @@ export const downloadExcel = async (req, res) => {
     const { range, startDate, endDate } = req.query;
     const { start, end } = getDatesByRange(range, startDate, endDate);
     
-    const orders = await Order.find({ status: "Delivered", createdOn: { $gte: start, $lte: end } })
+    const orders = await Order.find({ status: { $in: ["Delivered", "Returned"] }, createdOn: { $gte: start, $lte: end } })
       .populate("userId", "name")
-      .populate("orderedItems.product", "productName");
+      .populate("orderedItems.product", "productName")
+      .sort({ createdOn: -1 });
     
     const workbook = new exceljs.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
@@ -286,7 +307,7 @@ export const downloadExcel = async (req, res) => {
     // Setup Header Row (Row 3)
     const headerRow = worksheet.getRow(3);
     headerRow.values = [
-      "Order ID", "Date", "Customer", "Line Items", "Subtotal (Rs)", "Tax (Rs)", "Coupon Applied?", "Discounts (Rs)", "Payment Method", "Amount Paid (Rs)"
+      "Order ID", "Date", "Customer", "Line Items", "Subtotal (Rs)", "Tax (Rs)", "Coupon Applied?", "Discounts (Rs)", "Payment Method", "Order Status", "Amount Paid (Rs)"
     ];
     headerRow.font = { bold: true };
     headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
@@ -302,6 +323,7 @@ export const downloadExcel = async (req, res) => {
       { key: "coupon", width: 20 },
       { key: "discount", width: 15 },
       { key: "payment", width: 20 },
+      { key: "status", width: 15 },
       { key: "amount", width: 20 }
     ];
 
@@ -323,8 +345,9 @@ export const downloadExcel = async (req, res) => {
         tax: o.tax || 0,
         coupon: o.couponApplied ? "Yes (Coupon Applied)" : (o.discount > 0 ? "No (Product Category Offers)" : "None"),
         discount: o.discount,
-        payment: `${o.paymentMethod || 'Unknown'} (${o.paymentStatus})`,
-        amount: (o.finalAmount === 0 || !o.finalAmount) ? "Returned" : o.finalAmount
+        payment: `${o.paymentMethod || 'Unknown'} `,
+        status: o.status,
+        amount: o.status === "Returned" ? `Returned (Rs. ${o.finalAmount} refunded)` : o.finalAmount
       });
     });
 

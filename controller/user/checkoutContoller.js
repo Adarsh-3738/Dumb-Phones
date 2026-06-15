@@ -93,30 +93,30 @@ export const applyCoupon = async (req, res) => {
 
     const coupon = await Coupon.findOne({ name: code.toUpperCase() });
     
-    if (!coupon) return res.status(404).json({ success: false, message: "Invalid coupon code" });
+    if (!coupon) return res.status(404).json({ success: false, message: "The coupon code you entered is invalid. Please check and try again." });
 
     const now = new Date();
     const expiry = new Date(coupon.expireOn);
     expiry.setHours(23, 59, 59, 999);
 
     if (now > expiry) {
-       return res.status(400).json({ success: false, message: "Coupon has expired" });
+       return res.status(400).json({ success: false, message: "This coupon code has expired and is no longer valid." });
     }
 
     const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
     if (hasUsed) {
-       return res.status(400).json({ success: false, message: "You have already used this coupon" });
+       return res.status(400).json({ success: false, message: "You have already used this coupon code on a previous order." });
     }
 
     // Check minimum spend
     const cart = await Cart.findOne({ userId }).populate("items.variantId");
-    if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
+    if (!cart) return res.status(404).json({ success: false, message: "Your shopping cart could not be found. Please try adding items to your cart again." });
 
     let currentSubtotal = 0;
     cart.items.forEach(i => { currentSubtotal += i.price * i.quantity; });
     
     if (currentSubtotal < coupon.minimumPrice) {
-       return res.status(400).json({ success: false, message: `Minimum spend of ₹${coupon.minimumPrice.toLocaleString('en-IN')} required` });
+       return res.status(400).json({ success: false, message: `A minimum purchase of ₹${coupon.minimumPrice.toLocaleString('en-IN')} is required to apply this coupon.` });
     }
 
     cart.appliedCoupon = coupon._id;
@@ -125,7 +125,7 @@ export const applyCoupon = async (req, res) => {
     res.json({ success: true, message: "Coupon applied successfully" });
   } catch (error) {
     console.error("Apply coupon error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "An internal server error occurred while applying the coupon. Please try again later." });
   }
 };
 
@@ -137,7 +137,7 @@ export const removeCoupon = async (req, res) => {
     res.json({ success: true, message: "Coupon removed successfully" });
   } catch (error) {
     console.error("Remove coupon error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "An internal server error occurred while removing the coupon. Please try again later." });
   }
 };
 
@@ -195,10 +195,10 @@ export const verifyRazorpayPayment = async (req, res) => {
       
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
-      res.status(400).json({ success: false, message: "Invalid payment signature" });
+      res.status(400).json({ success: false, message: "The payment verification signature is invalid. Please contact customer support if you were charged." });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error during verification" });
+    res.status(500).json({ success: false, message: "A server error occurred during payment verification. Please contact customer support if your transaction succeeded." });
   }
 };
 
@@ -262,32 +262,45 @@ export const retryRazorpayPayment = async (req, res) => {
     const order = await Order.findOne({ orderId: orderId, userId: userId });
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res.status(404).json({ success: false, message: "The requested order could not be found." });
     }
 
     if (order.paymentStatus !== "Failed" && order.paymentStatus !== "Pending") {
-      return res.status(400).json({ success: false, message: "Payment cannot be retried for this order." });
+      return res.status(400).json({ success: false, message: "Payment retry is only available for orders with a failed or pending payment." });
     }
 
     if (order.status === "Cancelled") {
-      return res.status(400).json({ success: false, message: "This order has been cancelled and cannot be paid." });
+      return res.status(400).json({ success: false, message: "This order has already been cancelled and payment cannot be processed." });
     }
 
     // Re-reserve stock if the order was in 'Payment Failed' state and stock was restored
     if (order.paymentStatus === "Failed") {
       const reservedStock = [];
       const { Variant } = await import("../../models/variantSchema.js").then(m => ({ Variant: m.default }));
+      const Product = await import("../../models/productSchema.js").then(m => m.default);
       
       try {
         for (const item of order.orderedItems) {
+          const productDoc = await Product.findById(item.product);
+          const variantDoc = await Variant.findById(item.variant);
+          
+          if (!productDoc || productDoc.isBlocked || productDoc.status === "Discontinued") {
+            throw new Error(`Item "${productDoc?.productName || 'Product'}" is currently unavailable.`);
+          }
+          if (!variantDoc || variantDoc.isBlocked) {
+            throw new Error("Product variant is currently unavailable.");
+          }
+
           const variant = await Variant.findOneAndUpdate(
             { _id: item.variant, quantity: { $gte: item.quantity } },
             { $inc: { quantity: -item.quantity } },
             { new: true }
           );
-          if (!variant) throw new Error("One or more items in your order are now out of stock.");
-          if (variant.quantity === 0) variant.status = "out of stock";
-          await variant.save();
+          if (!variant) throw new Error(`One or more items in your order ("${productDoc.productName}") are now out of stock.`);
+          if (variant.quantity === 0) {
+            variant.status = "out of stock";
+            await variant.save();
+          }
           reservedStock.push({ variantId: item.variant, quantity: item.quantity });
         }
       } catch (error) {
@@ -321,6 +334,6 @@ export const retryRazorpayPayment = async (req, res) => {
     });
   } catch (error) {
     console.error("Retry Payment Error:", error);
-    res.status(500).json({ success: false, message: "Server error during payment retry" });
+    res.status(500).json({ success: false, message: "A server error occurred while retrying the payment. Please try again." });
   }
 };

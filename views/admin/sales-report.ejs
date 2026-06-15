@@ -34,16 +34,32 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
-      <h3>Overall Sales / Delivered</h3>
-      <div class="value"><%= stats.salesCount %></div>
+      <h3>Overall Sales</h3>
+      <div class="value"><%= stats.totalOrdersCount %></div>
+      <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
+        <%= stats.deliveredCount %> Delivered | <%= stats.returnedCount %> Returned
+      </div>
     </div>
     <div class="stat-card">
-      <h3>Overall Revenue</h3>
-      <div class="value">₹<%= stats.orderAmount.toLocaleString() %></div>
+      <h3>Net Revenue</h3>
+      <div class="value">₹<%= stats.netRevenue.toLocaleString() %></div>
+      <div style="font-size: 12px; color: #10b981; margin-top: 5px;">
+        Received from delivered orders
+      </div>
     </div>
     <div class="stat-card">
-      <h3>Deductions (Coupons/Discounts)</h3>
-      <div class="value" style="color: #ef4444;">₹<%= stats.totalDiscount.toLocaleString() %></div>
+      <h3>Deductions (Discounts)</h3>
+      <div class="value" style="color: #ea580c;">₹<%= stats.totalDiscount.toLocaleString() %></div>
+      <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
+        Offers and coupons applied
+      </div>
+    </div>
+    <div class="stat-card" style="border-top: 4px solid #ef4444;">
+      <h3>Total Refunds</h3>
+      <div class="value" style="color: #ef4444;">₹<%= stats.totalRefunded.toLocaleString() %></div>
+      <div style="font-size: 12px; color: #ef4444; margin-top: 5px;">
+        Returned order value refunded
+      </div>
     </div>
   </div>
 
@@ -93,19 +109,20 @@
     <table>
       <thead>
         <tr>
-          <th style="width: 18%;">Order ID</th>
-          <th style="width: 9%;">Date</th>
+          <th style="width: 15%;">Order ID</th>
+          <th style="width: 8%;">Date</th>
           <th style="width: 10%;">Customer</th>
-          <th style="width: 25%;">Purchased Items</th>
-          <th style="width: 10%;">Reg. Price Tot.</th>
+          <th style="width: 23%;">Purchased Items</th>
+          <th style="width: 9%;">Reg. Price Tot.</th>
           <th style="width: 9%;">Deductions</th>
-          <th style="width: 10%;">Amount Paid</th>
+          <th style="width: 9%;">Amount Paid</th>
           <th style="width: 9%;">Payment</th>
+          <th style="width: 8%;">Status</th>
         </tr>
       </thead>
       <tbody>
         <% if (orders.length === 0) { %>
-          <tr><td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">No Sales History Found for this Range.</td></tr>
+          <tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8;">No Sales History Found for this Range.</td></tr>
         <% } %>
         <% orders.forEach(order => { %>
           <tr>
@@ -139,15 +156,30 @@
                 <div style="margin-top:6px; font-size:13px; color:#ef4444; font-weight:bold;">- ₹<%= order.discount.toLocaleString() %></div>
               <% } %>
             </td>
-            <td style="font-weight:700; color:#10b981; font-size: 15px;">₹<%= order.finalAmount.toLocaleString() %></td>
+            <td style="font-weight:700; color:#10b981; font-size: 15px;">
+              <% if (order.status === 'Returned') { %>
+                <span style="color: #ef4444; font-weight: bold;">Returned<br><span style="font-size: 11px; color: #64748b; font-weight: normal;">(₹<%= order.finalAmount.toLocaleString() %> refunded)</span></span>
+              <% } else { %>
+                ₹<%= order.finalAmount.toLocaleString() %>
+              <% } %>
+            </td>
             <td>
               <span style="font-size: 13px; font-weight: 600; color: #334155;"><%= order.paymentMethod %></span><br>
-              <% if(order.paymentStatus === 'Paid') { %>
+              <!-- <% if(order.paymentStatus === 'Paid') { %>
                 <span style="font-size: 11px; color:#10b981; font-weight: bold;">[Paid]</span>
               <% } else if(order.paymentStatus === 'Pending') { %>
                 <span style="font-size: 11px; color:#f59e0b; font-weight: bold;">[Pending]</span>
               <% } else { %>
                 <span style="font-size: 11px; color:#ef4444; font-weight: bold;">[<%= order.paymentStatus %>]</span>
+              <% } %> -->
+            </td>
+            <td>
+              <% if (order.status === 'Delivered') { %>
+                <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;"><%= order.status %></span>
+              <% } else if (order.status === 'Returned') { %>
+                <span style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;"><%= order.status %></span>
+              <% } else { %>
+                <span style="background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;"><%= order.status %></span>
               <% } %>
             </td>
           </tr>

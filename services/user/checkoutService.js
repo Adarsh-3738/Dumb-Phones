@@ -127,7 +127,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     .populate("items.variantId");
 
   if (!cart || cart.items.length === 0) {
-    throw new Error("Cart empty");
+    throw new Error("Your shopping cart is currently empty. Please add items to your cart before proceeding to checkout.");
   }
 
 // CALCULATIONS
@@ -139,21 +139,34 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
   const reservedStock = [];
   try {
     for (const item of cart.items) {
+      const product = item.productId;
+      const variant = item.variantId;
+
+      if (
+        !product ||
+        product.isBlocked ||
+        product.status === "Discontinued" ||
+        !variant ||
+        variant.isBlocked
+      ) {
+        throw new Error(`Item "${product?.productName || 'Product'}" is currently unavailable.`);
+      }
+
       // Deduct atomically only if enough quantity exists
-      const variant = await Variant.findOneAndUpdate(
+      const variantDoc = await Variant.findOneAndUpdate(
         { _id: item.variantId._id, quantity: { $gte: item.quantity } },
         { $inc: { quantity: -item.quantity } },
         { new: true }
       );
 
-      if (!variant) {
+      if (!variantDoc) {
         throw new Error(`Item "${item.productId.productName}" is out of stock! Someone just bought the last one.`);
       }
 
       // If quantity drops to exactly 0, automatically toggle status to 'out of stock'
-      if (variant.quantity === 0) {
-        variant.status = "out of stock";
-        await variant.save();
+      if (variantDoc.quantity === 0) {
+        variantDoc.status = "out of stock";
+        await variantDoc.save();
       }
 
       reservedStock.push({ variantId: item.variantId._id, quantity: item.quantity });
@@ -196,28 +209,40 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     const couponId = cart.appliedCoupon._id || cart.appliedCoupon;
     const coupon = await Coupon.findById(couponId);
     
-    if (coupon) {
-      const now = new Date();
-      const expiry = new Date(coupon.expireOn);
-      expiry.setHours(23, 59, 59, 999);
-      
-      const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
-
-      if (now <= expiry && salePriceSubtotal >= coupon.minimumPrice && !hasUsed) {
-        if (coupon.discountType === "Percentage") {
-          let calcDeduction = Math.floor((salePriceSubtotal * coupon.offerPrice) / 100);
-          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
-            calcDeduction = coupon.maxDiscountAmount;
-          }
-          couponDeduction = Math.min(calcDeduction, salePriceSubtotal);
-        } else {
-          couponDeduction = Math.min(coupon.offerPrice, salePriceSubtotal);
-        }
-        coupon.userId.push(userId);
-        await coupon.save();
-        couponApplied = true;
-      }
+    if (!coupon) {
+      throw new Error("The applied coupon is invalid or does not exist.");
     }
+    
+    const now = new Date();
+    const expiry = new Date(coupon.expireOn);
+    expiry.setHours(23, 59, 59, 999);
+    
+    const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
+
+    if (now > expiry) {
+      throw new Error("The applied coupon has expired.");
+    }
+    
+    if (salePriceSubtotal < coupon.minimumPrice) {
+      throw new Error(`The applied coupon requires a minimum purchase of ₹${coupon.minimumPrice.toLocaleString('en-IN')}.`);
+    }
+    
+    if (hasUsed) {
+      throw new Error("You have already used this coupon code.");
+    }
+
+    if (coupon.discountType === "Percentage") {
+      let calcDeduction = Math.floor((salePriceSubtotal * coupon.offerPrice) / 100);
+      if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+        calcDeduction = coupon.maxDiscountAmount;
+      }
+      couponDeduction = Math.min(calcDeduction, salePriceSubtotal);
+    } else {
+      couponDeduction = Math.min(coupon.offerPrice, salePriceSubtotal);
+    }
+    coupon.userId.push(userId);
+    await coupon.save();
+    couponApplied = true;
   }
 
   const taxableAmount = Math.max(0, salePriceSubtotal - couponDeduction);
@@ -274,11 +299,11 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
   // Find address document
 const addressDoc = await Address.findOne({ userId });
 
-if (!addressDoc) throw new Error("Address not found");
+if (!addressDoc) throw new Error("We could not locate your delivery address. Please add an address to your profile.");
 
 const selectedAddress = addressDoc.address.id(addressId);
 
-if (!selectedAddress) throw new Error("Invalid address");
+if (!selectedAddress) throw new Error("The selected delivery address is invalid. Please select or add a valid address.");
 
 // CREATE ORDER
 order = await Order.create({
@@ -304,6 +329,7 @@ order = await Order.create({
   },
 
   couponApplied: couponApplied,
+  couponId: couponApplied ? cart.appliedCoupon : null,
   paymentMethod: paymentMethod,
   paymentStatus: paymentStatus,
   status: "Pending"
@@ -348,6 +374,6 @@ export const generateRazorpay = async (orderId, total) => {
     const order = await razorpay.orders.create(options);
     return order;
   } catch (error) {
-    throw new Error("Razorpay generation failed");
+    throw new Error("We encountered a problem initiating the Razorpay payment. Please try again or choose a different payment method.");
   }
 };

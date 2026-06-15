@@ -114,17 +114,19 @@ import Variant from "../../models/variantSchema.js";
 
  // PRODUCT DETAILS /  SIMILAR PRODUCTS
 
+
 const getProductDetailsService = async (productId) => {
+  // 1. Fetch the product without filtering by isBlocked: false
+  const product = await Product.findOne({ _id: productId })
+    .populate("brand", "name")
+    .populate("category");
 
-  const product = await Product.findOne({
-    _id: productId,
-    isBlocked: false
-  })
-  .populate("brand", "name")
-  .populate("category");
+  if (!product) {
+    throw new Error("PRODUCT_NOT_FOUND");
+  }
 
+  // 2. Check if the category is deleted or unlisted
   if (
-    !product ||
     !product.category ||
     !product.category.isListed ||
     product.category.isDeleted
@@ -132,17 +134,17 @@ const getProductDetailsService = async (productId) => {
     throw new Error("PRODUCT_NOT_FOUND");
   }
 
-  // FETCH VARIANTS
+  // Fetch variants (even if product is blocked, to display images/info)
   const variants = await Variant.find({
     productId: product._id,
     isBlocked: false
   }).sort({ createdAt: 1 });
 
-  // FIND SIMILAR PRODUCTS
+  // Find similar products
   const similarProductsRaw = await Product.find({
     category: product.category._id,
     _id: { $ne: product._id },
-    isBlocked: false
+    isBlocked: false // Only suggest active products
   })
   .limit(4)
   .populate("brand", "name")
@@ -152,7 +154,6 @@ const getProductDetailsService = async (productId) => {
   // ATTACH DEFAULT VARIANT
   const similarProducts = await Promise.all(
     similarProductsRaw.map(async (p) => {
-
       const variant = await Variant.findOne({
         productId: p._id,
         isBlocked: false
@@ -164,7 +165,6 @@ const getProductDetailsService = async (productId) => {
         ...p,
         defaultVariant: variant
       };
-
     })
   );
 
@@ -174,7 +174,9 @@ const getProductDetailsService = async (productId) => {
     similarProducts
   };
 };
+
+  
 export default {
   getProductDetailsService,
-  getProductsService
+  getProductsService,
 };

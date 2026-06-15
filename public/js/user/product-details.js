@@ -43,7 +43,12 @@ function updateVariantUI(index) {
   }
 
   // Stock
-  if (variant.quantity > 0) {
+  if (window.product && window.product.isBlocked) {
+    stockText.innerText = "Unavailable";
+    stockText.className = "out-of-stock";
+    qtyInput.value = 0;
+    qtyInput.max = 0;
+  } else if (variant.quantity > 0) {
     stockText.innerText = `In Stock: ${variant.quantity}`;
     stockText.className = "in-stock";
     qtyInput.value = 1;
@@ -79,6 +84,7 @@ function updateVariantUI(index) {
 
 // QUANTITY CONTROLS
 decreaseBtn.addEventListener("click", () => {
+  if (window.product && window.product.isBlocked) return;
   let current = parseInt(qtyInput.value);
   
   if (current > 1) {
@@ -97,6 +103,7 @@ decreaseBtn.addEventListener("click", () => {
 
 
 increaseBtn.addEventListener("click", () => {
+  if (window.product && window.product.isBlocked) return;
   let current = parseInt(qtyInput.value);
   let max = parseInt(qtyInput.max); // This is automatically either the stock or  new 5 limit!
   
@@ -136,6 +143,14 @@ zoomContainer.addEventListener("mouseleave", () => {
 
 // ADD TO CART 
 async function addToCart() {
+  if (!window.user) {
+    window.location.href = "/login";
+    return;
+  }
+  if (window.product && window.product.isBlocked) {
+    Swal.fire("Unavailable", "This product is currently unavailable", "error");
+    return;
+  }
   const variant = variants[selectedVariantIndex];
   const quantity = parseInt(qtyInput.value);
 
@@ -194,6 +209,10 @@ async function addToCart() {
 
 // TOGGLE WISHLIST
 async function toggleWishlist(productId) {
+  if (!window.user) {
+    window.location.href = "/login";
+    return;
+  }
   try {
     const response = await fetch("/wishlist/add", {
       method: "POST",

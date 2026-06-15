@@ -2,6 +2,7 @@ import Cart from "../../models/cartSchema.js";
 import Product from "../../models/productSchema.js";
 import Wishlist from "../../models/wishlistSchema.js";
 import Variant from "../../models/variantSchema.js";
+import Coupon from "../../models/couponSchema.js";
 
 const MAX_QTY = 5;
 
@@ -53,6 +54,22 @@ export const getCartData = async (userId) => {
 
       return true;
     });
+
+    if (cart.appliedCoupon) {
+      const coupon = await Coupon.findById(cart.appliedCoupon);
+      if (coupon) {
+        let subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+        const now = new Date();
+        const expiry = new Date(coupon.expireOn);
+        expiry.setHours(23, 59, 59, 999);
+        const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
+        if (now > expiry || subtotal < coupon.minimumPrice || hasUsed) {
+          cart.appliedCoupon = null;
+        }
+      } else {
+        cart.appliedCoupon = null;
+      }
+    }
 
     await cart.save();
   }
@@ -139,6 +156,9 @@ export const addToCartService = async (userId, productId, variantId, quantity = 
     await cart.save();
   }
 
+  // Auto-revalidate coupon
+  await revalidateCartCoupon(userId, cart);
+
   await Wishlist.updateOne(
     { userId },
     { $pull: { products: { productId: productId } } }
@@ -175,6 +195,7 @@ export const incrementQtyService = async (userId, variantId) => {
   item.totalPrice = item.quantity * item.price;
 
   await cart.save();
+  await revalidateCartCoupon(userId, cart);
 
   return true;
 };
@@ -201,6 +222,7 @@ export const decrementQtyService = async (userId, variantId) => {
   item.totalPrice = item.quantity * item.price;
 
   await cart.save();
+  await revalidateCartCoupon(userId, cart);
 
   return true;
 };
@@ -216,5 +238,40 @@ export const removeFromCartService = async (userId, variantId) => {
     { $pull: { items: { variantId } } }
   );
 
+  await revalidateCartCoupon(userId);
+
   return true;
+};
+
+// HELPER TO REVALIDATE CART COUPON
+export const revalidateCartCoupon = async (userId, cart = null) => {
+  try {
+    const cartDoc = cart || await Cart.findOne({ userId });
+    if (!cartDoc || !cartDoc.appliedCoupon) return;
+
+    const coupon = await Coupon.findById(cartDoc.appliedCoupon);
+    if (!coupon) {
+      cartDoc.appliedCoupon = null;
+      await cartDoc.save();
+      return;
+    }
+
+    let subtotal = 0;
+    cartDoc.items.forEach(item => {
+      subtotal += item.totalPrice;
+    });
+
+    const now = new Date();
+    const expiry = new Date(coupon.expireOn);
+    expiry.setHours(23, 59, 59, 999);
+
+    const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
+
+    if (now > expiry || subtotal < coupon.minimumPrice || hasUsed) {
+      cartDoc.appliedCoupon = null;
+      await cartDoc.save();
+    }
+  } catch (error) {
+    console.error("Coupon revalidation error:", error);
+  }
 };

@@ -5,6 +5,11 @@ async function toggleWishlist(productId, event) {
     event.stopPropagation();
     targetBtn = event.currentTarget; // Capture it synchronously
   }
+
+  if (!window.user) {
+    window.location.href = "/login";
+    return;
+  }
   
   try {
     const response = await fetch("/wishlist/add", {

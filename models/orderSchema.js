@@ -121,6 +121,11 @@ userId: {
     type: Boolean,
     default: false
   },
+  couponId: {
+    type: Schema.Types.ObjectId,
+    ref: "Coupon",
+    default: null
+  },
   paymentMethod: {
     type: String,
     enum: ["COD", "Wallet", "Razorpay"],

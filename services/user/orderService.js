@@ -1,5 +1,6 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
+import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "../../services/user/walletService.js";
 
 
@@ -66,6 +67,15 @@ export const cancelUserOrder = async (orderId, userId, reason) => {
   order.status = "Cancelled";
   order.cancelReason = reason || "";
 
+  // Release coupon if applied
+  if (order.couponApplied && order.couponId) {
+    const coupon = await Coupon.findById(order.couponId);
+    if (coupon) {
+      coupon.userId = coupon.userId.filter(id => id.toString() !== userId.toString());
+      await coupon.save();
+    }
+  }
+
   // AUTOMATED REFUND FOR PRE-PAID ORDERS
   if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
     await addMoneyToWallet(userId, order.finalAmount, `Refund for Cancelled Order ${order.orderId}`);
@@ -120,67 +130,88 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   item.itemStatus = "Cancelled";
   item.cancelReason = reason || "";
 
-  // Update order totals
-  
-  const variant = await Variant.findById(item.variant);
-  const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
-  
-  const regularItemTotal = regularPrice * item.quantity;
-  const saleItemTotal = item.price * item.quantity;
+  // Update order totals and refunds
+  const activeItemsBefore = order.orderedItems.filter(i => 
+    i.itemStatus !== "Cancelled" && 
+    i.itemStatus !== "Returned"
+  );
 
-  let discountToRemove = 0;
-  if (regularPrice > item.price) {
-    discountToRemove = (regularPrice - item.price) * item.quantity;
+  let previousSalePriceSubtotal = 0;
+  let previousProductSavings = 0;
+  for (const act of activeItemsBefore) {
+    const v = await Variant.findById(act.variant);
+    const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+    previousSalePriceSubtotal += act.price * act.quantity;
+    previousProductSavings += (regularPrice - act.price) * act.quantity;
+  }
+  const previousCouponDeduction = Math.max(0, order.discount - previousProductSavings);
+  const previousTaxableAmount = Math.max(0, previousSalePriceSubtotal - previousCouponDeduction);
+
+  let taxRate = 0.05;
+  if (previousTaxableAmount > 0) {
+    taxRate = order.tax / previousTaxableAmount;
   }
 
-  let currentSaleSubtotal = 0;
-  order.orderedItems.forEach(i => {
-    if (i._id.toString() === itemId || (i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned")) {
-       currentSaleSubtotal += i.price * i.quantity;
+  const remainingActiveItems = order.orderedItems.filter(i => 
+    i._id.toString() !== itemId && 
+    i.itemStatus !== "Cancelled" && 
+    i.itemStatus !== "Returned"
+  );
+
+  let newTotalPrice = 0;
+  let newSalePriceSubtotal = 0;
+  let newProductSavings = 0;
+
+  for (const act of remainingActiveItems) {
+    const v = await Variant.findById(act.variant);
+    const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+    newTotalPrice += regularPrice * act.quantity;
+    newSalePriceSubtotal += act.price * act.quantity;
+    newProductSavings += (regularPrice - act.price) * act.quantity;
+  }
+
+  let newCouponDeduction = 0;
+  if (order.couponApplied && order.couponId) {
+    const coupon = await Coupon.findById(order.couponId);
+    if (coupon && newSalePriceSubtotal >= coupon.minimumPrice) {
+      if (coupon.discountType === "Percentage") {
+        let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
+        if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+          calcDeduction = coupon.maxDiscountAmount;
+        }
+        newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
+      } else {
+        newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
+      }
     }
-  });
-
-  const currentProductSavings = Math.max(0, order.totalPrice - currentSaleSubtotal);
-  const currentCouponDeduction = Math.max(0, order.discount - currentProductSavings);
-
-  if (currentSaleSubtotal > 0 && currentCouponDeduction > 0) {
-     const couponReduction = Math.round((saleItemTotal / currentSaleSubtotal) * currentCouponDeduction);
-     discountToRemove += couponReduction;
   }
 
-  // don't deduct more discount than what's available
-  discountToRemove = Math.min(discountToRemove, order.discount);
+  const newTaxableAmount = Math.max(0, newSalePriceSubtotal - newCouponDeduction);
+  const newTax = Math.round(newTaxableAmount * taxRate);
+  const newDiscount = newProductSavings + newCouponDeduction;
 
-  // order.totalPrice in DB represents the regularPrice subtotal now
-  order.totalPrice = Math.max(0, order.totalPrice - regularItemTotal);
-  order.discount = Math.max(0, order.discount - discountToRemove);
+  let newFinalAmount = 0;
+  let refundAmount = 0;
 
-  // Recalculate tax proportionally
-  // Tax is charged on the sale price (totalPrice - discount), 
-  
-  let taxToRemove = 0;
-  if (order.totalPrice > 0 && order.tax > 0) {
-    const previousSaleTotal = (order.totalPrice + regularItemTotal) - (order.discount + discountToRemove);
-    if (previousSaleTotal > 0) {
-       const taxPercentage = order.tax / previousSaleTotal;
-       taxToRemove = Math.round(saleItemTotal * taxPercentage);
-    }
-  } else if (order.totalPrice === 0) {
-    // If all items cancelled, remove all tax
-    taxToRemove = order.tax;
-  }
-  order.tax = Math.max(0, order.tax - taxToRemove);
-  
-  // Refund Mathematics
-  const refundAmount = (regularItemTotal + taxToRemove) - discountToRemove;
-
-  // Recalculate finalAmount based on the new total and discount
-  if (order.totalPrice === 0) {
-     order.finalAmount = 0;
-     order.shipping = 0;
+  if (remainingActiveItems.length === 0) {
+    newTotalPrice = 0;
+    newSalePriceSubtotal = 0;
+    newProductSavings = 0;
+    newCouponDeduction = 0;
+    refundAmount = order.finalAmount;
+    newFinalAmount = 0;
+    order.shipping = 0;
   } else {
-     order.finalAmount = Math.max(0, order.finalAmount - refundAmount);
+    newFinalAmount = newTotalPrice + newTax + order.shipping - newDiscount;
+    if (newFinalAmount < 0) newFinalAmount = 0;
+    newFinalAmount = Math.min(newFinalAmount, order.finalAmount);
+    refundAmount = Math.max(0, order.finalAmount - newFinalAmount);
   }
+
+  order.totalPrice = newTotalPrice;
+  order.discount = newDiscount;
+  order.tax = newTax;
+  order.finalAmount = newFinalAmount;
 
   // Check if ALL items are now cancelled. If so, mark the entire order as cancelled.
   const allCancelled = order.orderedItems.every(i => i.itemStatus === "Cancelled");
@@ -188,6 +219,15 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   if (allCancelled) {
     order.status = "Cancelled";
     order.cancelReason = "All individual items cancelled";
+
+    // Release coupon if applied
+    if (order.couponApplied && order.couponId) {
+      const coupon = await Coupon.findById(order.couponId);
+      if (coupon) {
+        coupon.userId = coupon.userId.filter(id => id.toString() !== userId.toString());
+        await coupon.save();
+      }
+    }
   }
 
   // AUTOMATED PARTIAL/FULL REFUND FOR PRE-PAID ORDERS

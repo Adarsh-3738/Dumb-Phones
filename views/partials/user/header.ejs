@@ -345,6 +345,7 @@
   <!-- JS -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
+    window.user = <%- user ? JSON.stringify(user) : 'null' %>;
     lucide.createIcons();
 
 

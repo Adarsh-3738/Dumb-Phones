@@ -1,5 +1,6 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
+import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "../../services/user/walletService.js";
 // GET ORDERS WITH FILTER
 export const getOrders = async ({ page, limit, search, status, sort }) => {
@@ -132,9 +133,21 @@ export const changeOrderStatus = async (orderId, status) => {
         item.itemStatus = "Cancelled";
       }
     }
+
+    // Release coupon if applied
+    if (order.couponApplied && order.couponId) {
+      const coupon = await Coupon.findById(order.couponId);
+      if (coupon) {
+        coupon.userId = coupon.userId.filter(id => id.toString() !== order.userId.toString());
+        await coupon.save();
+      }
+    }
   }
 
   order.status = status;
+  if (status === "Delivered" && order.paymentMethod === "COD" && order.paymentStatus === "Pending") {
+    order.paymentStatus = "Paid";
+  }
   await order.save();
 
   return order;
@@ -157,58 +170,89 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
 
   if (status === "Returned") {
     const variantObj = await Variant.findById(item.variant);
-    const regularPrice = (variantObj && variantObj.regularPrice > item.price) ? variantObj.regularPrice : item.price;
-    const regularItemTotal = regularPrice * item.quantity;
-    
-    // Provide proper refunds
-    let discountToRemove = 0;
-    if (regularPrice > item.price) {
-      discountToRemove = (regularPrice - item.price) * item.quantity;
+
+    // Update order totals and refunds
+    const activeItemsBefore = order.orderedItems.filter(i => 
+      i.itemStatus !== "Cancelled" && 
+      i.itemStatus !== "Returned"
+    );
+
+    let previousSalePriceSubtotal = 0;
+    let previousProductSavings = 0;
+    for (const act of activeItemsBefore) {
+      const v = await Variant.findById(act.variant);
+      const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+      previousSalePriceSubtotal += act.price * act.quantity;
+      previousProductSavings += (regularPrice - act.price) * act.quantity;
     }
-    
-    const saleItemTotal = item.price * item.quantity;
-    let currentSaleSubtotal = 0;
-    order.orderedItems.forEach(i => {
-      if (i._id.toString() === itemId || (i.itemStatus !== "Cancelled" && i.itemStatus !== "Returned")) {
-         currentSaleSubtotal += i.price * i.quantity;
+    const previousCouponDeduction = Math.max(0, order.discount - previousProductSavings);
+    const previousTaxableAmount = Math.max(0, previousSalePriceSubtotal - previousCouponDeduction);
+
+    let taxRate = 0.05;
+    if (previousTaxableAmount > 0) {
+      taxRate = order.tax / previousTaxableAmount;
+    }
+
+    const remainingActiveItems = order.orderedItems.filter(i => 
+      i._id.toString() !== itemId && 
+      i.itemStatus !== "Cancelled" && 
+      i.itemStatus !== "Returned"
+    );
+
+    let newTotalPrice = 0;
+    let newSalePriceSubtotal = 0;
+    let newProductSavings = 0;
+
+    for (const act of remainingActiveItems) {
+      const v = await Variant.findById(act.variant);
+      const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+      newTotalPrice += regularPrice * act.quantity;
+      newSalePriceSubtotal += act.price * act.quantity;
+      newProductSavings += (regularPrice - act.price) * act.quantity;
+    }
+
+    let newCouponDeduction = 0;
+    if (order.couponApplied && order.couponId) {
+      const coupon = await Coupon.findById(order.couponId);
+      if (coupon && newSalePriceSubtotal >= coupon.minimumPrice) {
+        if (coupon.discountType === "Percentage") {
+          let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
+          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+            calcDeduction = coupon.maxDiscountAmount;
+          }
+          newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
+        } else {
+          newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
+        }
       }
-    });
-
-    const currentProductSavings = Math.max(0, order.totalPrice - currentSaleSubtotal);
-    const currentCouponDeduction = Math.max(0, order.discount - currentProductSavings);
-
-    if (currentSaleSubtotal > 0 && currentCouponDeduction > 0) {
-       const couponReduction = Math.round((saleItemTotal / currentSaleSubtotal) * currentCouponDeduction);
-       discountToRemove += couponReduction;
     }
-    
-    // Safeguard order totals
-    discountToRemove = Math.min(discountToRemove, Math.max(0, order.discount));
 
-    order.totalPrice = Math.max(0, order.totalPrice - regularItemTotal);
-    order.discount = Math.max(0, order.discount - discountToRemove);
+    const newTaxableAmount = Math.max(0, newSalePriceSubtotal - newCouponDeduction);
+    const newTax = Math.round(newTaxableAmount * taxRate);
+    const newDiscount = newProductSavings + newCouponDeduction;
 
-    let taxToRemove = 0;
-    if (order.totalPrice > 0 && order.tax > 0) {
-      const saleItemTotal = item.price * item.quantity;
-      const previousSaleTotal = (order.totalPrice + regularItemTotal) - (order.discount + discountToRemove);
-      if (previousSaleTotal > 0) {
-         taxToRemove = Math.round(saleItemTotal * (order.tax / previousSaleTotal));
-      }
-    } else if (order.totalPrice === 0) {
-      taxToRemove = order.tax;
-    }
-    
-    order.tax = Math.max(0, order.tax - taxToRemove);
+    let newFinalAmount = 0;
+    let refundAmount = 0;
 
-    const refundAmount = (regularItemTotal + taxToRemove) - discountToRemove;
-
-    if (order.totalPrice === 0) {
-       order.finalAmount = 0;
-       order.shipping = 0;
+    if (remainingActiveItems.length === 0) {
+      newTotalPrice = 0;
+      newSalePriceSubtotal = 0;
+      newProductSavings = 0;
+      newCouponDeduction = 0;
+      refundAmount = order.finalAmount;
+      newFinalAmount = 0;
+      order.shipping = 0;
     } else {
-       order.finalAmount = Math.max(0, order.finalAmount - refundAmount);
+      newFinalAmount = newTotalPrice + newTax + order.shipping - newDiscount;
+      if (newFinalAmount < 0) newFinalAmount = 0;
+      newFinalAmount = Math.min(newFinalAmount, order.finalAmount);
+      refundAmount = Math.max(0, order.finalAmount - newFinalAmount);
     }
+
+    order.totalPrice = newTotalPrice;
+    order.discount = newDiscount;
+    order.tax = newTax;
+    order.finalAmount = newFinalAmount;
 
     // Provide Wallet refund safely 
     if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
@@ -246,6 +290,9 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
   }
 
 
+  if (order.status === "Delivered" && order.paymentMethod === "COD" && order.paymentStatus === "Pending") {
+    order.paymentStatus = "Paid";
+  }
   await order.save();
   return item;
 };
