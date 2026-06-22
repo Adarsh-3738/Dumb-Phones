@@ -47,10 +47,13 @@ export const getSalesReport = async (req, res) => {
 
     const { start, end } = getDatesByRange(range, startDate, endDate);
 
-    // Only count completed (Delivered/Returned) orders for financial accuracy
+    // Count delivered/returned COD orders, and immediately count prepaid (non-COD) orders once Paid
     const query = {
-      status: { $in: ["Delivered", "Returned"] }, 
-      createdOn: { $gte: start, $lte: end }
+      createdOn: { $gte: start, $lte: end },
+      $or: [
+        { status: { $in: ["Delivered", "Returned"] } },
+        { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      ]
     };
 
     if (searchQuery) {
@@ -73,11 +76,11 @@ export const getSalesReport = async (req, res) => {
       { $group: {
           _id: null,
           totalOrdersCount: { $sum: 1 },
-          deliveredCount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] } },
+          deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
           returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
-          netRevenue: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$finalAmount", 0] } },
+          netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
           totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
-          totalDiscount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$discount", 0] } }
+          totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
         }
       }
     ]);
@@ -106,7 +109,13 @@ export const downloadPdf = async (req, res) => {
   try {
     const { range, startDate, endDate } = req.query;
     const { start, end } = getDatesByRange(range, startDate, endDate);
-    const query = { status: { $in: ["Delivered", "Returned"] }, createdOn: { $gte: start, $lte: end } };
+    const query = {
+      createdOn: { $gte: start, $lte: end },
+      $or: [
+        { status: { $in: ["Delivered", "Returned"] } },
+        { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      ]
+    };
     
     const orders = await Order.find(query)
       .populate("userId", "name")
@@ -118,11 +127,11 @@ export const downloadPdf = async (req, res) => {
       { $group: {
           _id: null,
           totalOrdersCount: { $sum: 1 },
-          deliveredCount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] } },
+          deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
           returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
-          netRevenue: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$finalAmount", 0] } },
+          netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
           totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
-          totalDiscount: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, "$discount", 0] } }
+          totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
         }
       }
     ]);
@@ -282,7 +291,15 @@ export const downloadExcel = async (req, res) => {
     const { range, startDate, endDate } = req.query;
     const { start, end } = getDatesByRange(range, startDate, endDate);
     
-    const orders = await Order.find({ status: { $in: ["Delivered", "Returned"] }, createdOn: { $gte: start, $lte: end } })
+    const query = {
+      createdOn: { $gte: start, $lte: end },
+      $or: [
+        { status: { $in: ["Delivered", "Returned"] } },
+        { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      ]
+    };
+    
+    const orders = await Order.find(query)
       .populate("userId", "name")
       .populate("orderedItems.product", "productName")
       .sort({ createdOn: -1 });

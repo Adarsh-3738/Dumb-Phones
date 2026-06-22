@@ -8,6 +8,25 @@ const MAX_QTY = 5;
 
 
 
+  // CHECK IF CART ITEM IS UNAVAILABLE
+
+export const isItemUnavailable = (item) => {
+  const product = item.productId;
+  const variant = item.variantId;
+
+  return (
+    !product ||
+    !variant ||
+    product.isBlocked ||
+    variant.isBlocked ||
+    variant.quantity <= 0 ||
+    !product.category ||
+    !product.category.isListed ||
+    product.category.isDeleted ||
+    product.status === "Discontinued"
+  );
+};
+
   // GET CART DATA
 
 export const getCartData = async (userId) => {
@@ -20,45 +39,35 @@ export const getCartData = async (userId) => {
     .populate("items.variantId");
 
   if (cart) {
-    cart.items = cart.items.filter(item => {
-
-      const product = item.productId;
+    // Modify item prices and quantities for available items
+    // Unavailable items are kept in the cart but their totalPrice is set to 0
+    cart.items.forEach(item => {
       const variant = item.variantId;
 
-      if (
-        !product ||
-        !variant ||
-        product.isBlocked ||
-        variant.isBlocked ||
-        variant.quantity <= 0 ||
-        !product.category ||
-        !product.category.isListed ||
-        product.category.isDeleted ||
-        product.status === "Discontinued"
-      ) {
-        return false;
+      if (!isItemUnavailable(item)) {
+        // Ensure users cannot checkout with an old cached price
+        if (item.price !== variant.salesPrice) {
+          item.price = variant.salesPrice;
+        }
+
+        // Ensure cart quantity doesn't exceed available variant quantity
+        if (item.quantity > variant.quantity) {
+          item.quantity = variant.quantity;
+        }
+
+        // Re-calculate total price
+        item.totalPrice = item.quantity * item.price;
+      } else {
+        item.totalPrice = 0;
       }
-
-      // Ensure users cannot checkout with an old cached price
-      if (item.price !== variant.salesPrice) {
-        item.price = variant.salesPrice;
-      }
-
-      // Ensure cart quantity doesn't exceed available variant quantity
-      if (item.quantity > variant.quantity) {
-        item.quantity = variant.quantity;
-      }
-
-      // Re calculate total price to reflect any changes in quantity or price
-      item.totalPrice = item.quantity * item.price;
-
-      return true;
     });
 
     if (cart.appliedCoupon) {
       const coupon = await Coupon.findById(cart.appliedCoupon);
       if (coupon) {
-        let subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+        let subtotal = cart.items.reduce((sum, item) => {
+          return sum + (isItemUnavailable(item) ? 0 : item.totalPrice);
+        }, 0);
         const now = new Date();
         const expiry = new Date(coupon.expireOn);
         expiry.setHours(23, 59, 59, 999);
@@ -249,6 +258,12 @@ export const revalidateCartCoupon = async (userId, cart = null) => {
     const cartDoc = cart || await Cart.findOne({ userId });
     if (!cartDoc || !cartDoc.appliedCoupon) return;
 
+    // Ensure items are populated for availability check
+    await cartDoc.populate([
+      { path: "items.productId", populate: { path: "category" } },
+      { path: "items.variantId" }
+    ]);
+
     const coupon = await Coupon.findById(cartDoc.appliedCoupon);
     if (!coupon) {
       cartDoc.appliedCoupon = null;
@@ -258,7 +273,9 @@ export const revalidateCartCoupon = async (userId, cart = null) => {
 
     let subtotal = 0;
     cartDoc.items.forEach(item => {
-      subtotal += item.totalPrice;
+      if (!isItemUnavailable(item)) {
+        subtotal += item.totalPrice;
+      }
     });
 
     const now = new Date();

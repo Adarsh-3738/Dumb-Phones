@@ -11,6 +11,8 @@ import { fileURLToPath } from "url";
 import Cart from "./models/cartSchema.js";
 import User from "./models/userSchema.js";
 import Wishlist from "./models/wishlistSchema.js";
+import Product from "./models/productSchema.js";
+import Category from "./models/categorySchema.js";
 
 // user profile
 import cookieParser from "cookie-parser";
@@ -126,10 +128,25 @@ app.use(async (req, res, next) => {
         res.locals.cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
       }
       
-      const wishlist = await Wishlist.findOne({ userId: liveUser._id });
+      const wishlist = await Wishlist.findOne({ userId: liveUser._id })
+        .populate({
+          path: "products.productId",
+          populate: { path: "category" }
+        });
       if (wishlist) {
-        res.locals.wishlistCount = wishlist.products.length;
-        res.locals.wishlistedProducts = wishlist.products.map(p => p.productId.toString());
+        const validProducts = wishlist.products.filter(item => {
+          const product = item.productId;
+          return (
+            product &&
+            !product.isBlocked &&
+            product.category &&
+            product.category.isListed &&
+            !product.category.isDeleted &&
+            product.status !== "Discontinued"
+          );
+        });
+        res.locals.wishlistCount = validProducts.length;
+        res.locals.wishlistedProducts = validProducts.map(p => p.productId._id.toString());
       }
     } catch (err) {
       console.log("Error fetching user or cart status:", err);

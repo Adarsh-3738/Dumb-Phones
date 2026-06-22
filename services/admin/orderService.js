@@ -81,8 +81,12 @@ export const changeOrderStatus = async (orderId, status) => {
   if (order.status === "Delivered" && status === "Cancelled") {
     throw new Error("Cannot cancel an order that has already been delivered.");
   }
-  if (order.status === "Delivered" && ["Pending", "Processing", "Shipped", "Out for Delivery"].includes(status)) {
-    throw new Error("Cannot rollback a Delivered order to a previous status.");
+  const statusOrder = ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+  const currentIndex = statusOrder.indexOf(order.status);
+  const newIndex = statusOrder.indexOf(status);
+
+  if (currentIndex !== -1 && newIndex !== -1 && newIndex < currentIndex) {
+    throw new Error(`Cannot revert order status from "${order.status}" to "${status}".`);
   }
   if (order.status === "Returned" && status !== "Returned") {
     throw new Error("Cannot change the status of a returned order.");
@@ -214,15 +218,23 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
     let newCouponDeduction = 0;
     if (order.couponApplied && order.couponId) {
       const coupon = await Coupon.findById(order.couponId);
-      if (coupon && newSalePriceSubtotal >= coupon.minimumPrice) {
-        if (coupon.discountType === "Percentage") {
-          let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
-          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
-            calcDeduction = coupon.maxDiscountAmount;
+      if (coupon) {
+        if (newSalePriceSubtotal >= coupon.minimumPrice) {
+          if (coupon.discountType === "Percentage") {
+            let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
+            if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+              calcDeduction = coupon.maxDiscountAmount;
+            }
+            newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
+          } else {
+            newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
           }
-          newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
         } else {
-          newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
+          // Minimum order price requirement is no longer met. Revoke coupon and release it back to the user.
+          coupon.userId = coupon.userId.filter(id => id.toString() !== order.userId.toString());
+          await coupon.save();
+          order.couponApplied = false;
+          order.couponId = null;
         }
       }
     }

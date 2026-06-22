@@ -10,6 +10,14 @@
 <%- include("../partials/admin/header") %>
 
 <div class="container">
+<%
+  const isOrderActive = order.orderedItems.some(i => i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned');
+  const subtotalVal = isOrderActive ? (order.totalPrice || 0) : 0;
+  const taxVal = isOrderActive ? (order.tax || 0) : 0;
+  const shippingVal = isOrderActive ? (order.shipping || 0) : 0;
+  const discountVal = isOrderActive ? (order.discount || 0) : 0;
+  const finalAmountVal = isOrderActive ? (order.finalAmount || 0) : 0;
+%>
 
   <div class="page-header">
     <h2>Order Details: #<%= order.orderId %></h2>
@@ -23,15 +31,7 @@
       <p><strong>Order ID:</strong> <%= order.orderId %></p>
       <p><strong>Date:</strong> <%= order.createdOn.toDateString() %></p>
       <p><strong>Status:</strong> <span class="status-badge"><%= order.status %></span></p>
-      <%
-        let topActiveSubtotal = 0;
-        order.orderedItems.forEach(item => {
-          if (item.itemStatus !== 'Cancelled') {
-            topActiveSubtotal += (item.price * item.quantity);
-          }
-        });
-      %>
-      <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %></p>
+      <p><strong>Total Amount:</strong> ₹<%= finalAmountVal.toLocaleString('en-IN') %></p>
       <p><strong>Payment Method:</strong> 
         <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 13px; color: #475569;"><%= order.paymentMethod || 'Unknown' %></span>
       </p>
@@ -140,7 +140,7 @@
                 </td>
                 <td><%= item.quantity %></td>
                 <td>₹<%= item.price %></td>
-                <td style="<%= item.itemStatus === 'Cancelled' ? 'text-decoration: line-through; color: #94a3b8;' : 'font-weight: 600;' %>">
+                <td style="<%= (item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned') ? 'text-decoration: line-through; color: #94a3b8;' : 'font-weight: 600;' %>">
                   ₹<%= item.price * item.quantity %>
                 </td>
                 <td>
@@ -183,23 +183,23 @@
       <div class="summary-totals">
         <div class="row">
           <span>Subtotal:</span>
-          <span style="font-weight: 600; color: #334155;">₹<%= topActiveSubtotal %></span>
+          <span style="font-weight: 600; color: #334155;">₹<%= subtotalVal.toLocaleString('en-IN') %></span>
         </div>
         <div class="row">
           <span>Tax:</span>
-          <span>₹<%= order.tax || 0 %></span>
+          <span>₹<%= taxVal.toLocaleString('en-IN') %></span>
         </div>
         <div class="row">
           <span>Shipping:</span>
-          <span><%= order.shipping === 0 ? "Free" : `₹${order.shipping}` %></span>
+          <span><%= shippingVal === 0 ? "Free" : `₹${shippingVal.toLocaleString('en-IN')}` %></span>
         </div>
         <div class="row" style="color: #10b981;">
           <span>Discount:</span>
-          <span>- ₹<%= order.discount || 0 %></span>
+          <span>- ₹<%= discountVal.toLocaleString('en-IN') %></span>
         </div>
         <div class="row grand-total">
-          <span>Amount Paid:</span>
-          <span style="color: #1d4ed8;">₹<%= (order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded') ? order.finalAmount : 0 %></span>
+          <span>Total Amount:</span>
+          <span style="color: #1d4ed8; font-weight: 700;">₹<%= finalAmountVal.toLocaleString('en-IN') %></span>
         </div>
       </div>
     </div>

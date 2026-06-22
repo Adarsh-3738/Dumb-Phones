@@ -236,15 +236,22 @@ export const loadDashboard = async (req, res) => {
 
     // Data Aggregation for Dashboard
 
-    //  Total Revenue (sum of finalAmount for Delivered orders)
+    const salesReportQuery = {
+      $or: [
+        { status: { $in: ["Delivered", "Returned"] } },
+        { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      ]
+    };
+
+    //  Total Revenue (sum of finalAmount for Delivered orders, excluding Returned orders)
     const revenueAggregation = await Order.aggregate([
-      { $match: { status: "Delivered" } },
-      { $group: { _id: null, totalRevenue: { $sum: "$finalAmount" } } }
+      { $match: salesReportQuery },
+      { $group: { _id: null, totalRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } } } }
     ]);
     const totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].totalRevenue : 0;
 
     //  Counts
-    const salesCount = await Order.countDocuments();
+    const salesCount = await Order.countDocuments(salesReportQuery);
     const usersCount = await User.countDocuments();
     const productsCount = await Product.countDocuments();
 
@@ -260,17 +267,20 @@ export const loadDashboard = async (req, res) => {
     const monthlyRevenue = await Order.aggregate([
       { 
         $match: { 
-          status: "Delivered",
           createdOn: { 
             $gte: new Date(`${currentYear}-01-01`), 
             $lte: new Date(`${currentYear}-12-31`) 
-          }
+          },
+          $or: [
+            { status: { $in: ["Delivered", "Returned"] } },
+            { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+          ]
         } 
       },
       {
         $group: {
           _id: { $month: "$createdOn" },
-          revenue: { $sum: "$finalAmount" }
+          revenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } }
         }
       },
       { $sort: { "_id": 1 } }
@@ -301,9 +311,9 @@ export const loadDashboard = async (req, res) => {
 
     // Top 10 Best Selling Products
     const topProducts = await Order.aggregate([
-      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Payment Failed"] } } },
       { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      { $match: { "orderedItems.itemStatus": { $nin: ["Cancelled", "Returned"] } } },
       { $group: { _id: "$orderedItems.product", totalSold: { $sum: "$orderedItems.quantity" } } },
       { $sort: { totalSold: -1 } },
       { $limit: 10 },
@@ -326,9 +336,9 @@ export const loadDashboard = async (req, res) => {
 
     // Top 10 Best Selling Categories
     const topCategories = await Order.aggregate([
-      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Payment Failed"] } } },
       { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      { $match: { "orderedItems.itemStatus": { $nin: ["Cancelled", "Returned"] } } },
       {
         $lookup: {
           from: "products",
@@ -360,9 +370,9 @@ export const loadDashboard = async (req, res) => {
 
     // Top 10 Best Selling Brands
     const topBrands = await Order.aggregate([
-      { $match: { status: { $nin: ["Cancelled", "Returned", "Return Rejected", "Payment Failed"] } } },
+      { $match: { status: { $nin: ["Cancelled", "Returned", "Payment Failed"] } } },
       { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.itemStatus": { $ne: "Cancelled" } } },
+      { $match: { "orderedItems.itemStatus": { $nin: ["Cancelled", "Returned"] } } },
       {
         $lookup: {
           from: "products",
@@ -452,7 +462,12 @@ export const logout = async (req, res) => {
 export const filterChartData = async (req, res) => {
   try {
     const filter = req.query.filter || 'monthly';
-    let matchCondition = { status: "Delivered" };
+    let matchCondition = {
+      $or: [
+        { status: { $in: ["Delivered", "Returned"] } },
+        { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      ]
+    };
     
     let labels = [];
     let data = [];
@@ -469,7 +484,7 @@ export const filterChartData = async (req, res) => {
         {
           $group: {
             _id: { $year: "$createdOn" },
-            revenue: { $sum: "$finalAmount" }
+            revenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } }
           }
         },
         { $sort: { "_id": 1 } }
@@ -501,7 +516,7 @@ export const filterChartData = async (req, res) => {
         {
           $group: {
             _id: { $dayOfWeek: "$createdOn" },
-            revenue: { $sum: "$finalAmount" }
+            revenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } }
           }
         }
       ]);
@@ -527,7 +542,7 @@ export const filterChartData = async (req, res) => {
         {
           $group: {
             _id: { $month: "$createdOn" },
-            revenue: { $sum: "$finalAmount" }
+            revenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } }
           }
         },
         { $sort: { "_id": 1 } }

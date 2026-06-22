@@ -126,10 +126,6 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
     await variantObj.save();
   }
 
-  // Mark item as cancelled
-  item.itemStatus = "Cancelled";
-  item.cancelReason = reason || "";
-
   // Update order totals and refunds
   const activeItemsBefore = order.orderedItems.filter(i => 
     i.itemStatus !== "Cancelled" && 
@@ -152,6 +148,10 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
     taxRate = order.tax / previousTaxableAmount;
   }
 
+  // Mark item as cancelled
+  item.itemStatus = "Cancelled";
+  item.cancelReason = reason || "";
+
   const remainingActiveItems = order.orderedItems.filter(i => 
     i._id.toString() !== itemId && 
     i.itemStatus !== "Cancelled" && 
@@ -173,15 +173,23 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   let newCouponDeduction = 0;
   if (order.couponApplied && order.couponId) {
     const coupon = await Coupon.findById(order.couponId);
-    if (coupon && newSalePriceSubtotal >= coupon.minimumPrice) {
-      if (coupon.discountType === "Percentage") {
-        let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
-        if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
-          calcDeduction = coupon.maxDiscountAmount;
+    if (coupon) {
+      if (newSalePriceSubtotal >= coupon.minimumPrice) {
+        if (coupon.discountType === "Percentage") {
+          let calcDeduction = Math.floor((newSalePriceSubtotal * coupon.offerPrice) / 100);
+          if (coupon.maxDiscountAmount && calcDeduction > coupon.maxDiscountAmount) {
+            calcDeduction = coupon.maxDiscountAmount;
+          }
+          newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
+        } else {
+          newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
         }
-        newCouponDeduction = Math.min(calcDeduction, newSalePriceSubtotal);
       } else {
-        newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
+        // Minimum order price requirement is no longer met. Revoke coupon and release it back to the user.
+        coupon.userId = coupon.userId.filter(id => id.toString() !== userId.toString());
+        await coupon.save();
+        order.couponApplied = false;
+        order.couponId = null;
       }
     }
   }
@@ -259,8 +267,26 @@ export const returnUserOrder = async (orderId, userId, reason) => {
     userId
   });
 
-  if (!order || order.status !== "Delivered")
+  if (!order) throw new Error("Order not found");
+
+  const allowedStatuses = ["Delivered", "Return Request", "Return Rejected"];
+  if (!allowedStatuses.includes(order.status)) {
     throw new Error("Invalid return request");
+  }
+
+  // Mark all active items as Return Request
+  let hasActiveItems = false;
+  for (const item of order.orderedItems) {
+    if (item.itemStatus === "Active") {
+      item.itemStatus = "Return Request";
+      item.returnReason = reason;
+      hasActiveItems = true;
+    }
+  }
+
+  if (!hasActiveItems) {
+    throw new Error("No active items to return in this order.");
+  }
 
   order.status = "Return Request";
   order.returnReason = reason;

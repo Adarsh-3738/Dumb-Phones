@@ -31,6 +31,14 @@
       </div>
 
       <div class="order-details-grid">
+      <%
+        const isOrderActive = order.orderedItems.some(i => i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned');
+        const subtotalVal = isOrderActive ? (order.totalPrice || 0) : 0;
+        const taxVal = isOrderActive ? (order.tax || 0) : 0;
+        const shippingVal = isOrderActive ? (order.shipping || 0) : 0;
+        const discountVal = isOrderActive ? (order.discount || 0) : 0;
+        const finalAmountVal = isOrderActive ? (order.finalAmount || 0) : 0;
+      %>
         
         <!-- Left Column Items List -->
         <div class="main-column">
@@ -61,7 +69,7 @@
                     </div>
 
                     <div class="item-total" style="display:flex; justify-content:space-between; align-items:center;">
-                      <% if (item.itemStatus === 'Cancelled') { %>
+                      <% if (item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned') { %>
                         <span style="text-decoration: line-through; color: #999;">₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
                       <% } else { %>
                         <span>₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
@@ -87,7 +95,7 @@
                           <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:12px; height:auto;" onclick="cancelOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Cancel Item
                           </button>
-                        <% } else if (['Delivered', 'Return Request', 'Returned', 'Return Rejected'].includes(order.status) && item.itemStatus === 'Active') { %>
+                        <% } else if (['Delivered', 'Return Request', 'Returned', 'Return Rejected'].includes(order.status) && item.itemStatus === 'Active' && order.orderedItems.filter(i => i.itemStatus === 'Active').length > 1) { %>
                           <button type="button" class="btn btn-warning" style="padding:4px 8px; font-size:12px; height:auto; color:#b45309; border-color:#b45309;" onclick="returnOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Return Item
                           </button>
@@ -113,7 +121,7 @@
             <div class="summary-details">
               <div class="summary-line">
                 <span class="label">Subtotal</span>
-                <span class="value">₹<%= parseInt(order.totalPrice).toLocaleString('en-IN') %></span>
+                <span class="value">₹<%= parseInt(subtotalVal).toLocaleString('en-IN') %></span>
               </div>
               <div class="summary-line">
                 <span class="label">Order Date</span>
@@ -121,19 +129,19 @@
               </div>
               <div class="summary-line">
                 <span class="label">Tax</span>
-                <span class="value">₹<%= parseInt(order.tax).toLocaleString('en-IN') %></span>
+                <span class="value">₹<%= parseInt(taxVal).toLocaleString('en-IN') %></span>
               </div>
               <div class="summary-line">
                 <span class="label">Shipping</span>
-                <% if (order.shipping === 0) { %>
+                <% if (shippingVal === 0) { %>
                   <span class="value" style="color: #10b981; font-weight: 600;">Free</span>
                 <% } else { %>
-                  <span class="value">₹<%= parseInt(order.shipping).toLocaleString('en-IN') %></span>
+                  <span class="value">₹<%= parseInt(shippingVal).toLocaleString('en-IN') %></span>
                 <% } %>
               </div>
               <div class="summary-line discount-line">
                 <span class="label">Discount Applied</span>
-                <span class="value">- ₹<%= parseInt(order.discount).toLocaleString('en-IN') %></span>
+                <span class="value">- ₹<%= parseInt(discountVal).toLocaleString('en-IN') %></span>
               </div>
               <div class="summary-line" style="margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px;">
                 <span class="label">Payment Method</span>
@@ -153,7 +161,7 @@
 
             <div class="summary-total">
               <span class="label">Total Amount</span>
-              <span class="value">₹<%= parseInt(order.finalAmount).toLocaleString('en-IN') %></span>
+              <span class="value">₹<%= parseInt(finalAmountVal).toLocaleString('en-IN') %></span>
             </div>
           </div>
 
@@ -181,7 +189,7 @@
               </button>
             <% } %>
 
-            <% if (order.status === 'Delivered') { %>
+            <% if (['Delivered', 'Return Request', 'Return Rejected'].includes(order.status) && order.orderedItems.some(i => i.itemStatus === 'Active')) { %>
               <button class="btn btn-warning" onclick="returnOrder('<%= order.orderId %>')">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
                 Return Order

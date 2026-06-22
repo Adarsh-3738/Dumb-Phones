@@ -639,18 +639,18 @@ export const logoutUser = (req, res) => {
           return res.redirect("/profile");
         }
         res.clearCookie("connect.sid");
-        return res.redirect("/login");
+        return res.redirect("/");
       });
     } else {
       res.clearCookie("connect.sid");
-      return res.redirect("/login");
+      return res.redirect("/");
     }
 
   } catch (error) {
 
     console.error("Logout Catch Error:", error);
 
-    return res.redirect("/login");
+    return res.redirect("/");
 
   }
 

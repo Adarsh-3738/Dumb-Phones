@@ -1,5 +1,6 @@
 <%- include("../partials/user/header") %>
 <link rel="stylesheet" href="/css/user/cart.css">
+<% let hasUnavailableItems = false; %>
 
 <div class="cart-wrapper">
   <!-- BREADCRUMB -->
@@ -32,14 +33,17 @@
           <% cartItems.forEach(item => { 
             const product = item.productId;
             const variant = item.variantId;
-            const disabled = !variant || variant.quantity <= 0 || product.isBlocked;
+            const disabled = !product || !variant || product.isBlocked || variant.isBlocked || (variant && variant.quantity <= 0) || !product.category || !product.category.isListed || product.category.isDeleted || product.status === "Discontinued";
+            if (disabled) {
+              hasUnavailableItems = true;
+            }
           %>
             <div class="cart-card <%= disabled ? 'disabled' : '' %>">
               
               <!-- PRODUCT IMAGE -->
               <div class="cart-card-img">
                 <% if (variant && variant.variantImages && variant.variantImages.length) { %>
-                  <img src="<%= variant.variantImages[0].url %>" alt="<%= product.productName %>">
+                  <img src="<%= variant.variantImages[0].url %>" alt="<%= product ? product.productName : 'Product Unavailable' %>">
                 <% } else { %>
                   <img src="/images/no-image.png" alt="No image">
                 <% } %>
@@ -49,16 +53,19 @@
               <div class="cart-card-details">
                 <div class="cart-card-header">
                   <div class="title-wrap">
-                    <h4 class="product-title"><%= product.productName %></h4>
+                    <h4 class="product-title"><%= product ? product.productName : 'Product Unavailable' %></h4>
                     <p class="product-sku">Variant: <%= variant ? variant.color : 'N/A' %></p>
                   </div>
                   <p class="product-price">₹<%= parseInt(item.price).toLocaleString('en-IN') %></p>
                 </div>
 
                 <div class="product-meta">
-                  <% if (!variant || variant.quantity <= 0) { %>
-                    <span class="stock-badge out-of-stock">
-                      <span class="dot"></span> Out of stock
+                  <% if (disabled) { %>
+                    <span class="stock-badge out-of-stock" style="background-color: #fee2e2; color: #ef4444; border: 1px solid #fca5a5;">
+                      <span class="dot"></span> Unavailable
+                    </span>
+                    <span class="unavailable-msg" style="color: #ef4444; font-size: 13px; font-weight: 500; margin-left: 8px;">
+                      This product is currently unavailable. Please remove it to proceed.
                     </span>
                   <% } else { %>
                     <span class="stock-badge in-stock">
@@ -113,11 +120,14 @@
           <% 
             let subtotal = 0;
             cartItems.forEach(item => {
-              if (item.variantId && item.variantId.quantity > 0 && item.productId && !item.productId.isBlocked) {
+              const product = item.productId;
+              const variant = item.variantId;
+              const disabled = !product || !variant || product.isBlocked || variant.isBlocked || (variant && variant.quantity <= 0) || !product.category || !product.category.isListed || product.category.isDeleted || product.status === "Discontinued";
+              if (!disabled) {
                 subtotal += item.price * item.quantity;
               }
             });
-            const isCartValid = subtotal > 0;
+            const isCartValid = subtotal > 0 && !hasUnavailableItems;
             const shipping = isCartValid ? 0 : 0; 
             const total = subtotal + shipping;
           %>
@@ -144,7 +154,7 @@
             </a>
           <% } else { %>
             <button class="btn-checkout" disabled style="opacity: 0.5; cursor: not-allowed;">
-              Cart Items Unavailable
+              <%= hasUnavailableItems ? "Remove Unavailable Items to Checkout" : "Cart Items Unavailable" %>
             </button>
           <% } %>
           
@@ -162,3 +172,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/cart.js"></script>
+
+<% if (hasUnavailableItems) { %>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Unavailable Items in Cart',
+        text: 'Some products in your cart are currently unavailable. Please remove them to proceed to checkout.',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#1d4ed8'
+      });
+    });
+  </script>
+<% } %>
