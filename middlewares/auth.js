@@ -2,27 +2,54 @@ import User from "../models/userSchema.js";
 import logger from "../utils/logger.js";
 
 // USER AUTH
-const userAuth = (req, res, next) => {
+const userAuth = async (req, res, next) => {
   try {
-    if (req.isAuthenticated?.() && req.user && !req.user.isBlocked) {
-      return next();
+    const loggedInUser = req.user || req.session?.user;
+    if (!loggedInUser) {
+      return res.redirect("/login");
     }
 
-    logger.warn("Unauthorized user access attempt", {
-      path: req.originalUrl,
-      user: req.user?._id || null
-    });
+    // Fetch latest user data from DB
+    const user = await User.findById(loggedInUser._id || loggedInUser);
 
-    return res.redirect("/login");
+    if (!user || user.isBlocked) {
+      req.session.message = "Your account has been blocked by the administrator.";
+
+      const finishLogout = () => {
+        if (req.session) {
+          delete req.session.user;
+          delete req.session.passport;
+          return req.session.save(() => {
+            return res.redirect("/login");
+          });
+        }
+        return res.redirect("/login");
+      };
+
+      if (req.logout) {
+        return req.logout((err) => {
+          if (err) {
+            logger.error("Logout error", {
+              message: err.message
+            });
+          }
+          finishLogout();
+        });
+      } else {
+        return finishLogout();
+      }
+    }
+
+    next();
   } catch (error) {
     logger.error("Error in userAuth middleware", {
       message: error.message,
       stack: error.stack
     });
+
     return res.redirect("/login");
   }
 };
-
 // ADMIN AUTH
 const adminAuth = async (req, res, next) => {
   try {
@@ -58,3 +85,4 @@ const adminAuth = async (req, res, next) => {
 };
 
 export { userAuth, adminAuth };
+export default userAuth;

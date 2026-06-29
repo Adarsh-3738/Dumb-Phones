@@ -1,21 +1,34 @@
 // for easy login for already logged in user
+
+import User from "../models/userSchema.js";
 import logger from "../utils/logger.js";
 
-const alreadyLoggedin = (req, res, next) => {
+const alreadyLoggedin = async (req, res, next) => {
   try {
-    if (req.user || (req.isAuthenticated && req.isAuthenticated()) || (req.session && req.session.user)) {
+    const loggedInUser = req.user || req.session?.user;
+    if (loggedInUser || req.isAuthenticated?.()) {
+      const user = await User.findById(loggedInUser?._id || loggedInUser);
+
+      // Allow blocked users to reach login page
+      if (user?.isBlocked) {
+        return next();
+      }
+
       logger.info("Already logged-in user redirected", {
-        userId: req.user?._id || req.session?.user?._id,
+        userId: user?._id,
         path: req.originalUrl
       });
+
       return res.redirect("/");
     }
+
     next();
   } catch (error) {
     logger.error("Error in alreadyLoggedin middleware", {
       message: error.message,
       stack: error.stack
     });
+
     next(error);
   }
 };

@@ -2,6 +2,42 @@ import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "../../services/user/walletService.js";
+
+const FULFILLMENT_STATUSES = ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+const TERMINAL_ITEM_STATUSES = ["Cancelled", "Returned"];
+
+const getEffectiveItemStatus = (item, orderStatus) => {
+  return item.itemStatus === "Active" ? orderStatus : item.itemStatus;
+};
+
+const syncOrderStatusFromItems = (order) => {
+  const itemStatuses = order.orderedItems.map((item) => getEffectiveItemStatus(item, order.status));
+
+  if (itemStatuses.every((status) => status === "Cancelled")) {
+    order.status = "Cancelled";
+    return;
+  }
+
+  if (itemStatuses.every((status) => status === "Returned" || status === "Cancelled")) {
+    order.status = "Returned";
+    return;
+  }
+
+  if (itemStatuses.some((status) => status === "Return Request")) {
+    order.status = "Return Request";
+    return;
+  }
+
+  const activeFulfillmentStatuses = itemStatuses.filter((status) => FULFILLMENT_STATUSES.includes(status));
+  if (activeFulfillmentStatuses.length) {
+    order.status = activeFulfillmentStatuses.reduce((lowestStatus, status) => {
+      return FULFILLMENT_STATUSES.indexOf(status) < FULFILLMENT_STATUSES.indexOf(lowestStatus)
+        ? status
+        : lowestStatus;
+    }, activeFulfillmentStatuses[0]);
+  }
+};
+
 // GET ORDERS WITH FILTER
 export const getOrders = async ({ page, limit, search, status, sort }) => {
 
@@ -149,6 +185,15 @@ export const changeOrderStatus = async (orderId, status) => {
   }
 
   order.status = status;
+  if (FULFILLMENT_STATUSES.includes(status)) {
+    for (const item of order.orderedItems) {
+      const itemStatus = getEffectiveItemStatus(item, order.status);
+      if (!TERMINAL_ITEM_STATUSES.includes(itemStatus) && itemStatus !== "Return Request") {
+        item.itemStatus = status;
+      }
+    }
+  }
+
   if (status === "Delivered" && order.paymentMethod === "COD" && order.paymentStatus === "Pending") {
     order.paymentStatus = "Paid";
   }
@@ -167,9 +212,38 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
   const item = order.orderedItems.find(i => i._id.toString() === itemId);
   if (!item) throw new Error("Item not found");
 
+  const currentItemStatus = getEffectiveItemStatus(item, order.status);
+
+  if (FULFILLMENT_STATUSES.includes(status)) {
+    if (TERMINAL_ITEM_STATUSES.includes(currentItemStatus) || currentItemStatus === "Return Request") {
+      throw new Error(`Cannot change item status from ${currentItemStatus}.`);
+    }
+
+    const currentIndex = FULFILLMENT_STATUSES.indexOf(currentItemStatus);
+    const newIndex = FULFILLMENT_STATUSES.indexOf(status);
+
+    if (currentIndex !== -1 && newIndex < currentIndex) {
+      throw new Error(`Cannot revert item status from "${currentItemStatus}" to "${status}".`);
+    }
+
+    item.itemStatus = status;
+    syncOrderStatusFromItems(order);
+
+    if (
+      order.status === "Delivered" &&
+      order.paymentMethod === "COD" &&
+      order.paymentStatus === "Pending"
+    ) {
+      order.paymentStatus = "Paid";
+    }
+
+    await order.save();
+    return item;
+  }
+
   // Prevent invalid transitions
-  if (item.itemStatus !== "Return Request") {
-    throw new Error(`Item relies on Return Request state. Current state: ${item.itemStatus}`);
+  if (currentItemStatus !== "Return Request") {
+    throw new Error(`Item relies on Return Request state. Current state: ${currentItemStatus}`);
   }
 
   if (status === "Returned") {
@@ -293,12 +367,7 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
   // Resolve order status if no items are pending return
   const hasPendingReturns = order.orderedItems.some(i => i.itemStatus === "Return Request");
   if (!hasPendingReturns) {
-     const everythingReturnedOrCancelled = order.orderedItems.every(i => i.itemStatus === "Returned" || i.itemStatus === "Cancelled");
-     if (everythingReturnedOrCancelled) {
-       order.status = "Returned";
-     } else {
-       order.status = "Delivered";
-     }
+     syncOrderStatusFromItems(order);
   }
 
 

@@ -11,6 +11,9 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   />
 
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     * {
       margin: 0;
@@ -347,6 +350,58 @@
   <script>
     window.user = <%- user ? JSON.stringify(user) : 'null' %>;
     lucide.createIcons();
+
+    // DYNAMIC BLOCKED USER DETECTION
+    if (window.user) {
+      const handleBlockedUser = (message) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Account Blocked',
+          text: message || 'Your account has been blocked by the administrator.',
+          confirmButtonColor: '#3085d6',
+          allowOutsideClick: false,
+          allowEscapeKey: false
+        }).then(() => {
+          window.location.href = '/login';
+        });
+      };
+
+      // 1. Fetch Polling every 5 seconds
+      setInterval(async () => {
+        try {
+          const res = await fetch('/auth/check-status');
+          const data = await res.json();
+          if (data && data.blocked) {
+            handleBlockedUser(data.message);
+          }
+        } catch (err) {
+          // Fail silently
+        }
+      }, 5000);
+
+      // 2. Global Fetch Interceptor to catch dynamic JSON response triggers
+      const originalFetch = window.fetch;
+      window.fetch = async function(...args) {
+        const response = await originalFetch(...args);
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const clone = response.clone();
+          try {
+            const data = await clone.json();
+            if (data && data.blocked) {
+              handleBlockedUser(data.message);
+              return new Response(JSON.stringify({ success: false, blocked: true, message: data.message }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json' }
+              });
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+        return response;
+      };
+    }
 
 
     // HAMBURGER MENU

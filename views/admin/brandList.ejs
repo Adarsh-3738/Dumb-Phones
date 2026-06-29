@@ -53,6 +53,7 @@
           <th>Brand</th>
           <th>Country</th>
           <th>Founded</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -60,7 +61,7 @@
       <tbody>
         <% if(brands.length === 0) { %>
           <tr>
-            <td colspan="4" class="no-data">No brands found</td>
+            <td colspan="5" class="no-data">No brands found</td>
           </tr>
         <% } %>
 
@@ -70,6 +71,11 @@
             <td><%= b.country %></td>
             <td><%= b.founded %></td>
             <td>
+              <span class="<%= b.isBlocked ? 'status-inactive' : 'status-active' %>">
+                <%= b.isBlocked ? 'Blocked' : 'Active' %>
+              </span>
+            </td>
+            <td>
               
               <button 
   class="btn-edit"
@@ -77,12 +83,11 @@
   Edit
 </button>
 
-              <!-- DELETE -->
               <button 
                 type="button"
-                onclick="deleteBrand('<%= b._id %>')" 
-                class="btn-delete">
-                Delete
+                onclick="toggleBrandStatus('<%= b._id %>', <%= b.isBlocked ? 'true' : 'false' %>)" 
+                class="<%= b.isBlocked ? 'btn-edit' : 'btn-delete' %>">
+                <%= b.isBlocked ? 'Unblock' : 'Block' %>
               </button>
             </td>
           </tr>

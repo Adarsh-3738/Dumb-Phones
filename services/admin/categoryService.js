@@ -29,6 +29,7 @@ export const createCategory = async ({ name, status }) => {
   const category = await Category.create({
     name,
     status,
+    isListed: status === "Active",
     isDeleted: false,
     categoryOffer: 0,
   });
@@ -51,6 +52,7 @@ export const updateCategory = async ({ id, name, status }) => {
   const category = await Category.findByIdAndUpdate(id, {
     name: name.trim(),
     status,
+    isListed: status === "Active",
   });
 
   return category;

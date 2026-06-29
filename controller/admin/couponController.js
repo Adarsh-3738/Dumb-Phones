@@ -1,14 +1,10 @@
-import Coupon from "../../models/couponSchema.js";
+import * as couponService from "../../services/admin/couponService.js";
 
 // Load Coupons Page
 export const getCoupons = async (req, res) => {
   try {
     const searchQuery = req.query.search || "";
-    let filter = {};
-    if (searchQuery) {
-      filter.name = { $regex: searchQuery, $options: "i" };
-    }
-    const coupons = await Coupon.find(filter).sort({ createdOn: -1 });
+    const coupons = await couponService.getCoupons(searchQuery);
     res.render("admin/coupons", { coupons, searchQuery: searchQuery || "" });
   } catch (error) {
     console.error("Error fetching coupons:", error);
@@ -31,7 +27,7 @@ export const addCoupon = async (req, res) => {
     }
 
     const nameUpper = name.toUpperCase().trim();
-    const existing = await Coupon.findOne({ name: nameUpper });
+    const existing = await couponService.findCouponByName(nameUpper);
     if (existing) {
       return res.status(400).json({ success: false, message: "Coupon code already exists" });
     }
@@ -60,7 +56,7 @@ export const addCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
     }
 
-    const newCoupon = new Coupon({
+    await couponService.createCoupon({
       name: nameUpper,
       startDate: sDate,
       expireOn: eDate,
@@ -70,7 +66,6 @@ export const addCoupon = async (req, res) => {
       maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
     });
 
-    await newCoupon.save();
     res.json({ success: true, message: "Coupon created successfully!" });
 
   } catch (error) {
@@ -97,7 +92,7 @@ export const editCoupon = async (req, res) => {
     const nameUpper = name.toUpperCase().trim();
     
     // Check if another coupon has the same name
-    const existing = await Coupon.findOne({ name: nameUpper, _id: { $ne: id } });
+    const existing = await couponService.findCouponByName(nameUpper, id);
     if (existing) {
       return res.status(400).json({ success: false, message: "Coupon code already exists" });
     }
@@ -126,19 +121,15 @@ export const editCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
     }
 
-    const updatedCoupon = await Coupon.findByIdAndUpdate(
-      id,
-      {
-        name: nameUpper,
-        startDate: sDate,
-        expireOn: eDate,
-        offerPrice: offerVal,
-        minimumPrice: minVal,
-        discountType: discountType || "Fixed Amount",
-        maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
-      },
-      { new: true }
-    );
+    const updatedCoupon = await couponService.updateCoupon(id, {
+      name: nameUpper,
+      startDate: sDate,
+      expireOn: eDate,
+      offerPrice: offerVal,
+      minimumPrice: minVal,
+      discountType: discountType || "Fixed Amount",
+      maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
+    });
 
     if (!updatedCoupon) {
       return res.status(404).json({ success: false, message: "Coupon not found" });
@@ -155,7 +146,7 @@ export const editCoupon = async (req, res) => {
 // Delete Coupon
 export const deleteCoupon = async (req, res) => {
   try {
-    await Coupon.findByIdAndDelete(req.params.id);
+    await couponService.deleteCoupon(req.params.id);
     res.json({ success: true, message: "Coupon deleted safely" });
   } catch (error) {
     console.error("Error deleting coupon:", error);

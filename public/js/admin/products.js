@@ -3,14 +3,43 @@ let variantCount = 0;
 
 const variantsContainer = document.getElementById("variantsContainer");
 const addVariantBtn = document.getElementById("addVariantBtn");
-
 const form = document.getElementById("addProductForm");
-// SWEET ALERT 
+
+// Inject dynamic shared cropper modal
+const cropperModalHtml = `
+  <div id="cropperModal" class="cropper-modal-overlay">
+    <div class="cropper-modal-container">
+      <div class="cropper-modal-header">
+        <h3 id="cropperModalTitle">Crop Image</h3>
+        <span id="closeCropperModal" class="cropper-modal-close">&times;</span>
+      </div>
+      <div class="cropper-img-wrapper">
+        <img id="cropperModalImage" style="max-width: 100%; display: block;" />
+      </div>
+      <div class="cropper-modal-footer">
+        <button type="button" id="cancelCropBtn" class="cropper-btn-cancel">Cancel</button>
+        <button type="button" id="saveCropBtn" class="cropper-btn-save">Crop & Next</button>
+      </div>
+    </div>
+  </div>
+`;
+document.body.insertAdjacentHTML('beforeend', cropperModalHtml);
+
+const cropperModal = document.getElementById("cropperModal");
+const cropperModalImage = document.getElementById("cropperModalImage");
+const cropperModalTitle = document.getElementById("cropperModalTitle");
+const closeCropperModal = document.getElementById("closeCropperModal");
+const cancelCropBtn = document.getElementById("cancelCropBtn");
+const saveCropBtn = document.getElementById("saveCropBtn");
+
+let currentCropper = null;
+let currentCropQueue = null; // { files: [], cropped: [], currentIndex: 0, variantIndex: null, previewGrid, input }
+
 function showError(msg) {
   Swal.fire({ icon: "error", title: "Oops!", text: msg });
 }
 function showSuccess(msg) {
-  Swal.fire({ icon: "success", title: "Success", text: msg });
+  Swal.fire({ icon: "success", title: "Success", text: msg, timer: 1500, showConfirmButton: false });
 }
 
 function updateVariantNumbers() {
@@ -28,10 +57,6 @@ addVariantBtn.addEventListener("click", () => {
   const div = document.createElement("div");
   div.className = "variant-card";
   div.dataset.index = index;
-  div.style.marginBottom = "20px";
-  div.style.padding = "15px";
-  div.style.border = "1px solid #e5e7eb";
-  div.style.borderRadius = "8px";
   
   div.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
@@ -54,24 +79,19 @@ addVariantBtn.addEventListener("click", () => {
     <label>Images (Min 3)</label>
     <input type="file" class="variant-image-input" data-index="${index}" name="variants[${index}][images]" multiple accept="image/jpeg, image/png, image/webp" required />
 
-    <img class="crop-preview" style="display:none;max-width:100%;margin-top:10px;" />
-
-    <button type="button" class="crop-next-btn btn-outline" style="margin-top:10px;">Crop & Next</button>
-
-    <div class="preview-grid" style="display:flex;gap:8px;margin-top:10px;"></div>
+    <div class="preview-grid" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
   `;
   
   variantsContainer.appendChild(div);
 });
 
-// IMAGE SELECTION 
+// IMAGE SELECTION
 document.addEventListener("change", e => {
   if (!e.target.classList.contains("variant-image-input")) return;
 
   const index = e.target.dataset.index;
   const files = Array.from(e.target.files);
 
-  // Validate format limits to images only
   const hasInvalidFormat = files.some(file => 
     !file.type.startsWith("image/") && 
     !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
@@ -94,99 +114,123 @@ document.addEventListener("change", e => {
   }
 
   const card = document.querySelector(`.variant-card[data-index="${index}"]`);
+  const previewGrid = card.querySelector(".preview-grid");
+  previewGrid.innerHTML = ""; // Clear existing previews
 
-  variantStates[index] = {
-    selectedFiles: files,
-    croppedFiles: [],
+  currentCropQueue = {
+    files: files,
+    cropped: [],
     currentIndex: 0,
-    cropper: null,
-    previewImg: card.querySelector(".crop-preview"),
-    input: e.target,
-    previewGrid: card.querySelector(".preview-grid"),
-    completed: false
+    variantIndex: index,
+    previewGrid: previewGrid,
+    input: e.target
   };
 
-  loadVariantImage(index);
+  openCropperForQueue();
 });
 
 // LOAD IMAGE
-function loadVariantImage(index) {
-  const state = variantStates[index];
-  const file = state.selectedFiles[state.currentIndex];
+function openCropperForQueue() {
+  if (!currentCropQueue || currentCropQueue.currentIndex >= currentCropQueue.files.length) {
+    finalizeCropping();
+    return;
+  }
+
+  const file = currentCropQueue.files[currentCropQueue.currentIndex];
+  cropperModalTitle.innerText = `Crop Image ${currentCropQueue.currentIndex + 1} of ${currentCropQueue.files.length}`;
 
   const reader = new FileReader();
   reader.onload = () => {
-    state.previewImg.src = reader.result;
-    state.previewImg.style.display = "block";
+    cropperModalImage.src = reader.result;
+    cropperModal.style.display = "flex";
 
-    if (state.cropper) state.cropper.destroy();
+    if (currentCropper) currentCropper.destroy();
 
-    state.cropper = new Cropper(state.previewImg, {
+    currentCropper = new Cropper(cropperModalImage, {
       aspectRatio: 1,
       viewMode: 2,
-      autoCropArea: 1
+      autoCropArea: 1,
+      background: false
     });
   };
   reader.readAsDataURL(file);
 }
 
-// CROP & NEXT 
-document.addEventListener("click", e => {
-  if (!e.target.classList.contains("crop-next-btn")) return;
+// CROP & SAVE ACTION
+saveCropBtn.addEventListener("click", () => {
+  if (!currentCropper || !currentCropQueue) return;
 
-  const card = e.target.closest(".variant-card");
-  const index = card.dataset.index;
-  const state = variantStates[index];
+  currentCropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob(blob => {
+    const file = new File(
+      [blob],
+      currentCropQueue.files[currentCropQueue.currentIndex].name,
+      { type: "image/jpeg" }
+    );
 
-  if (!state || !state.cropper) return showError("Please select images first");
+    currentCropQueue.cropped.push(file);
 
-  state.cropper.getCroppedCanvas({ width: 600, height: 600 })
-    .toBlob(blob => {
-      const file = new File(
-        [blob],
-        state.selectedFiles[state.currentIndex].name,
-        { type: "image/jpeg" }
-      );
+    // Render preview item
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.style.width = "70px";
+    img.style.height = "70px";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "6px";
+    img.style.border = "1px solid #cbd5e1";
+    currentCropQueue.previewGrid.appendChild(img);
 
-      state.croppedFiles.push(file);
-      addVariantPreview(state, file);
-
-      state.currentIndex++;
-      state.cropper.destroy();
-
-      if (state.currentIndex < state.selectedFiles.length) {
-        loadVariantImage(index);
-      } else {
-        updateVariantInput(state);
-        state.completed = true;
-        showSuccess(`All images cropped for ${card.querySelector("h5").innerText}`);
-      }
-    });
+    currentCropQueue.currentIndex++;
+    openCropperForQueue();
+  }, "image/jpeg");
 });
 
-// PREVIEW 
-function addVariantPreview(state, file) {
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(file);
-  img.style.width = "70px";
-  img.style.borderRadius = "6px";
-  state.previewGrid.appendChild(img);
-}
+// FINALIZE FILES
+function finalizeCropping() {
+  if (!currentCropQueue) return;
 
-//  UPDATE INPUT 
-function updateVariantInput(state) {
   const dt = new DataTransfer();
-  state.croppedFiles.forEach(file => dt.items.add(file));
-  state.input.files = dt.files; 
+  currentCropQueue.cropped.forEach(file => dt.items.add(file));
+  currentCropQueue.input.files = dt.files;
+
+  // Mark state as completed
+  if (!variantStates[currentCropQueue.variantIndex]) {
+    variantStates[currentCropQueue.variantIndex] = {};
+  }
+  variantStates[currentCropQueue.variantIndex].completed = true;
+
+  cropperModal.style.display = "none";
+  if (currentCropper) {
+    currentCropper.destroy();
+    currentCropper = null;
+  }
+
+  showSuccess(`Successfully cropped all images for Variant ${Number(currentCropQueue.variantIndex) + 1}`);
+  currentCropQueue = null;
 }
 
-// FINAL FORM VALIDATION 
+// CANCEL CROPPING
+function cancelCropping() {
+  if (currentCropper) {
+    currentCropper.destroy();
+    currentCropper = null;
+  }
+  cropperModal.style.display = "none";
+  if (currentCropQueue) {
+    currentCropQueue.input.value = ""; // Reset file selection
+    currentCropQueue.previewGrid.innerHTML = "";
+    if (variantStates[currentCropQueue.variantIndex]) {
+      variantStates[currentCropQueue.variantIndex].completed = false;
+    }
+    currentCropQueue = null;
+  }
+}
+
+cancelCropBtn.addEventListener("click", cancelCropping);
+closeCropperModal.addEventListener("click", cancelCropping);
+
+// FINAL FORM SUBMISSION
 form.addEventListener("submit", async e => {
   e.preventDefault();
-
-  if (Object.keys(variantStates).length === 0 && !document.querySelector('.variant-card')) { 
-    return showError("Please add at least one variant"); 
-  }
 
   const variantCards = document.querySelectorAll(".variant-card");
   if (variantCards.length === 0) {
@@ -210,9 +254,13 @@ form.addEventListener("submit", async e => {
       return showError("Sales price cannot be greater than regular price"); 
     }
     
-    // If files are selected, but crop sequence isn't complete
-    if (state && !state.completed && state.selectedFiles && state.selectedFiles.length > 0) { 
-      return showError(`Please crop all images for Variant ${Number(index) + 1}`); 
+    const input = card.querySelector(".variant-image-input");
+    if (input.files.length < 3) {
+      return showError(`Minimum 3 cropped images required for Variant ${i + 1}`);
+    }
+
+    if (!state || !state.completed) { 
+      return showError(`Please crop all selected images for Variant ${i + 1}`); 
     }
   }
 
@@ -262,12 +310,9 @@ form.addEventListener("submit", async e => {
   }
 });
 
-// MODAL 
+// MODAL CONTROLS
 function openModal() { document.getElementById("productModal").style.display = "block"; }
 function closeModal() { document.getElementById("productModal").style.display = "none"; }
-
-
-
 
 function openStatusModal(productId, page, search, currentState) {
   const actionTxt = currentState === 'Inactive' ? 'Activate' : 'Deactivate';

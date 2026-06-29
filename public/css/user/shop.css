@@ -473,3 +473,22 @@ body {
     font-size: 28px;
   }
 }
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.checkbox-group input {
+  width: 16px;
+  height: 16px;
+}

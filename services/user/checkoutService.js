@@ -15,7 +15,10 @@ const SHIPPING_COST = 0;
 export const getCheckoutData = async (userId) => {
 
   const cart = await Cart.findOne({ userId })
-    .populate("items.productId")
+    .populate({
+      path: "items.productId",
+      populate: [{ path: "category" }, { path: "brand" }]
+    })
     .populate("items.variantId");
 
   if (!cart || cart.items.length === 0) return null;
@@ -24,7 +27,19 @@ export const getCheckoutData = async (userId) => {
     const product = item.productId;
     const variant = item.variantId;
 
-    if (!product || product.isBlocked || !variant || variant.isBlocked || variant.quantity <= 0) {
+    if (
+      !product ||
+      product.isBlocked ||
+      !product.category ||
+      !product.category.isListed ||
+      product.category.isDeleted ||
+      product.category.status !== "Active" ||
+      !product.brand ||
+      product.brand.isBlocked ||
+      !variant ||
+      variant.isBlocked ||
+      variant.quantity <= 0
+    ) {
       return false;
     }
 
@@ -123,7 +138,10 @@ export const getCheckoutData = async (userId) => {
 export const placeOrderService = async (userId, addressId, paymentMethod = "COD") => {
 
   const cart = await Cart.findOne({ userId })
-    .populate("items.productId")
+    .populate({
+      path: "items.productId",
+      populate: [{ path: "category" }, { path: "brand" }]
+    })
     .populate("items.variantId");
 
   if (!cart || cart.items.length === 0) {
@@ -146,6 +164,12 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
         !product ||
         product.isBlocked ||
         product.status === "Discontinued" ||
+        !product.category ||
+        !product.category.isListed ||
+        product.category.isDeleted ||
+        product.category.status !== "Active" ||
+        !product.brand ||
+        product.brand.isBlocked ||
         !variant ||
         variant.isBlocked
       ) {
@@ -262,7 +286,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     variant: item.variantId._id,
     quantity: item.quantity,
     price: item.price,
-    status: "Active"
+    itemStatus: "Pending"
   }));
 
   let paymentStatus = "Pending";

@@ -3,6 +3,43 @@ import Brand from "../../models/brandSchema.js";
 import Category from "../../models/categorySchema.js";
 import Variant from "../../models/variantSchema.js";
 
+const getAvailableFilters = async () => {
+  const [brands, categories] = await Promise.all([
+    Brand.find({ isBlocked: { $ne: true } }).select("_id").lean(),
+    Category.find({
+      isDeleted: false,
+      isListed: true,
+      status: "Active"
+    }).select("_id").lean()
+  ]);
+
+  return {
+    brandIds: brands.map((brand) => brand._id),
+    categoryIds: categories.map((category) => category._id)
+  };
+};
+
+const getUnavailableReason = (product) => {
+  if (product.isBlocked) {
+    return "This product has been blocked by the administrator.";
+  }
+
+  if (
+    !product.category ||
+    product.category.isDeleted ||
+    !product.category.isListed ||
+    product.category.status !== "Active"
+  ) {
+    return "This product's category has been blocked by the administrator.";
+  }
+
+  if (!product.brand || product.brand.isBlocked) {
+    return "This product's brand has been blocked by the administrator.";
+  }
+
+  return "";
+};
+
 
 //   GET PRODUCTS 
 
@@ -20,9 +57,14 @@ import Variant from "../../models/variantSchema.js";
   const limit = 9;
   const currentPage = Math.max(Number(page), 1);
   const skip = (currentPage - 1) * limit;
+  const { brandIds, categoryIds } = await getAvailableFilters();
 
   // FILTER 
-  let filter = { isBlocked: false };
+  let filter = {
+    isBlocked: false,
+    brand: { $in: brandIds },
+    category: { $in: categoryIds }
+  };
 
   // SEARCH
   if (search && search.trim()) {
@@ -31,12 +73,12 @@ import Variant from "../../models/variantSchema.js";
 
   // BRAND
   if (brand) {
-    filter.brand = brand;
+    filter.brand = { $in: [brand].flat().filter((id) => brandIds.some((brandId) => brandId.equals(id))) };
   }
 
   // CATEGORY
   if (category) {
-    filter.category = category;
+    filter.category = { $in: [category].flat().filter((id) => categoryIds.some((categoryId) => categoryId.equals(id))) };
   }
 
   // PRICE RANGE
@@ -97,8 +139,8 @@ import Variant from "../../models/variantSchema.js";
 
   // FILTER DATA 
   const [brands, categories] = await Promise.all([
-    Brand.find({}).lean(),
-    Category.find({ isDeleted: false, isListed: true }).lean()
+    Brand.find({ isBlocked: { $ne: true } }).lean(),
+    Category.find({ isDeleted: false, isListed: true, status: "Active" }).lean()
   ]);
 
   return {
@@ -118,21 +160,14 @@ import Variant from "../../models/variantSchema.js";
 const getProductDetailsService = async (productId) => {
   // 1. Fetch the product without filtering by isBlocked: false
   const product = await Product.findOne({ _id: productId })
-    .populate("brand", "name")
+    .populate("brand", "name isBlocked")
     .populate("category");
 
   if (!product) {
     throw new Error("PRODUCT_NOT_FOUND");
   }
 
-  // 2. Check if the category is deleted or unlisted
-  if (
-    !product.category ||
-    !product.category.isListed ||
-    product.category.isDeleted
-  ) {
-    throw new Error("PRODUCT_NOT_FOUND");
-  }
+  const unavailableReason = getUnavailableReason(product);
 
   // Fetch variants (even if product is blocked, to display images/info)
   const variants = await Variant.find({
@@ -141,19 +176,23 @@ const getProductDetailsService = async (productId) => {
   }).sort({ createdAt: 1 });
 
   // Find similar products
-  const similarProductsRaw = await Product.find({
-    category: product.category._id,
-    _id: { $ne: product._id },
-    isBlocked: false // Only suggest active products
-  })
-  .limit(4)
-  .populate("brand", "name")
-  .populate("category", "name")
-  .lean();
+  const similarProductsRaw = product.category
+    ? await Product.find({
+      category: product.category._id,
+      _id: { $ne: product._id },
+      isBlocked: false
+    })
+      .limit(4)
+      .populate("brand", "name isBlocked")
+      .populate("category", "name status isListed isDeleted")
+      .lean()
+    : [];
+
+  const similarProductsFiltered = similarProductsRaw.filter((p) => !getUnavailableReason(p));
 
   // ATTACH DEFAULT VARIANT
   const similarProducts = await Promise.all(
-    similarProductsRaw.map(async (p) => {
+    similarProductsFiltered.map(async (p) => {
       const variant = await Variant.findOne({
         productId: p._id,
         isBlocked: false
@@ -171,7 +210,8 @@ const getProductDetailsService = async (productId) => {
   return {
     product,
     variants,
-    similarProducts
+    similarProducts,
+    unavailableReason
   };
 };
 

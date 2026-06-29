@@ -6,6 +6,6 @@ const router = express.Router();
 router.get("/brands", brandController.loadBrands);
 router.post("/brand/add", brandController.addBrand);
 router.patch("/brand/edit/:id", brandController.editBrand);
-router.delete("/brand/delete/:id", brandController.deleteBrand);
+router.patch("/brand/status/:id", brandController.changeBrandStatus);
 
 export default router;

@@ -3,6 +3,49 @@ import Variant from "../../models/variantSchema.js";
 import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "../../services/user/walletService.js";
 
+const FULFILLMENT_STATUSES = ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+const RETURNABLE_ITEM_STATUSES = ["Delivered", "Return Rejected"];
+const TERMINAL_ITEM_STATUSES = ["Cancelled", "Returned"];
+
+const getEffectiveItemStatus = (item, orderStatus) => {
+  return item.itemStatus === "Active" ? orderStatus : item.itemStatus;
+};
+
+const isFinanciallyActiveItem = (item) => {
+  return !TERMINAL_ITEM_STATUSES.includes(item.itemStatus);
+};
+
+const syncOrderStatusFromItems = (order) => {
+  const itemStatuses = order.orderedItems.map((item) => getEffectiveItemStatus(item, order.status));
+
+  if (itemStatuses.every((status) => status === "Cancelled")) {
+    order.status = "Cancelled";
+    return;
+  }
+
+  if (itemStatuses.every((status) => status === "Returned" || status === "Cancelled")) {
+    order.status = "Returned";
+    return;
+  }
+
+  if (itemStatuses.some((status) => status === "Return Request")) {
+    order.status = "Return Request";
+    return;
+  }
+
+  const activeFulfillmentStatuses = itemStatuses
+    .map((status) => status === "Return Rejected" ? "Delivered" : status)
+    .filter((status) => FULFILLMENT_STATUSES.includes(status));
+
+  if (activeFulfillmentStatuses.length) {
+    order.status = activeFulfillmentStatuses.reduce((lowestStatus, status) => {
+      return FULFILLMENT_STATUSES.indexOf(status) < FULFILLMENT_STATUSES.indexOf(lowestStatus)
+        ? status
+        : lowestStatus;
+    }, activeFulfillmentStatuses[0]);
+  }
+};
+
 
  //  GET USER ORDERS
 
@@ -49,7 +92,9 @@ export const cancelUserOrder = async (orderId, userId, reason) => {
 
   for (const item of order.orderedItems) {
 
-    if (item.itemStatus === "Active") {
+    const itemStatus = getEffectiveItemStatus(item, order.status);
+
+    if (FULFILLMENT_STATUSES.includes(itemStatus)) {
 
       const variant = await Variant.findById(item.variant);
       if (variant) {
@@ -104,13 +149,10 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   
   if (!item) throw new Error("Item not found in order");
 
-  if (
-    order.status === "Delivered" || 
-    order.status === "Return Request" || 
-    order.status === "Returned" ||
-    order.status === "Out for Delivery"
-  ) {
-    throw new Error(`Cannot cancel item when order is ${order.status}`);
+  const currentItemStatus = getEffectiveItemStatus(item, order.status);
+
+  if (!["Pending", "Processing"].includes(currentItemStatus)) {
+    throw new Error(`Cannot cancel item when item is ${currentItemStatus}`);
   }
 
   if (item.itemStatus === "Cancelled")
@@ -128,8 +170,7 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
 
   // Update order totals and refunds
   const activeItemsBefore = order.orderedItems.filter(i => 
-    i.itemStatus !== "Cancelled" && 
-    i.itemStatus !== "Returned"
+    isFinanciallyActiveItem(i)
   );
 
   let previousSalePriceSubtotal = 0;
@@ -154,8 +195,7 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
 
   const remainingActiveItems = order.orderedItems.filter(i => 
     i._id.toString() !== itemId && 
-    i.itemStatus !== "Cancelled" && 
-    i.itemStatus !== "Returned"
+    isFinanciallyActiveItem(i)
   );
 
   let newTotalPrice = 0;
@@ -236,6 +276,8 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
         await coupon.save();
       }
     }
+  } else {
+    syncOrderStatusFromItems(order);
   }
 
   // AUTOMATED PARTIAL/FULL REFUND FOR PRE-PAID ORDERS
@@ -269,15 +311,11 @@ export const returnUserOrder = async (orderId, userId, reason) => {
 
   if (!order) throw new Error("Order not found");
 
-  const allowedStatuses = ["Delivered", "Return Request", "Return Rejected"];
-  if (!allowedStatuses.includes(order.status)) {
-    throw new Error("Invalid return request");
-  }
-
   // Mark all active items as Return Request
   let hasActiveItems = false;
   for (const item of order.orderedItems) {
-    if (item.itemStatus === "Active") {
+    const itemStatus = getEffectiveItemStatus(item, order.status);
+    if (RETURNABLE_ITEM_STATUSES.includes(itemStatus)) {
       item.itemStatus = "Return Request";
       item.returnReason = reason;
       hasActiveItems = true;
@@ -302,16 +340,14 @@ export const returnUserOrderItem = async (orderId, userId, itemId, reason) => {
   if (!reason) throw new Error("Return reason required");
 
   const order = await Order.findOne({ orderId, userId });
-  const allowedStatuses = ["Delivered", "Return Request", "Returned", "Return Rejected"];
-  if (!order || !allowedStatuses.includes(order.status)) {
-    throw new Error("Invalid return request. Order must be in a post-delivery state.");
-  }
+  if (!order) throw new Error("Order not found");
 
   const item = order.orderedItems.find(i => i._id.toString() === itemId);
   if (!item) throw new Error("Item not found in order");
 
-  if (item.itemStatus !== "Active") {
-    throw new Error(`Item is already ${item.itemStatus}`);
+  const itemStatus = getEffectiveItemStatus(item, order.status);
+  if (!RETURNABLE_ITEM_STATUSES.includes(itemStatus)) {
+    throw new Error(`Item cannot be returned when it is ${itemStatus}`);
   }
 
   item.itemStatus = "Return Request";

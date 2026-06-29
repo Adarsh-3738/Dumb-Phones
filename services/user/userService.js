@@ -12,6 +12,22 @@ import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "./walletService.js";
 dotenv.config();
 
+const getAvailableProductRefs = async () => {
+  const [brands, categories] = await Promise.all([
+    Brand.find({ isBlocked: { $ne: true } }).select("_id").lean(),
+    Category.find({
+      isDeleted: false,
+      isListed: true,
+      status: "Active"
+    }).select("_id").lean()
+  ]);
+
+  return {
+    brandIds: brands.map((brand) => brand._id),
+    categoryIds: categories.map((category) => category._id)
+  };
+};
+
 // PASSWORD & OTP
 export const hashPassword = async (password) => await bcrypt.hash(password, 10);
 export const comparePassword = async (plainPassword, hashedPassword) => await bcrypt.compare(plainPassword, hashedPassword);
@@ -105,13 +121,14 @@ export const getProducts = async ({
   limit = 6,
 }) => {
   const skip = (page - 1) * limit;
+  const { brandIds, categoryIds } = await getAvailableProductRefs();
 
   // FILTER PRODUCTS 
   const productFilter = {
     isBlocked: false,
+    brand: { $in: brandFilter ? [brandFilter].flat().filter((id) => brandIds.some((brandId) => brandId.equals(id))) : brandIds },
+    category: { $in: categoryFilter ? [categoryFilter].flat().filter((id) => categoryIds.some((categoryId) => categoryId.equals(id))) : categoryIds },
     ...(search && { productName: { $regex: search, $options: "i" } }),
-    ...(brandFilter && { brand: brandFilter }),
-    ...(categoryFilter && { category: categoryFilter }),
   };
 
   const products = await Product.find(productFilter)
@@ -170,8 +187,8 @@ export const getProducts = async ({
 
 
 export const getBrandsAndCategories = async () => {
-  const brands = await Brand.find({}).lean();
-  const categories = await Category.find({ isDeleted: false, isListed: true }).lean();
+  const brands = await Brand.find({ isBlocked: { $ne: true } }).lean();
+  const categories = await Category.find({ isDeleted: false, isListed: true, status: "Active" }).lean();
   return { brands, categories };
 };
 
@@ -181,29 +198,43 @@ export const getBrandsAndCategories = async () => {
 export const getShopProducts = async ({
   search = "",
   sort = "",
-  brand = "",
-  category = "",
-  price = "",
+  brand = [],
+  category = [],
+  price = [],
   page = 1,
 }) => {
   const limit = 8;
   const currentPage = Math.max(parseInt(page) || 1, 1);
   const skip = (currentPage - 1) * limit;
+  const { brandIds, categoryIds } = await getAvailableProductRefs();
 
-  const productFilter = {
-    isBlocked: false,
-    ...(search && { productName: { $regex: search, $options: "i" } }),
-    ...(brand && { brand }),
-    ...(category && { category }),
-  };
+ const productFilter = {
+  isBlocked: false,
+  brand: {
+    $in: brand.length
+      ? brand.filter((id) => brandIds.some((brandId) => brandId.equals(id)))
+      : brandIds,
+  },
+  category: {
+    $in: category.length
+      ? category.filter((id) => categoryIds.some((categoryId) => categoryId.equals(id)))
+      : categoryIds,
+  },
 
-  const products = await Product.find(productFilter)
-    .populate("brand", "name")
-    .populate("category", "name")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  ...(search && {
+    productName: {
+      $regex: search,
+      $options: "i",
+    },
+  }),
+
+};
+
+  let products = await Product.find(productFilter)
+  .populate("brand", "name")
+  .populate("category", "name")
+  .sort({ createdAt: -1 })
+  .lean();
 
   // Attach default variant 
   for (const product of products) {
@@ -217,15 +248,23 @@ export const getShopProducts = async ({
   // Price filter
   let filteredProducts = products;
 
-  if (price) {
-    const [min, max] = price.split("-").map(Number);
-    filteredProducts = filteredProducts.filter(
-      p =>
-        p.defaultVariant &&
+  if (price.length) {
+  filteredProducts = filteredProducts.filter((p) => {
+    if (!p.defaultVariant) return false;
+
+    return price.some((range) => {
+      const [min, max] = range
+        .split("-")
+        .map(Number);
+
+      return (
         p.defaultVariant.salesPrice >= min &&
         p.defaultVariant.salesPrice <= max
-    );
-  }
+      );
+    });
+  });
+}
+  
 
   // Sort 
   if (sort === "priceLowHigh") {
@@ -242,11 +281,22 @@ export const getShopProducts = async ({
     filteredProducts.sort((a, b) => b.productName.localeCompare(a.productName));
   }
 
-  const totalProducts = await Product.countDocuments(productFilter);
-  const totalPages = Math.max(Math.ceil(totalProducts / limit), 1);
+  const totalProducts =
+  filteredProducts.length;
 
-  const brands = await Brand.find({}).lean();
-  const categories = await Category.find({ isDeleted: false, isListed: true }).lean();
+const totalPages =
+  Math.max(
+    Math.ceil(totalProducts / limit),
+    1
+  );
+
+filteredProducts =
+  filteredProducts.slice(
+    skip,
+    skip + limit
+  );
+  const brands = await Brand.find({ isBlocked: { $ne: true } }).lean();
+  const categories = await Category.find({ isDeleted: false, isListed: true, status: "Active" }).lean();
 
   return {
     products: filteredProducts,

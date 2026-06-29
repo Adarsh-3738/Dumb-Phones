@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import Product from "../models/productSchema.js";
-import { recalculateVariantPrices } from "../controller/admin/offerController.js";
+import { recalculateVariantPrices } from "../services/admin/offerService.js";
 import logger from "./logger.js";
 
 // Run exactly at midnight every single day (00:00)

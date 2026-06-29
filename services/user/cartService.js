@@ -23,6 +23,9 @@ export const isItemUnavailable = (item) => {
     !product.category ||
     !product.category.isListed ||
     product.category.isDeleted ||
+    product.category.status !== "Active" ||
+    !product.brand ||
+    product.brand.isBlocked ||
     product.status === "Discontinued"
   );
 };
@@ -34,7 +37,7 @@ export const getCartData = async (userId) => {
   const cart = await Cart.findOne({ userId })
     .populate({
       path: "items.productId",
-      populate: { path: "category" }
+      populate: [{ path: "category" }, { path: "brand" }]
     })
     .populate("items.variantId");
 
@@ -92,7 +95,7 @@ export const getCartData = async (userId) => {
 
 export const addToCartService = async (userId, productId, variantId, quantity = 1) => {
 
-  const product = await Product.findById(productId).populate("category");
+  const product = await Product.findById(productId).populate("category").populate("brand");
 
   if (
     !product ||
@@ -100,6 +103,9 @@ export const addToCartService = async (userId, productId, variantId, quantity = 
     !product.category ||
     !product.category.isListed ||
     product.category.isDeleted ||
+    product.category.status !== "Active" ||
+    !product.brand ||
+    product.brand.isBlocked ||
     product.status === "Discontinued"
   ) {
     throw new Error("Product unavailable");
@@ -260,7 +266,7 @@ export const revalidateCartCoupon = async (userId, cart = null) => {
 
     // Ensure items are populated for availability check
     await cartDoc.populate([
-      { path: "items.productId", populate: { path: "category" } },
+      { path: "items.productId", populate: [{ path: "category" }, { path: "brand" }] },
       { path: "items.variantId" }
     ]);
 

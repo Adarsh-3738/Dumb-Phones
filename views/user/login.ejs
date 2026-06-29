@@ -68,10 +68,11 @@
   <!-- Server side error message -->
   <% if (typeof message !== "undefined" && message) { %>
     <script>
+      const loginMessage = <%- JSON.stringify(message) %>;
       Swal.fire({
         icon: 'error',
-        title: 'Login Failed',
-        text: "<%= message %>",
+        title: loginMessage.toLowerCase().includes('blocked') ? 'Account Blocked' : 'Login Failed',
+        text: loginMessage,
         confirmButtonColor: '#3085d6'
       });
     </script>

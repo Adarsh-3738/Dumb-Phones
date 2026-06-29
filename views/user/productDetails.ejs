@@ -3,6 +3,11 @@
 
 <link rel="stylesheet" href="/css/user/product-details.css">
 
+<%
+  const productUnavailableReason = typeof unavailableReason !== "undefined" ? unavailableReason : "";
+  const isProductUnavailable = Boolean(productUnavailableReason);
+%>
+
 <div class="product-page-wrapper">
   
   <!-- BREADCRUMBS -->
@@ -56,10 +61,10 @@
           <a href="#reviews" class="review-link-mini">124 Reviews</a>
         </div>
       </div>
-<% if (product.isBlocked) { %>
+<% if (isProductUnavailable) { %>
   <div class="unavailable-banner" style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fca5a5; font-weight: bold; display: flex; align-items: center; gap: 8px;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-    This product is currently unavailable.
+    <%= productUnavailableReason %>
   </div>
 <% } %>
       <!-- PRICE & STOCK -->
@@ -152,7 +157,7 @@
 
       <!-- BUY BUTTONS -->
       <div class="product-buttons">
-        <% if (product.isBlocked) { %>
+        <% if (isProductUnavailable) { %>
           <button type="button" class="add-to-cart-btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed; background-color: #9ca3af;">
             Product Unavailable
           </button>
@@ -239,7 +244,11 @@
 <!-- VARIANT DATA -->
 <script>
   window.variants = <%- JSON.stringify(variants) %>;
-  window.product = { isBlocked: <%= product.isBlocked %> };
+  window.product = {
+    isBlocked: <%= product.isBlocked %>,
+    isUnavailable: <%= isProductUnavailable ? "true" : "false" %>,
+    unavailableReason: <%- JSON.stringify(productUnavailableReason) %>
+  };
   // Simple tab switching logic for the UI
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));

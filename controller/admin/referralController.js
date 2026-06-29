@@ -1,35 +1,20 @@
-import User from "../../models/userSchema.js";
+import * as referralService from "../../services/admin/referralService.js";
 import logger from "../../utils/logger.js";
 
 export const getReferrals = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-
     const searchQuery = req.query.search || "";
 
-    // Find users who have actually referred at least one person
-    const query = {
-      redeemedUsers: { $exists: true, $not: { $size: 0 } }
-    };
-
-    if (searchQuery) {
-      query.name = { $regex: searchQuery, $options: "i" };
-    }
-
-    const totalReferrers = await User.countDocuments(query);
-    const totalPages = Math.ceil(totalReferrers / limit);
-
-    const referrers = await User.find(query)
-      .populate("redeemedUsers", "name email createdOn")
-      .sort({ createdOn: -1 })
-      .skip(skip)
-      .limit(limit);
+    const { referrers, totalPages, currentPage } = await referralService.getReferralsData({
+      page,
+      limit: 10,
+      searchQuery
+    });
 
     res.render("admin/referrals", {
       referrers,
-      currentPage: page,
+      currentPage,
       totalPages,
       searchQuery
     });

@@ -14,6 +14,7 @@ import {
 } from "../../services/user/userService.js";
 import { validateSignup } from "../../helpers/validators.js";
 import logger from "../../utils/logger.js";
+import User from "../../models/userSchema.js";
 
 // PAGE NOT FOUND
 export const pageNotFound = (req, res) => {
@@ -72,7 +73,28 @@ export const loadShopPage = async (req, res) => {
   try {
     logger.info("Loading shop page", { query: req.query });
 
-    const { search, sort, brand, category, price, page } = req.query;
+    const { search, sort, page } = req.query;
+
+let { brand = [], category = [], price = [] } = req.query;
+
+brand = Array.isArray(brand)
+  ? brand
+  : brand
+  ? [brand]
+  : [];
+
+category = Array.isArray(category)
+  ? category
+  : category
+  ? [category]
+  : [];
+
+price = Array.isArray(price)
+  ? price
+  : price
+  ? [price]
+  : [];
+
     const { products, brands, categories, totalPages } =
       await getShopProducts({
         search,
@@ -194,7 +216,11 @@ export const verifyOtp = async (req, res) => {
 // LOGIN / LOGOUT
 export const loadLogin = (req, res) => {
   logger.info("Loading login page");
-  res.render("user/login", { message: null });
+
+  const message = req.session.message;
+  delete req.session.message; // Clear 
+
+  res.render("user/login", { message });
 };
 
 export const login = async (req, res) => {
@@ -210,8 +236,9 @@ export const login = async (req, res) => {
     }
 
     if (user.isBlocked) {
-      logger.warn("Blocked user login attempt", { email });
-      return res.render("user/login", { message: "User blocked" });
+      return res.render("user/login", {
+        message: "Your account has been blocked by the administrator. Please contact support."
+      });
     }
     
     const isMatch = await comparePassword(password, user.password);
@@ -374,5 +401,51 @@ export const resendOtp = async (req, res) => {
       success: false,
       message: "Error resending OTP"
     });
+  }
+};
+
+// CHECK BLOCK STATUS DYNAMICALLY
+export const checkStatus = async (req, res) => {
+  try {
+    const loggedInUser = req.user || req.session?.user;
+    if (!loggedInUser) {
+      return res.json({ blocked: false, loggedIn: false });
+    }
+
+    const user = await User.findById(loggedInUser._id || loggedInUser);
+    if (!user || user.isBlocked) {
+      const finishLogout = () => {
+        if (req.session) {
+          delete req.session.user;
+          delete req.session.passport;
+          req.session.message = "Your account has been blocked by the administrator.";
+          return req.session.save(() => {
+            return res.json({ blocked: true, message: req.session.message });
+          });
+        }
+        return res.json({ blocked: true, message: "Your account has been blocked by the administrator." });
+      };
+
+      if (req.logout) {
+        const adminSession = req.session ? req.session.admin : null;
+        return req.logout({ keepSessionInfo: true }, (err) => {
+          if (err) logger.error("Passport logout error in checkStatus", err);
+          if (req.session && adminSession) {
+             req.session.admin = adminSession;
+          }
+          finishLogout();
+        });
+      } else {
+        return finishLogout();
+      }
+    }
+
+    return res.json({ blocked: false, loggedIn: true });
+  } catch (error) {
+    logger.error("Check status error", {
+      message: error.message,
+      stack: error.stack
+    });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

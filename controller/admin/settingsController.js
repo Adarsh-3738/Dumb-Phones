@@ -1,13 +1,10 @@
-import Settings from "../../models/settingsSchema.js";
+import * as settingsService from "../../services/admin/settingsService.js";
 import logger from "../../utils/logger.js";
 
 // GET SETTINGS PAGE
 export const getSettings = async (req, res) => {
   try {
-    let settings = await Settings.findOne();
-    if (!settings) {
-      settings = await Settings.create({ taxRate: 5 });
-    }
+    const settings = await settingsService.getOrInitSettings();
 
     res.render("admin/settings", {
       settings,
@@ -34,13 +31,7 @@ export const updateSettings = async (req, res) => {
       });
     }
 
-    let settings = await Settings.findOne();
-    if (!settings) {
-      settings = new Settings();
-    }
-
-    settings.taxRate = parsedTax;
-    await settings.save();
+    const settings = await settingsService.updateTaxRate(parsedTax);
 
     logger.info(`Tax Rate updated to ${parsedTax}%`);
 

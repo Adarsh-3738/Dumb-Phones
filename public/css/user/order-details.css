@@ -144,6 +144,7 @@ body {
 .status-badge.pending { background: var(--status-pending-bg); color: var(--status-pending-text); }
 .status-badge.processing { background: var(--status-processing-bg); color: var(--status-processing-text); }
 .status-badge.shipped { background: var(--status-shipped-bg); color: var(--status-shipped-text); }
+.status-badge.out-for-delivery { background: #ffedd5; color: #c2410c; }
 .status-badge.delivered { background: var(--status-delivered-bg); color: var(--status-delivered-text); }
 .status-badge.cancelled { background: var(--status-cancelled-bg); color: var(--status-cancelled-text); }
 .status-badge.return { background: var(--status-returned-bg); color: var(--status-returned-text); }

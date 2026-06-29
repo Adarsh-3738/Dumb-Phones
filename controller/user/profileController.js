@@ -627,31 +627,39 @@ export const deleteAddress = async (req, res) => {
 // LOGOUT
 
 export const logoutUser = (req, res) => {
-
   try {
-
-    if (req.session) {
-      delete req.session.user;
-      delete req.session.passport;
-      req.session.save(err => {
-        if (err) {
-          console.error("Logout Error:", err);
-          return res.redirect("/profile");
-        }
-        res.clearCookie("connect.sid");
+    const finishLogout = () => {
+      if (req.session) {
+        delete req.session.user;
+        delete req.session.passport;
+        return req.session.save(err => {
+          if (err) {
+            console.error("Logout Error:", err);
+            return res.redirect("/profile");
+          }
+          return res.redirect("/");
+        });
+      } else {
         return res.redirect("/");
+      }
+    };
+
+    if (req.logout) {
+      const adminSession = req.session ? req.session.admin : null;
+      return req.logout({ keepSessionInfo: true }, (err) => {
+        if (err) {
+          console.error("Passport logout error:", err);
+        }
+        if (req.session && adminSession) {
+          req.session.admin = adminSession;
+        }
+        finishLogout();
       });
     } else {
-      res.clearCookie("connect.sid");
-      return res.redirect("/");
+      return finishLogout();
     }
-
   } catch (error) {
-
     console.error("Logout Catch Error:", error);
-
     return res.redirect("/");
-
   }
-
 };

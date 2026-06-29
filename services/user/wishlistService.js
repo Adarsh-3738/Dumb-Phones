@@ -23,6 +23,9 @@ export const getWishlistItemsService = async (userId) => {
       !product.category ||
       !product.category.isListed ||
       product.category.isDeleted ||
+      product.category.status !== "Active" ||
+      !product.brand ||
+      product.brand.isBlocked ||
       product.status === "Discontinued"
     ) {
       continue;
@@ -44,13 +47,16 @@ export const getWishlistItemsService = async (userId) => {
 
 // ADD TO WISHLIST
 export const addToWishlistService = async (userId, productId) => {
-  const product = await Product.findById(productId).populate("category");
+  const product = await Product.findById(productId).populate("category").populate("brand");
   if (
     !product ||
     product.isBlocked ||
     !product.category ||
     !product.category.isListed ||
     product.category.isDeleted ||
+    product.category.status !== "Active" ||
+    !product.brand ||
+    product.brand.isBlocked ||
     product.status === "Discontinued"
   ) {
     throw new Error("Product is not available");

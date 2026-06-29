@@ -2,7 +2,7 @@ import {
   getBrands,
   createBrand,
   updateBrand,
-  removeBrand
+  toggleBrandStatus
 } from "../../services/admin/brandService.js";
 
 //LIST PAGE 
@@ -63,12 +63,18 @@ export const editBrand = async (req, res) => {
   }
 };
 
-//DELETE BRAND 
-export const deleteBrand = async (req, res) => {
+//BLOCK / UNBLOCK BRAND
+export const changeBrandStatus = async (req, res) => {
   try {
-    await removeBrand(req.params.id);
+    const brand = await toggleBrandStatus(req.params.id);
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      isBlocked: brand.isBlocked,
+      message: brand.isBlocked
+        ? "Brand blocked successfully"
+        : "Brand unblocked successfully"
+    });
   } catch (err) {
     res.json({
       success: false,

@@ -2,7 +2,7 @@ import * as productService from "../../services/admin/productService.js";
 import logger from "../../utils/logger.js";
 import Brand from "../../models/brandSchema.js";
 import Category from "../../models/categorySchema.js";
-import { recalculateVariantPrices } from "./offerController.js";
+import { recalculateVariantPrices } from "../../services/admin/offerService.js";
 
 // GET PRODUCTS
 export const getProducts = async (req, res) => {

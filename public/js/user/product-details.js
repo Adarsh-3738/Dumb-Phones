@@ -14,8 +14,33 @@ const regularPrice = document.getElementById("regularPrice");
 const salesPrice = document.getElementById("salesPrice");
 const stockText = document.getElementById("stockText");
 
+function isProductUnavailable() {
+  return Boolean(window.product && window.product.isUnavailable);
+}
+
+function showProductUnavailableAlert() {
+  const message = window.product?.unavailableReason || "This product is currently unavailable.";
+
+  return Swal.fire({
+    icon: "warning",
+    title: "Product Unavailable",
+    text: message,
+    confirmButtonText: "Go to Shop",
+    showCancelButton: true,
+    cancelButtonText: "Stay Here"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = "/shop";
+    }
+  });
+}
+
 // INIT 
 updateVariantUI(0);
+
+if (isProductUnavailable()) {
+  showProductUnavailableAlert();
+}
 
 // VARIANT CHANGE 
 variantSelect.addEventListener("change", () => {
@@ -43,7 +68,7 @@ function updateVariantUI(index) {
   }
 
   // Stock
-  if (window.product && window.product.isBlocked) {
+  if (isProductUnavailable()) {
     stockText.innerText = "Unavailable";
     stockText.className = "out-of-stock";
     qtyInput.value = 0;
@@ -84,7 +109,7 @@ function updateVariantUI(index) {
 
 // QUANTITY CONTROLS
 decreaseBtn.addEventListener("click", () => {
-  if (window.product && window.product.isBlocked) return;
+  if (isProductUnavailable()) return;
   let current = parseInt(qtyInput.value);
   
   if (current > 1) {
@@ -103,7 +128,7 @@ decreaseBtn.addEventListener("click", () => {
 
 
 increaseBtn.addEventListener("click", () => {
-  if (window.product && window.product.isBlocked) return;
+  if (isProductUnavailable()) return;
   let current = parseInt(qtyInput.value);
   let max = parseInt(qtyInput.max); // This is automatically either the stock or  new 5 limit!
   
@@ -147,8 +172,8 @@ async function addToCart() {
     window.location.href = "/login";
     return;
   }
-  if (window.product && window.product.isBlocked) {
-    Swal.fire("Unavailable", "This product is currently unavailable", "error");
+  if (isProductUnavailable()) {
+    showProductUnavailableAlert();
     return;
   }
   const variant = variants[selectedVariantIndex];
@@ -209,6 +234,11 @@ async function addToCart() {
 
 // TOGGLE WISHLIST
 async function toggleWishlist(productId) {
+  if (isProductUnavailable()) {
+    showProductUnavailableAlert();
+    return;
+  }
+
   if (!window.user) {
     window.location.href = "/login";
     return;

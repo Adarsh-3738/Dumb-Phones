@@ -38,8 +38,19 @@ userId: {
     },
     itemStatus: {
       type: String,
-      enum: ["Active", "Cancelled", "Return Request", "Returned", "Return Rejected"],
-      default: "Active"
+      enum: [
+        "Active",
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Cancelled",
+        "Return Request",
+        "Returned",
+        "Return Rejected"
+      ],
+      default: "Pending"
     },
     cancelReason: {
       type: String,

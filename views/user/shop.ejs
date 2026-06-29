@@ -37,47 +37,105 @@
 
         <div class="filter-group">
           <label>Category</label>
-          <div class="custom-select-wrapper">
-            <select name="category">
-              <option value="">All Categories</option>
-              <% categories.forEach(c => { %>
-                <option value="<%= c._id %>" <%= category == c._id.toString() ? 'selected' : '' %>>
-                  <%= c.name %>
-                </option>
-              <% }) %>
-            </select>
+          
+            <div class="checkbox-group">
+  <% categories.forEach(c => { %>
+    <label>
+      <input
+        type="checkbox"
+        name="category"
+        value="<%= c._id %>"
+        <%= category.includes(c._id.toString())
+          ? 'checked'
+          : '' %>
+      >
+      <%= c.name %>
+    </label>
+  <% }) %>
+</div>
             <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
-        </div>
+        
 
         <div class="filter-group">
           <label>Brand</label>
-          <div class="custom-select-wrapper">
-            <select name="brand">
-              <option value="">All Brands</option>
-              <% brands.forEach(b => { %>
-                <option value="<%= b._id %>" <%= brand == b._id.toString() ? 'selected' : '' %>>
-                  <%= b.name %>
-                </option>
-              <% }) %>
-            </select>
+          
+            <div class="checkbox-group">
+  <% brands.forEach(b => { %>
+    <label>
+      <input
+        type="checkbox"
+        name="brand"
+        value="<%= b._id %>"
+        <%= brand.includes(b._id.toString())
+          ? 'checked'
+          : '' %>
+      >
+      <%= b.name %>
+    </label>
+  <% }) %>
+</div>
             <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
-        </div>
+        
 
         <div class="filter-group">
           <label>Price Range</label>
-          <div class="custom-select-wrapper">
-            <select name="price">
-              <option value="">All Prices</option>
-              <option value="0-1000" <%= price === '0-1000' ? 'selected' : '' %>>Below ₹1,000</option>
-              <option value="1000-5000" <%= price === '1000-5000' ? 'selected' : '' %>>₹1,000 - ₹5,000</option>
-              <option value="5000-10000" <%= price === '5000-10000' ? 'selected' : '' %>>₹5,000 - ₹10,000</option>
-              <option value="10000-999999" <%= price === '10000-999999' ? 'selected' : '' %>>Above ₹10,000</option>
-            </select>
+         
+            <div class="checkbox-group">
+
+  <label>
+    <input
+      type="checkbox"
+      name="price"
+      value="0-1000"
+      <%= price.includes('0-1000')
+        ? 'checked'
+        : '' %>
+    >
+    Below ₹1,000
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="price"
+      value="1000-5000"
+      <%= price.includes('1000-5000')
+        ? 'checked'
+        : '' %>
+    >
+    ₹1,000 - ₹5,000
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="price"
+      value="5000-10000"
+      <%= price.includes('5000-10000')
+        ? 'checked'
+        : '' %>
+    >
+    ₹5,000 - ₹10,000
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="price"
+      value="10000-999999"
+      <%= price.includes('10000-999999')
+        ? 'checked'
+        : '' %>
+    >
+    Above ₹10,000
+  </label>
+
+</div>
             <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
-        </div>
+        
 
         <div class="filter-group">
           <label>Sort By</label>
@@ -189,45 +247,140 @@
         </div>
       <% } %>
 
-      <!--  PAGINATION  -->
-      <% if (totalPages > 1) { %>
-        <div class="pagination-wrapper">
-          <div class="pagination">
-            <% if (currentPage > 1) { %>
-              <a href="?page=<%= currentPage - 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-arrow" aria-label="Previous">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-              </a>
-            <% } else { %>
-              <span class="page-arrow disabled">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-              </span>
-            <% } %>
 
-            <div class="page-numbers">
-              <% for (let i = 1; i <= totalPages; i++) { %>
-                <% if (i === currentPage) { %>
-                  <span class="page-num active"><%= i %></span>
-                <% } else { %>
-                  <a href="?page=<%= i %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-num"><%= i %></a>
-                <% } %>
-              <% } %>
-            </div>
 
-            <% if (currentPage < totalPages) { %>
-              <a href="?page=<%= currentPage + 1 %>&category=<%= category || '' %>&brand=<%= brand || '' %>&price=<%= price || '' %>&sort=<%= sort || '' %>&search=<%= search || '' %>" class="page-arrow" aria-label="Next">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-              </a>
-            <% } else { %>
-              <span class="page-arrow disabled">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-              </span>
-            <% } %>
-          </div>
-        </div>
+
+      <%
+let filterQuery = "";
+
+const selectedCategories = Array.isArray(category)
+  ? category
+  : (category ? [category] : []);
+
+const selectedBrands = Array.isArray(brand)
+  ? brand
+  : (brand ? [brand] : []);
+
+const selectedPrices = Array.isArray(price)
+  ? price
+  : (price ? [price] : []);
+
+selectedCategories.forEach(c => {
+  filterQuery += `&category=${c}`;
+});
+
+selectedBrands.forEach(b => {
+  filterQuery += `&brand=${b}`;
+});
+
+selectedPrices.forEach(p => {
+  filterQuery += `&price=${p}`;
+});
+
+if (sort) {
+  filterQuery += `&sort=${sort}`;
+}
+
+if (search) {
+  filterQuery += `&search=${search}`;
+}
+%>
+
+
+     <!-- PAGINATION -->
+<% if (totalPages > 1) { %>
+  <div class="pagination-wrapper">
+    <div class="pagination">
+
+      <!-- Previous -->
+      <% if (currentPage > 1) { %>
+        <a
+          href="?page=<%= currentPage - 1 %><%= filterQuery %>"
+          class="page-arrow"
+          aria-label="Previous"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </a>
+      <% } else { %>
+        <span class="page-arrow disabled">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </span>
       <% } %>
-    </section>
 
+      <!-- Page Numbers -->
+      <div class="page-numbers">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+
+          <% if (i === currentPage) { %>
+            <span class="page-num active">
+              <%= i %>
+            </span>
+          <% } else { %>
+            <a
+              href="?page=<%= i %><%= filterQuery %>"
+              class="page-num"
+            >
+              <%= i %>
+            </a>
+          <% } %>
+
+        <% } %>
+      </div>
+
+      <!-- Next -->
+      <% if (currentPage < totalPages) { %>
+        <a
+          href="?page=<%= currentPage + 1 %><%= filterQuery %>"
+          class="page-arrow"
+          aria-label="Next"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </a>
+      <% } else { %>
+        <span class="page-arrow disabled">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </span>
+      <% } %>
+
+    </div>
   </div>
+<% } %>
 </main>
 
 <%- include("../../views/partials/user/footer") %>

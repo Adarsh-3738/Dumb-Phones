@@ -82,6 +82,10 @@ app.use(passport.session());
 // Make logged-in user available in all EJS views
 // Make logged-in user and cart count available in all EJS views
 app.use(async (req, res, next) => {
+  if (req.path.startsWith("/admin") || req.path === "/auth/check-status") {
+    return next();
+  }
+
   let sessionUser = req.user || req.session.user;
   res.locals.user = null;
   res.locals.cartCount = 0;
@@ -98,12 +102,25 @@ app.use(async (req, res, next) => {
           if (req.session) {
             delete req.session.user;
             delete req.session.passport;
+            
+            // Set message for login page SweetAlert
+            req.session.message = "Your account has been blocked by the administrator.";
+            
             return req.session.save((err) => {
               if (err) console.log("Session save error:", err);
-              return next();
+              
+              // Handle AJAX requests
+              if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+                return res.status(403).json({ success: false, blocked: true, message: req.session.message });
+              }
+              return res.redirect("/login");
             });
           }
-          return next();
+          
+          if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+            return res.status(403).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
+          }
+          return res.redirect("/login");
         };
 
         if (req.logout) {

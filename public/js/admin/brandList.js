@@ -128,44 +128,44 @@ async function submitEdit() {
 }
 
 
- //  DELETE BRAND
+ //  BLOCK / UNBLOCK BRAND
 
-async function deleteBrand(id) {
+async function toggleBrandStatus(id, isBlocked) {
+  const nextAction = isBlocked ? "unblock" : "block";
 
   const result = await Swal.fire({
     title: "Are you sure?",
-    text: "This brand will be permanently deleted.",
+    text: isBlocked
+      ? "Products from this brand will be visible again."
+      : "Products from this brand will no longer be available to customers.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#d33",
+    confirmButtonColor: isBlocked ? "#16a34a" : "#d33",
     cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!"
+    confirmButtonText: `Yes, ${nextAction} it!`
   });
 
   if (!result.isConfirmed) return;
 
   try {
-    const res = await fetch(`/admin/brand/delete/${id}`, {
-      method: "DELETE"
+    const res = await fetch(`/admin/brand/status/${id}`, {
+      method: "PATCH"
     });
 
     const data = await res.json();
 
     if (data.success) {
-
-      document.getElementById(`brand-${id}`).remove();
-
       Swal.fire({
         icon: "success",
-        title: "Deleted Successfully",
+        title: data.message || "Brand status updated",
         showConfirmButton: false,
         timer: 1500
-      });
+      }).then(() => location.reload());
 
     } else {
       Swal.fire({
         icon: "error",
-        title: "Delete Failed",
+        title: "Update Failed",
         text: data.message
       });
     }
@@ -177,4 +177,3 @@ async function deleteBrand(id) {
     });
   }
 }
-

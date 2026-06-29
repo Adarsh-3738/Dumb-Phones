@@ -19,6 +19,10 @@ const brandSchema = new Schema({
   description: {
     type: String
   },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -128,7 +128,9 @@
             </tr>
           </thead>
           <tbody>
-            <% order.orderedItems.forEach(item => { %>
+            <% order.orderedItems.forEach(item => { 
+              const effectiveStatus = item.itemStatus === 'Active' ? order.status : item.itemStatus;
+            %>
               <tr>
                 <td style="font-weight: 500; display: flex; align-items: center; gap: 12px;">
                   <% if (item.variant && item.variant.variantImages && item.variant.variantImages.length > 0) { %>
@@ -171,7 +173,11 @@
                       <div style="font-size: 0.85em; color: #b45309; margin-top: 6px;">Reason: <%= order.cancelReason %></div>
                     <% } %>
                   <% } else { %>
-                    <span class="status-badge badge-active">Active</span>
+                    <select class="custom-select" style="max-width: 170px; padding: 6px 10px; font-size: 13px; margin-top: 0;" onchange="updateItemStatus('<%= order._id %>', '<%= item._id %>', this.value, '<%= effectiveStatus %>', this)">
+                      <% ["Pending","Processing","Shipped","Out for Delivery","Delivered"].forEach(s => { %>
+                        <option value="<%= s %>" <%= effectiveStatus === s ? "selected" : "" %>><%= s %></option>
+                      <% }) %>
+                    </select>
                   <% } %>
                 </td>
               </tr>

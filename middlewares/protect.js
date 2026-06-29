@@ -29,10 +29,21 @@ const protect = async (req, res, next) => {
           if (req.session) {
             delete req.session.user;
             delete req.session.passport;
+            
+            req.session.message = "Your account has been blocked by the administrator.";
+            
             return req.session.save((err) => {
               if (err) console.error("Session save error:", err);
+              
+              if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+                return res.status(403).json({ success: false, blocked: true, message: req.session.message });
+              }
               return res.redirect("/login");
             });
+          }
+          
+          if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+            return res.status(403).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
           }
           return res.redirect("/login");
         };

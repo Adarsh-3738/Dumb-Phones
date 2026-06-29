@@ -49,7 +49,9 @@
             </div>
 
             <div class="items-list">
-              <% order.orderedItems.forEach(item => { %>
+              <% order.orderedItems.forEach(item => { 
+                const itemEffectiveStatus = item.itemStatus === 'Active' ? order.status : item.itemStatus;
+              %>
                 <div class="item-card">
                   <div class="item-img-wrap">
                     <img 
@@ -60,15 +62,19 @@
                   <div class="item-info">
                     <h4 class="item-title"><%= item.product?.productName || "Product Unavailable" %></h4>
                     
-                    <div class="item-meta">
+                    <div class="item-meta" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
                       <span class="meta-qty">Qty: <strong><%= item.quantity %></strong></span>
                       <span class="meta-calc">₹<%= parseInt(item.price).toLocaleString('en-IN') %> × <%= item.quantity %></span>
-                      <% if (item.itemStatus === 'Cancelled') { %>
-                        <span class="status-badge cancelled" style="margin-left:8px;font-size:0.75rem;">Cancelled</span>
+                      <% if (!['Cancelled', 'Returned', 'Return Request', 'Return Rejected'].includes(item.itemStatus)) { %>
+                        <span class="status-badge <%= itemEffectiveStatus.toLowerCase().replace(/\s+/g, '-') %>" style="font-size:0.75rem; padding:2px 8px; border-radius:4px;">
+                          <%= itemEffectiveStatus %>
+                        </span>
+                      <% } else if (item.itemStatus === 'Cancelled') { %>
+                        <span class="status-badge cancelled" style="font-size:0.75rem; padding:2px 8px; border-radius:4px;">Cancelled</span>
                       <% } %>
                     </div>
 
-                    <div class="item-total" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="item-total" style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
                       <% if (item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned') { %>
                         <span style="text-decoration: line-through; color: #999;">₹<%= parseInt(item.price * item.quantity).toLocaleString('en-IN') %></span>
                       <% } else { %>
@@ -91,12 +97,12 @@
                           <div style="font-size: 11px; color:#b45309; margin-top:4px;">Reason: <%= item.returnReason %></div>
                         <% } %>
                       <% } else if (item.itemStatus !== 'Cancelled') { %>
-                        <% if ((order.status === 'Pending' || order.status === 'Processing')) { %>
-                          <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:12px; height:auto;" onclick="cancelOrderItem('<%= order.orderId %>', '<%= item._id %>')">
+                        <% if (['Pending', 'Processing'].includes(itemEffectiveStatus)) { %>
+                          <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:12px; height:auto; width:auto; margin-bottom:0;" onclick="cancelOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Cancel Item
                           </button>
-                        <% } else if (['Delivered', 'Return Request', 'Returned', 'Return Rejected'].includes(order.status) && item.itemStatus === 'Active' && order.orderedItems.filter(i => i.itemStatus === 'Active').length > 1) { %>
-                          <button type="button" class="btn btn-warning" style="padding:4px 8px; font-size:12px; height:auto; color:#b45309; border-color:#b45309;" onclick="returnOrderItem('<%= order.orderId %>', '<%= item._id %>')">
+                        <% } else if (itemEffectiveStatus === 'Delivered') { %>
+                          <button type="button" class="btn btn-warning" style="padding:4px 8px; font-size:12px; height:auto; width:auto; margin-bottom:0; color:#b45309; border-color:#b45309;" onclick="returnOrderItem('<%= order.orderId %>', '<%= item._id %>')">
                             Return Item
                           </button>
                         <% } %>

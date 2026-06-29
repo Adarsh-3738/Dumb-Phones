@@ -53,7 +53,7 @@ async function updateStatus(orderId, newStatus, currentStatus, selectElement) {
   }
 }
 
-async function updateItemStatus(orderId, itemId, newStatus) {
+async function updateItemStatus(orderId, itemId, newStatus, currentStatus, selectElement) {
     const result = await Swal.fire({
       title: `Confirm Action`,
       text: `Are you sure you want to mark this item as ${newStatus}?`,
@@ -85,6 +85,7 @@ async function updateItemStatus(orderId, itemId, newStatus) {
             title: "Error",
             text: data.message || "Failed to update item status",
           });
+          if (selectElement && currentStatus) selectElement.value = currentStatus;
         }
       } catch (err) {
         Swal.fire({
@@ -92,6 +93,9 @@ async function updateItemStatus(orderId, itemId, newStatus) {
           title: "Error",
           text: "Something went wrong. Try again later.",
         });
+        if (selectElement && currentStatus) selectElement.value = currentStatus;
       }
+    } else {
+      if (selectElement && currentStatus) selectElement.value = currentStatus;
     }
 }

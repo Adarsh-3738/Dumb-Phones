@@ -43,10 +43,12 @@ export const updateBrand = async (id, data) => {
   return brand;
 };
 
-//  DELETE BRAND
-export const removeBrand = async (id) => {
+//  TOGGLE BRAND STATUS
+export const toggleBrandStatus = async (id) => {
   const brand = await Brand.findById(id);
   if (!brand) throw new Error("Brand not found");
 
-  await brand.deleteOne();
+  brand.isBlocked = !brand.isBlocked;
+  await brand.save();
+  return brand;
 };

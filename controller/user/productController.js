@@ -45,7 +45,8 @@ export const loadProductDetails = async (req, res) => {
     const {
       product,
       variants,
-      similarProducts
+      similarProducts,
+      unavailableReason
     } = await productService.getProductDetailsService(productId);
 
     
@@ -53,6 +54,7 @@ export const loadProductDetails = async (req, res) => {
       product,
       variants,
       similarProducts,
+      unavailableReason,
       
     });
 
