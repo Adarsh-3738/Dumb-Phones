@@ -193,3 +193,33 @@ td {
 
 .btn-blue { background: #2563eb; color: white; }
 .btn-gray { background: #e2e8f0; color: #475569; }
+
+/* ===== Pagination ===== */
+.pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;   /* center horizontally */
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #dcdcdc;
+  background: #ffffff;
+  cursor: pointer;
+  min-width: 40px;
+  transition: 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #f1f3ff;
+}
+
+.page-btn.active {
+  background: #2a55ff;
+  color: white;
+  border-color: #2a55ff;
+}

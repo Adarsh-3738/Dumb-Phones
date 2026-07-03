@@ -172,20 +172,20 @@
           enctype="multipart/form-data">
 
       <label>Product Name</label>
-      <input type="text" name="productName" required />
+      <input type="text" name="productName"  />
 
       <label>Description</label>
-      <textarea name="description" required></textarea>
+      <textarea name="description" ></textarea>
 
       <label>Brand</label>
-      <select name="brand" required>
+      <select name="brand" >
         <% brands.forEach(b => { %>
           <option value="<%= b._id %>"><%= b.name %></option>
         <% }) %>
       </select>
 
       <label>Category</label>
-      <select name="category" required>
+      <select name="category" >
         <% categories.forEach(c => { %>
           <option value="<%= c._id %>"><%= c.name %></option>
         <% }) %>

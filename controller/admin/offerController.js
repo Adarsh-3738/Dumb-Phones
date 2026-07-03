@@ -16,12 +16,24 @@ export const syncAllOffers = async (req, res) => {
 
 export const getOffers = async (req, res) => {
   try {
-    
     const searchQuery = req.query.search || "";
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
 
-    const { offers, products, categories } = await offerService.getOffersData({ searchQuery,  });
+    const { offers, products, categories, totalPages, currentPage } = await offerService.getOffersData({ 
+      searchQuery,
+      page,
+      limit
+    });
 
-    res.render("admin/offers", { offers, products, categories, searchQuery,});
+    res.render("admin/offers", { 
+      offers, 
+      products, 
+      categories, 
+      searchQuery,
+      totalPages,
+      currentPage
+    });
   } catch (error) {
     logger.error("Error fetching offers", { error });
     res.status(500).render("admin/admin-error");

@@ -65,19 +65,19 @@ addVariantBtn.addEventListener("click", () => {
     </div>
 
     <label>Color</label>
-    <input type="text" class="colorInput" name="variants[${index}][color]" required placeholder="E.g. Matte Black" />
+    <input type="text" class="colorInput" name="variants[${index}][color]" placeholder="E.g. Matte Black" />
 
     <label>Regular Price</label>
-    <input type="number" min="1" class="regularPrice" name="variants[${index}][regularPrice]" required />
+    <input type="number" min="1" class="regularPrice" name="variants[${index}][regularPrice]" />
 
     <label>Sales Price</label>
-    <input type="number" min="1" class="salesPrice" name="variants[${index}][salesPrice]" required />
+    <input type="number" min="1" class="salesPrice" name="variants[${index}][salesPrice]" />
 
     <label>Stock Quantity</label>
-    <input type="number" min="0" class="quantity" name="variants[${index}][quantity]" required />
+    <input type="number" min="0" class="quantity" name="variants[${index}][quantity]" />
 
     <label>Images (Min 3)</label>
-    <input type="file" class="variant-image-input" data-index="${index}" name="variants[${index}][images]" multiple accept="image/jpeg, image/png, image/webp" required />
+    <input type="file" class="variant-image-input" data-index="${index}" name="variants[${index}][images]" multiple accept="image/jpeg, image/png, image/webp" />
 
     <div class="preview-grid" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
   `;
@@ -235,6 +235,20 @@ form.addEventListener("submit", async e => {
   const variantCards = document.querySelectorAll(".variant-card");
   if (variantCards.length === 0) {
     return showError("Please add at least one variant");
+  }
+
+  // Check for duplicate variant colors
+  const colorsList = [];
+  for (let i = 0; i < variantCards.length; i++) {
+    const card = variantCards[i];
+    const colorInput = card.querySelector(".colorInput");
+    const colorVal = (colorInput?.value || "").trim().toLowerCase();
+    if (colorVal) {
+      if (colorsList.includes(colorVal)) {
+        return showError(`Duplicate variant color "${colorInput.value}" is not allowed.`);
+      }
+      colorsList.push(colorVal);
+    }
   }
 
   for (let i = 0; i < variantCards.length; i++) {

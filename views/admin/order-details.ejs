@@ -73,11 +73,27 @@
             </div>
           </div>
         <% } %>
+      <% } else if (["Delivered", "Cancelled", "Returned", "Return Rejected"].includes(order.status)) { %>
+        <!-- Terminal states - status is read-only -->
       <% } else { %>
         <div style="margin-top: 20px;">
           <label style="font-size: 14px; font-weight: 600; color: #475569; display: block;">Change Status</label>
           <select class="custom-select" onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
-            <% ["Pending","Processing","Shipped","Out for Delivery","Delivered","Cancelled", "Return Request", "Returned", "Return Rejected"].forEach(s => { %>
+            <% 
+              let validOptions = [];
+              if (order.status === "Pending") {
+                validOptions = ["Pending", "Processing", "Cancelled"];
+              } else if (order.status === "Processing") {
+                validOptions = ["Processing", "Shipped", "Cancelled"];
+              } else if (order.status === "Shipped") {
+                validOptions = ["Shipped", "Out for Delivery", "Cancelled"];
+              } else if (order.status === "Out for Delivery") {
+                validOptions = ["Out for Delivery", "Delivered", "Cancelled"];
+              } else {
+                validOptions = [order.status];
+              }
+            %>
+            <% validOptions.forEach(s => { %>
               <option value="<%= s %>" <%= order.status === s ? "selected" : "" %>>
                 <%= s %>
               </option>

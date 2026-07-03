@@ -92,6 +92,27 @@
       <% }) %>
     </tbody>
   </table>
+
+  <!-- pagination -->
+  <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+    <div class="pagination">
+      <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>"><button class="page-btn">Prev</button></a>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>&search=<%= searchQuery %>">
+          <button class="page-btn <%= currentPage === i ? 'active' : '' %>">
+            <%= i %>
+          </button>
+        </a>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"><button class="page-btn">Next</button></a>
+      <% } %>
+    </div>
+  <% } %>
 </div>
 
 <!-- ADD OFFER MODAL -->

@@ -111,29 +111,37 @@ export const changeOrderStatus = async (orderId, status) => {
   }
 
   // Strict transition blocks
-  if (order.status === "Cancelled" && status !== "Cancelled") {
-    throw new Error("Cannot change the status of a cancelled order.");
+  if (["Cancelled", "Returned", "Return Rejected"].includes(order.status)) {
+    throw new Error(`Cannot change the status of a ${order.status.toLowerCase()} order.`);
   }
-  if (order.status === "Delivered" && status === "Cancelled") {
-    throw new Error("Cannot cancel an order that has already been delivered.");
-  }
-  const statusOrder = ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered"];
-  const currentIndex = statusOrder.indexOf(order.status);
-  const newIndex = statusOrder.indexOf(status);
 
-  if (currentIndex !== -1 && newIndex !== -1 && newIndex < currentIndex) {
-    throw new Error(`Cannot revert order status from "${order.status}" to "${status}".`);
+  let allowedTargets = [];
+  if (order.status === "Pending") {
+    allowedTargets = ["Pending", "Processing", "Cancelled"];
+  } else if (order.status === "Processing") {
+    allowedTargets = ["Processing", "Shipped", "Cancelled"];
+  } else if (order.status === "Shipped") {
+    allowedTargets = ["Shipped", "Out for Delivery", "Cancelled"];
+  } else if (order.status === "Out for Delivery") {
+    allowedTargets = ["Out for Delivery", "Delivered", "Cancelled"];
+  } else if (order.status === "Return Request") {
+    allowedTargets = ["Return Request", "Returned", "Return Rejected"];
+  } else {
+    allowedTargets = [order.status];
   }
-  if (order.status === "Returned" && status !== "Returned") {
-    throw new Error("Cannot change the status of a returned order.");
+
+  if (!allowedTargets.includes(status)) {
+    throw new Error(`Invalid transition from "${order.status}" to "${status}".`);
   }
 
   // If approving a return
   if (status === "Returned" && order.status !== "Returned") {
     
-    // Add amount back to user's wallet safely (excluding discounts applied)
-    await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Returned Order ${order.orderId}`);
-    order.paymentStatus = "Refunded";
+    // Add amount back to user's wallet safely (excluding discounts applied) if paid
+    if (order.paymentMethod !== "COD" || order.paymentStatus === "Paid") {
+      await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Returned Order ${order.orderId}`);
+      order.paymentStatus = "Refunded";
+    }
 
     // Restore inventory and mark items as cancelled/returned
     for (const item of order.orderedItems) {

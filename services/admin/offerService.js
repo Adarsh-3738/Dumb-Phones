@@ -128,18 +128,32 @@ export const syncAllOffers = async () => {
   }
 };
 
-export const getOffersData = async ({ searchQuery,}) => {
+export const getOffersData = async ({ searchQuery, page = 1, limit = 10 }) => {
   let filter = {};
 
   if (searchQuery) {
     filter.name = { $regex: searchQuery, $options: "i" };
   }
 
-  const offers = await Offer.find(filter).populate("target").sort({ createdAt: -1 });
+  const skip = (page - 1) * limit;
+
+  const offers = await Offer.find(filter)
+    .populate("target")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalOffers = await Offer.countDocuments(filter);
   const products = await Product.find({ isBlocked: false });
   const categories = await Category.find({ isDeleted: false });
 
-  return { offers, products, categories };
+  return {
+    offers,
+    products,
+    categories,
+    totalPages: Math.ceil(totalOffers / limit),
+    currentPage: page
+  };
 };
 
 export const createOffer = async (offerData) => {

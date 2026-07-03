@@ -1,11 +1,21 @@
 import Coupon from "../../models/couponSchema.js";
 
-export const getCoupons = async (searchQuery) => {
+export const getCoupons = async (searchQuery, page = 1, limit = 10) => {
   let filter = {};
   if (searchQuery) {
     filter.name = { $regex: searchQuery, $options: "i" };
   }
-  return await Coupon.find(filter).sort({ createdOn: -1 });
+  const skip = (page - 1) * limit;
+  const coupons = await Coupon.find(filter)
+    .sort({ createdOn: -1 })
+    .skip(skip)
+    .limit(limit);
+  const totalCoupons = await Coupon.countDocuments(filter);
+  return {
+    coupons,
+    totalPages: Math.ceil(totalCoupons / limit),
+    currentPage: page
+  };
 };
 
 export const findCouponByName = async (name, excludeId = null) => {

@@ -4,8 +4,15 @@ import * as couponService from "../../services/admin/couponService.js";
 export const getCoupons = async (req, res) => {
   try {
     const searchQuery = req.query.search || "";
-    const coupons = await couponService.getCoupons(searchQuery);
-    res.render("admin/coupons", { coupons, searchQuery: searchQuery || "" });
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+    const { coupons, totalPages, currentPage } = await couponService.getCoupons(searchQuery, page, limit);
+    res.render("admin/coupons", { 
+      coupons, 
+      searchQuery: searchQuery || "",
+      totalPages,
+      currentPage
+    });
   } catch (error) {
     console.error("Error fetching coupons:", error);
     res.status(500).render("admin/admin-error");

@@ -33,14 +33,14 @@
           type="text"
           name="productName"
           value="<%= product.productName %>"
-          required
+          
         />
 
         <label>Description</label>
-        <textarea name="description" required><%= product.description %></textarea>
+        <textarea name="description"><%= product.description %></textarea>
 
         <label>Brand</label>
-        <select name="brand" required>
+        <select name="brand">
   <% brands.forEach(b => { %>
     <option
       value="<%= b._id %>"
@@ -54,7 +54,7 @@
 </select>
 
         <label>Category</label>
-        <select name="category" required>
+        <select name="category">
           <% categories.forEach(c => { %>
             <option
               value="<%= c._id %>"
@@ -98,7 +98,6 @@
                 type="text"
                 name="variants[<%= index %>][color]"
                 value="<%= variant.color %>"
-                required
               />
 
               <label>Regular Price</label>
@@ -107,7 +106,6 @@
                 class="regularPrice"
                 name="variants[<%= index %>][regularPrice]"
                 value="<%= variant.regularPrice %>"
-                required
               />
 
               <label>Sales Price</label>
@@ -116,7 +114,6 @@
                 class="salesPrice"
                 name="variants[<%= index %>][salesPrice]"
                 value="<%= variant.salesPrice %>"
-                required
               />
 
               <label>Quantity</label>
@@ -125,7 +122,6 @@
                 class="quantity"
                 name="variants[<%= index %>][quantity]"
                 value="<%= variant.quantity %>"
-                required
               />
 
               <!-- EXISTING IMAGES -->
