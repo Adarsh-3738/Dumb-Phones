@@ -1,4 +1,5 @@
 import * as couponService from "../../services/admin/couponService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // Load Coupons Page
 export const getCoupons = async (req, res) => {
@@ -15,7 +16,7 @@ export const getCoupons = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching coupons:", error);
-    res.status(500).render("admin/admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error");
   }
 };
 
@@ -26,28 +27,28 @@ export const addCoupon = async (req, res) => {
 
     // Validation
     if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "All fields are required" });
     }
     
     if (discountType === "Percentage" && Number(offerPrice) > 100) {
-      return res.status(400).json({ success: false, message: "Percentage discount cannot exceed 100%" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Percentage discount cannot exceed 100%" });
     }
 
     const nameUpper = name.toUpperCase().trim();
     const existing = await couponService.findCouponByName(nameUpper);
     if (existing) {
-      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Coupon code already exists" });
     }
 
     const offerVal = Number(offerPrice);
     const minVal = Number(minimumPrice);
 
     if (offerVal <= 0 || minVal <= 0) {
-      return res.status(400).json({ success: false, message: "Prices must be greater than 0" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Prices must be greater than 0" });
     }
 
     if (offerVal >= minVal) {
-      return res.status(400).json({ success: false, message: "Offer price must be less than Minimum price" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Offer price must be less than Minimum price" });
     }
 
     const today = new Date();
@@ -56,11 +57,11 @@ export const addCoupon = async (req, res) => {
     const eDate = new Date(expireOn);
     
     if (eDate < today) {
-      return res.status(400).json({ success: false, message: "Expiry date cannot be in the past" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Expiry date cannot be in the past" });
     }
 
     if (eDate <= sDate) {
-      return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Expiry date must be strictly after the start date" });
     }
 
     await couponService.createCoupon({
@@ -77,7 +78,7 @@ export const addCoupon = async (req, res) => {
 
   } catch (error) {
     console.error("Error adding coupon:", error);
-    res.status(500).json({ success: false, message: "Failed to create coupon" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to create coupon" });
   }
 };
 
@@ -89,11 +90,11 @@ export const editCoupon = async (req, res) => {
 
     // Validation
     if (!name || !expireOn || !offerPrice || !minimumPrice || !startDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "All fields are required" });
     }
 
     if (discountType === "Percentage" && Number(offerPrice) > 100) {
-      return res.status(400).json({ success: false, message: "Percentage discount cannot exceed 100%" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Percentage discount cannot exceed 100%" });
     }
 
     const nameUpper = name.toUpperCase().trim();
@@ -101,18 +102,18 @@ export const editCoupon = async (req, res) => {
     // Check if another coupon has the same name
     const existing = await couponService.findCouponByName(nameUpper, id);
     if (existing) {
-      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Coupon code already exists" });
     }
 
     const offerVal = Number(offerPrice);
     const minVal = Number(minimumPrice);
 
     if (offerVal <= 0 || minVal <= 0) {
-      return res.status(400).json({ success: false, message: "Prices must be greater than 0" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Prices must be greater than 0" });
     }
 
     if (offerVal >= minVal) {
-      return res.status(400).json({ success: false, message: "Offer price must be less than Minimum price" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Offer price must be less than Minimum price" });
     }
 
     const today = new Date();
@@ -121,11 +122,11 @@ export const editCoupon = async (req, res) => {
     const eDate = new Date(expireOn);
 
     if (eDate < today) {
-      return res.status(400).json({ success: false, message: "Expiry date cannot be in the past" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Expiry date cannot be in the past" });
     }
     
     if (eDate <= sDate) {
-      return res.status(400).json({ success: false, message: "Expiry date must be strictly after the start date" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Expiry date must be strictly after the start date" });
     }
 
     const updatedCoupon = await couponService.updateCoupon(id, {
@@ -139,14 +140,14 @@ export const editCoupon = async (req, res) => {
     });
 
     if (!updatedCoupon) {
-      return res.status(404).json({ success: false, message: "Coupon not found" });
+      return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "Coupon not found" });
     }
 
     res.json({ success: true, message: "Coupon updated successfully!" });
 
   } catch (error) {
     console.error("Error editing coupon:", error);
-    res.status(500).json({ success: false, message: "Failed to update coupon" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to update coupon" });
   }
 };
 
@@ -157,6 +158,6 @@ export const deleteCoupon = async (req, res) => {
     res.json({ success: true, message: "Coupon deleted safely" });
   } catch (error) {
     console.error("Error deleting coupon:", error);
-    res.status(500).json({ success: false, message: "Failed to delete coupon" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete coupon" });
   }
 };

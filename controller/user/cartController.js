@@ -5,6 +5,7 @@ import {
   decrementQtyService,
   removeFromCartService
 } from "../../services/user/cartService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 
  //  LOAD CART
@@ -37,7 +38,7 @@ export const addToCart = async (req, res) => {
   try {
 
     if (!req.user) {
-      return res.status(401).json({
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({
         success: false,
         notLoggedIn: true,
         message: "Please login"
@@ -53,7 +54,7 @@ export const addToCart = async (req, res) => {
 
   } catch (error) {
 
-    res.status(400).json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       success: false,
       message: error.message
     });
@@ -68,7 +69,7 @@ export const addToCart = async (req, res) => {
 export const incrementQty = async (req, res) => {
   try {
 
-    if (!req.user) return res.status(401).json({ success: false });
+    if (!req.user) return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false });
 
     const userId = req.user._id;
     const { variantId } = req.body;
@@ -94,7 +95,7 @@ export const incrementQty = async (req, res) => {
 export const decrementQty = async (req, res) => {
   try {
 
-    if (!req.user) return res.status(401).json({ success: false });
+    if (!req.user) return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false });
 
     const userId = req.user._id;
     const { variantId } = req.body;
@@ -121,7 +122,7 @@ export const removeFromCart = async (req, res) => {
   try {
 
     if (!req.user) {
-      return res.status(401).json({ success: false });
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false });
     }
 
     const userId = req.user._id;
@@ -133,7 +134,7 @@ export const removeFromCart = async (req, res) => {
 
   } catch (error) {
 
-    res.status(500).json({ success: false });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false });
 
   }
 };

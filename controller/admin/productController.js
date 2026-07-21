@@ -1,5 +1,6 @@
 import * as productService from "../../services/admin/productService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 import Brand from "../../models/brandSchema.js";
 import Category from "../../models/categorySchema.js";
 import { recalculateVariantPrices } from "../../services/admin/offerService.js";
@@ -130,6 +131,7 @@ export const addProduct = async (req, res) => {
         color: variant.color,
         regularPrice: Number(variant.regularPrice),
         salesPrice: Number(variant.salesPrice),
+        baseSalesPrice: Number(variant.salesPrice),
         quantity: Number(variant.quantity),
         variantImages: images
       };
@@ -143,7 +145,7 @@ export const addProduct = async (req, res) => {
   } catch (error) {
     console.error("ADD PRODUCT ERROR:", error);
     logger.error("Add product failed", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 // LOAD EDIT PAGE
@@ -159,7 +161,7 @@ export const getEditPage = async (req, res) => {
       .populate("category");
 
     if (!product) {
-      return res.status(404).render("admin/404");
+      return res.status(STATUS_CODES.NOT_FOUND).render("admin/404");
     }
 
     //  FETCH VARIANTS SEPARATELY
@@ -178,7 +180,7 @@ export const getEditPage = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).render("admin/admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error");
   }
 };
 // UPDATE PRODUCT 
@@ -302,7 +304,7 @@ export const editProduct = async (req, res) => {
       productId: req.params.id,
     });
 
-    res.status(500).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 
@@ -312,7 +314,7 @@ export const removeProductImage = async (req, res) => {
     const { variantId, imageUrl } = req.body;
 
     if (!variantId || !imageUrl) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: "Missing data"
       });
@@ -332,7 +334,7 @@ export const removeProductImage = async (req, res) => {
       stack: error.stack,
     });
 
-    res.status(500).json({ success: false });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false });
   }
 };
 // SOFT DELETE 
@@ -370,10 +372,10 @@ export const softDeleteProduct = async (req, res) => {
     });
 
     if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
-      return res.status(500).json({ success: false, message: error.message });
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
 
-    res.status(500).render("admin/error", { message: error.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/error", { message: error.message });
   }
 };
 

@@ -63,7 +63,7 @@ export const fetchSalesReportData = async ({ range, startDate, endDate, searchQu
         deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
         returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
         netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
-        totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
+        totalRefunded: { $sum: { $ifNull: ["$refundedAmount", 0] } },
         totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
       }
     }
@@ -102,7 +102,7 @@ export const generateSalesPdfStream = async (res, { range, startDate, endDate })
         deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
         returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
         netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
-        totalRefunded: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] } },
+        totalRefunded: { $sum: { $ifNull: ["$refundedAmount", 0] } },
         totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
       }
     }
@@ -216,8 +216,12 @@ export const generateSalesPdfStream = async (res, { range, startDate, endDate })
     doc.text(o.status.toUpperCase(), col_status, y, { width: 65, lineBreak: true });
     
     let amountPaidText = `Rs. ${o.finalAmount.toLocaleString()}`;
-    if (o.status === "Returned") {
-      amountPaidText = `Returned\n(Rs. ${o.finalAmount.toLocaleString()} ref)`;
+    if (o.status === "Returned" || (o.refundedAmount && o.refundedAmount > 0)) {
+      if (o.status === "Returned") {
+        amountPaidText = `Returned\n(Rs. ${(o.refundedAmount || 0).toLocaleString()} ref)`;
+      } else {
+        amountPaidText = `Rs. ${o.finalAmount.toLocaleString()}\n(Rs. ${o.refundedAmount.toLocaleString()} ref)`;
+      }
     }
     doc.font("Helvetica-Bold").fillColor(o.status === "Returned" ? '#ef4444' : '#10b981').text(amountPaidText, col7, y, { width: 65 });
     doc.font("Helvetica").fillColor('#334155');
@@ -319,7 +323,7 @@ export const generateSalesExcelStream = async (res, { range, startDate, endDate 
       discount: o.discount,
       payment: `${o.paymentMethod || 'Unknown'} `,
       status: o.status,
-      amount: o.status === "Returned" ? `Returned (Rs. ${o.finalAmount} refunded)` : o.finalAmount
+      amount: o.status === "Returned" ? `Returned (Rs. ${o.refundedAmount || 0} refunded)` : (o.refundedAmount > 0 ? `${o.finalAmount} (Rs. ${o.refundedAmount} refunded)` : o.finalAmount)
     });
   });
 

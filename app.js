@@ -20,6 +20,7 @@ import cookieParser from "cookie-parser";
 
 import methodOverride from "method-override";
 import { initCronJobs } from "./utils/cronJobs.js";
+import STATUS_CODES from "./utils/statusCodes.js";
 
 
 
@@ -111,14 +112,14 @@ app.use(async (req, res, next) => {
               
               // Handle AJAX requests
               if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
-                return res.status(403).json({ success: false, blocked: true, message: req.session.message });
+                return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, blocked: true, message: req.session.message });
               }
               return res.redirect("/login");
             });
           }
           
           if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
-            return res.status(403).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
+            return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
           }
           return res.redirect("/login");
         };

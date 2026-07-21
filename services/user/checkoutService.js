@@ -286,6 +286,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     variant: item.variantId._id,
     quantity: item.quantity,
     price: item.price,
+    regularPrice: (item.variantId && item.variantId.regularPrice && item.variantId.regularPrice > item.price) ? item.variantId.regularPrice : item.price,
     itemStatus: "Pending"
   }));
 

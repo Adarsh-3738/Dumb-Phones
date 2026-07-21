@@ -11,6 +11,7 @@ import {
   getOrderForInvoice
 } from "../../services/user/orderService.js";
 import Settings from "../../models/settingsSchema.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
  //  LOAD ORDERS
 
 export const loadOrders = async (req, res) => {
@@ -72,7 +73,7 @@ export const cancelOrder = async (req, res) => {
 
   } catch (error) {
 
-    res.status(400).json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       message: error.message
     });
 
@@ -85,11 +86,18 @@ export const cancelOrderItem = async (req, res) => {
     const { orderId, itemId } = req.params;
     const { reason } = req.body;
 
-    await cancelUserOrderItem(orderId, req.user._id, itemId, reason);
+    const result = await cancelUserOrderItem(orderId, req.user._id, itemId, reason);
 
-    res.json({ success: true });
+    if (result && result.couponRevoked) {
+      res.json({ 
+        success: true, 
+        message: "Item cancelled successfully. Your coupon was revoked because the remaining order subtotal fell below the minimum purchase limit." 
+      });
+    } else {
+      res.json({ success: true, message: "Item cancelled successfully." });
+    }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(STATUS_CODES.BAD_REQUEST).json({ message: error.message });
   }
 };
 
@@ -109,7 +117,7 @@ export const returnOrder = async (req, res) => {
 
   } catch (error) {
 
-    res.status(400).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
 
   }
 };
@@ -124,7 +132,7 @@ export const returnOrderItem = async (req, res) => {
 
     res.json({ success: true, message: "Item return requested successfully" });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
   }
 };
 
@@ -235,8 +243,7 @@ export const downloadInvoice = async (req, res) => {
       let isCancelled = item.itemStatus === "Cancelled";
       let isReturned = item.itemStatus === "Returned";
       
-      const variant = item.variant;
-      const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+      const regularPrice = (item.regularPrice !== undefined && item.regularPrice !== null) ? item.regularPrice : item.price;
       const unitPrice = regularPrice;
       const itemDiscount = (regularPrice - item.price) * item.quantity;
       
@@ -297,8 +304,7 @@ export const downloadInvoice = async (req, res) => {
     if (isActive) {
       order.orderedItems.forEach(item => {
         if (item.itemStatus !== "Cancelled" && item.itemStatus !== "Returned") {
-          const variant = item.variant;
-          const regularPrice = (variant && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+          const regularPrice = (item.regularPrice !== undefined && item.regularPrice !== null) ? item.regularPrice : item.price;
           activeProductSavings += (regularPrice - item.price) * item.quantity;
         }
       });

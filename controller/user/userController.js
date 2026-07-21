@@ -15,6 +15,7 @@ import {
 import { validateSignup } from "../../helpers/validators.js";
 import logger from "../../utils/logger.js";
 import User from "../../models/userSchema.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // PAGE NOT FOUND
 export const pageNotFound = (req, res) => {
@@ -64,7 +65,7 @@ export const loadHomepage = async (req, res) => {
       message: error.message,
       stack: error.stack,
     });
-    res.status(500).send("Server error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
 
@@ -125,7 +126,7 @@ price = Array.isArray(price)
       message: error.message,
       stack: error.stack,
     });
-    res.status(500).render("user/page-404");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("user/page-404");
   }
 };
 
@@ -188,7 +189,7 @@ export const verifyOtp = async (req, res) => {
     ) {
       logger.warn("Invalid OTP attempt");
       return res
-        .status(400)
+        .status(STATUS_CODES.BAD_REQUEST)
         .json({ success: false, message: "Invalid OTP" });
     }
 
@@ -208,7 +209,7 @@ export const verifyOtp = async (req, res) => {
       stack: error.stack,
     });
     res
-      .status(500)
+      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Error verifying OTP" });
   }
 };
@@ -365,7 +366,7 @@ export const resendOtp = async (req, res) => {
   try {
 
     if (!req.session.userData) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: "Session expired. Please signup again."
       });
@@ -382,7 +383,7 @@ export const resendOtp = async (req, res) => {
     const emailSent = await sendOtpEmail(email, otp);
 
     if (!emailSent) {
-      return res.status(500).json({
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to send OTP"
       });
@@ -397,7 +398,7 @@ export const resendOtp = async (req, res) => {
       stack: error.stack
     });
 
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error resending OTP"
     });
@@ -446,6 +447,6 @@ export const checkStatus = async (req, res) => {
       message: error.message,
       stack: error.stack
     });
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };

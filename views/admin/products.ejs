@@ -172,20 +172,22 @@
           enctype="multipart/form-data">
 
       <label>Product Name</label>
-      <input type="text" name="productName"  />
+      <input type="text" name="productName" />
 
       <label>Description</label>
-      <textarea name="description" ></textarea>
+      <textarea name="description"></textarea>
 
       <label>Brand</label>
-      <select name="brand" >
+      <select name="brand">
+        <option value="" selected disabled>Select Brand</option>
         <% brands.forEach(b => { %>
           <option value="<%= b._id %>"><%= b.name %></option>
         <% }) %>
       </select>
 
       <label>Category</label>
-      <select name="category" >
+      <select name="category">
+        <option value="" selected disabled>Select Category</option>
         <% categories.forEach(c => { %>
           <option value="<%= c._id %>"><%= c.name %></option>
         <% }) %>
@@ -193,8 +195,15 @@
 
       <hr/>
       <h4>Variant Details</h4>
-      
-      <button type="button" id="addVariantBtn" class="add-btn" style="margin-bottom: 15px; margin-top: 10px;">+ Add Variant</button>
+
+      <button
+        type="button"
+        id="addVariantBtn"
+        class="add-btn"
+        style="margin-bottom: 15px; margin-top: 10px;"
+      >
+        + Add Variant
+      </button>
 
       <div id="variantsContainer"></div>
 
@@ -206,13 +215,6 @@
 
   </div>
 </div>
-
-
-
-
-
-
-
 
 <!-- Cropper.js JS  -->
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>

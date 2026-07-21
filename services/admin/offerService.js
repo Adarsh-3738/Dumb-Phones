@@ -92,9 +92,12 @@ export const recalculateVariantPrices = async (productId) => {
       }
 
       const maxDiscount = Math.max(cDiscount, pDiscount, 0);
-      const newSalesPrice = variant.regularPrice - maxDiscount;
-      
-      variant.salesPrice = newSalesPrice < 0 ? 0 : newSalesPrice;
+      if (maxDiscount > 0) {
+        const newSalesPrice = variant.regularPrice - maxDiscount;
+        variant.salesPrice = newSalesPrice < 0 ? 0 : newSalesPrice;
+      } else {
+        variant.salesPrice = (variant.baseSalesPrice !== undefined && variant.baseSalesPrice !== null) ? variant.baseSalesPrice : variant.salesPrice;
+      }
       
       if (pDiscount >= cDiscount && productOfferDoc && productOfferDoc.discountType === "Percentage") {
          variant.productOffer = productOfferDoc.discountValue;

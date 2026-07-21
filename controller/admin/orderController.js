@@ -4,6 +4,7 @@ import {
   changeOrderStatus,
   changeOrderItemStatus,
 } from "../../services/admin/orderService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 
 // LOAD ORDERS PAGE
@@ -85,7 +86,7 @@ export const updateOrderStatus = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: err.message
     });
@@ -107,7 +108,7 @@ export const updateOrderItemStatus = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: err.message
     });

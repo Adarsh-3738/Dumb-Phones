@@ -1,4 +1,5 @@
 import User from "../models/userSchema.js";
+import STATUS_CODES from "../utils/statusCodes.js";
 
 const protect = async (req, res, next) => {
   try {
@@ -36,14 +37,14 @@ const protect = async (req, res, next) => {
               if (err) console.error("Session save error:", err);
               
               if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
-                return res.status(403).json({ success: false, blocked: true, message: req.session.message });
+                return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, blocked: true, message: req.session.message });
               }
               return res.redirect("/login");
             });
           }
           
           if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
-            return res.status(403).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
+            return res.status(STATUS_CODES.FORBIDDEN).json({ success: false, blocked: true, message: "Your account has been blocked by the administrator." });
           }
           return res.redirect("/login");
         };

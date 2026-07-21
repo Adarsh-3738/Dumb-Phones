@@ -1,5 +1,6 @@
 import * as referralService from "../../services/admin/referralService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 export const getReferrals = async (req, res) => {
   try {
@@ -20,6 +21,6 @@ export const getReferrals = async (req, res) => {
     });
   } catch (error) {
     logger.error("Error fetching referrals", { error });
-    res.status(500).render("admin/admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error");
   }
 };

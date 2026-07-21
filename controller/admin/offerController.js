@@ -1,5 +1,6 @@
 import * as offerService from "../../services/admin/offerService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // Re-export recalculateVariantPrices for backward compatibility
 export const recalculateVariantPrices = offerService.recalculateVariantPrices;
@@ -10,7 +11,7 @@ export const syncAllOffers = async (req, res) => {
     res.json({ success: true, message: "All product prices synced to current offers successfully!" });
   } catch (error) {
     logger.error("Error syncing offers", { error });
-    res.status(500).json({ success: false, message: "Failed to sync offers" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to sync offers" });
   }
 };
 
@@ -36,7 +37,7 @@ export const getOffers = async (req, res) => {
     });
   } catch (error) {
     logger.error("Error fetching offers", { error });
-    res.status(500).render("admin/admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error");
   }
 };
 
@@ -45,22 +46,22 @@ export const addOffer = async (req, res) => {
     const { name, type, discountType, discountValue, maxDiscountAmount, target, startDate, endDate } = req.body;
 
     if (!name || !type || !discountType || !discountValue || !startDate || !endDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "All fields are required" });
     }
 
     if (type !== "Referral" && !target) {
-      return res.status(400).json({ success: false, message: "Target is required for Product/Category offer" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Target is required for Product/Category offer" });
     }
 
     const offerStartDate = offerService.getStartOfDay(startDate);
     const offerEndDate = offerService.getEndOfDay(endDate);
     
     if (offerEndDate < offerStartDate) {
-      return res.status(400).json({ success: false, message: "End Date cannot be before Start Date" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "End Date cannot be before Start Date" });
     }
 
     if (type === "Referral" && discountType !== "Fixed Amount") {
-      return res.status(400).json({ success: false, message: "Referral offers must use a Fixed Amount discount type." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Referral offers must use a Fixed Amount discount type." });
     }
 
     if (type !== "Referral") {
@@ -71,7 +72,7 @@ export const addOffer = async (req, res) => {
         endDate: offerEndDate
       });
       if (existingOffer) {
-        return res.status(400).json({ success: false, message: `This ${type} already has an active or scheduled offer during the selected dates.` });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: `This ${type} already has an active or scheduled offer during the selected dates.` });
       }
     } else {
       const existingReferral = await offerService.findConflictingOffer({
@@ -80,7 +81,7 @@ export const addOffer = async (req, res) => {
         endDate: offerEndDate
       });
       if (existingReferral) {
-        return res.status(400).json({ success: false, message: "A Referral offer already exists during the selected dates." });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "A Referral offer already exists during the selected dates." });
       }
     }
 
@@ -100,9 +101,9 @@ export const addOffer = async (req, res) => {
   } catch (error) {
     logger.error("Error adding offer", { error });
     if (error.code === 11000) {
-      return res.status(400).json({ success: false, message: "Offer name already exists" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Offer name already exists" });
     }
-    res.status(500).json({ success: false, message: "Failed to add offer" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to add offer" });
   }
 };
 
@@ -112,13 +113,13 @@ export const toggleOfferStatus = async (req, res) => {
     const offer = await offerService.toggleOfferStatus(id);
 
     if (!offer) {
-      return res.status(404).json({ success: false, message: "Offer not found" });
+      return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "Offer not found" });
     }
 
     res.json({ success: true, message: `Offer ${offer.status.toLowerCase()} successfully` });
   } catch (error) {
     logger.error("Error toggling offer status", { error });
-    res.status(500).json({ success: false, message: "Failed to toggle offer status" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to toggle offer status" });
   }
 };
 
@@ -128,13 +129,13 @@ export const deleteOffer = async (req, res) => {
     const offer = await offerService.deleteOffer(id);
 
     if (!offer) {
-      return res.status(404).json({ success: false, message: "Offer not found" });
+      return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "Offer not found" });
     }
 
     res.json({ success: true, message: "Offer deleted successfully" });
   } catch (error) {
     logger.error("Error deleting offer", { error });
-    res.status(500).json({ success: false, message: "Failed to delete offer" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete offer" });
   }
 };
 
@@ -144,22 +145,22 @@ export const editOffer = async (req, res) => {
     const { name, type, discountType, discountValue, maxDiscountAmount, target, startDate, endDate } = req.body;
 
     if (!name || !type || !discountType || !discountValue || !startDate || !endDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "All fields are required" });
     }
 
     if (type !== "Referral" && !target) {
-      return res.status(400).json({ success: false, message: "Target is required for Product/Category offer" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Target is required for Product/Category offer" });
     }
 
     const offerStartDate = offerService.getStartOfDay(startDate);
     const offerEndDate = offerService.getEndOfDay(endDate);
 
     if (offerEndDate < offerStartDate) {
-      return res.status(400).json({ success: false, message: "End Date cannot be before Start Date" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "End Date cannot be before Start Date" });
     }
 
     if (type === "Referral" && discountType !== "Fixed Amount") {
-      return res.status(400).json({ success: false, message: "Referral offers must use a Fixed Amount discount type." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Referral offers must use a Fixed Amount discount type." });
     }
 
     if (type !== "Referral") {
@@ -171,7 +172,7 @@ export const editOffer = async (req, res) => {
         excludeId: id
       });
       if (existingOffer) {
-        return res.status(400).json({ success: false, message: `This ${type} already has another active or scheduled offer during the selected dates.` });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: `This ${type} already has another active or scheduled offer during the selected dates.` });
       }
     } else {
       const existingReferral = await offerService.findConflictingOffer({
@@ -181,7 +182,7 @@ export const editOffer = async (req, res) => {
         excludeId: id
       });
       if (existingReferral) {
-        return res.status(400).json({ success: false, message: "Another Referral offer already exists during the selected dates." });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Another Referral offer already exists during the selected dates." });
       }
     }
 
@@ -198,15 +199,15 @@ export const editOffer = async (req, res) => {
     });
 
     if (!updatedOffer) {
-      return res.status(404).json({ success: false, message: "Offer not found" });
+      return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "Offer not found" });
     }
 
     res.json({ success: true, message: "Offer updated successfully" });
   } catch (error) {
     logger.error("Error editing offer", { error });
     if (error.code === 11000) {
-      return res.status(400).json({ success: false, message: "Offer name already exists" });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Offer name already exists" });
     }
-    res.status(500).json({ success: false, message: "Failed to edit offer" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to edit offer" });
   }
 };

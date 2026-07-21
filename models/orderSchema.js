@@ -36,6 +36,10 @@ userId: {
       type: Number,
       default: 0
     },
+    regularPrice: {
+      type: Number,
+      default: 0
+    },
     itemStatus: {
       type: String,
       enum: [
@@ -84,6 +88,10 @@ userId: {
   finalAmount: {
     type: Number,
     required: true
+  },
+  refundedAmount: {
+    type: Number,
+    default: 0
   },
  address: {
   name: { type: String, required: true },

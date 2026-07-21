@@ -4,6 +4,7 @@ import Coupon from "../../models/couponSchema.js";
 import Cart from "../../models/cartSchema.js";
 import crypto from "crypto";
 import Order from "../../models/orderSchema.js"; // make sure Order is imported
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 
 // LOAD CHECKOUT
@@ -89,34 +90,34 @@ export const applyCoupon = async (req, res) => {
     const userId = req.user._id;
     const { code } = req.body;
     
-    if (!code) return res.status(400).json({ success: false, message: "Coupon code is required" });
+    if (!code) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Coupon code is required" });
 
     const coupon = await Coupon.findOne({ name: code.toUpperCase() });
     
-    if (!coupon) return res.status(404).json({ success: false, message: "The coupon code you entered is invalid. Please check and try again." });
+    if (!coupon) return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "The coupon code you entered is invalid. Please check and try again." });
 
     const now = new Date();
     const expiry = new Date(coupon.expireOn);
     expiry.setHours(23, 59, 59, 999);
 
     if (now > expiry) {
-       return res.status(400).json({ success: false, message: "This coupon code has expired and is no longer valid." });
+       return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "This coupon code has expired and is no longer valid." });
     }
 
     const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
     if (hasUsed) {
-       return res.status(400).json({ success: false, message: "You have already used this coupon code on a previous order." });
+       return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "You have already used this coupon code on a previous order." });
     }
 
     // Check minimum spend
     const cart = await Cart.findOne({ userId }).populate("items.variantId");
-    if (!cart) return res.status(404).json({ success: false, message: "Your shopping cart could not be found. Please try adding items to your cart again." });
+    if (!cart) return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "Your shopping cart could not be found. Please try adding items to your cart again." });
 
     let currentSubtotal = 0;
     cart.items.forEach(i => { currentSubtotal += i.price * i.quantity; });
     
     if (currentSubtotal < coupon.minimumPrice) {
-       return res.status(400).json({ success: false, message: `A minimum purchase of ₹${coupon.minimumPrice.toLocaleString('en-IN')} is required to apply this coupon.` });
+       return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: `A minimum purchase of ₹${coupon.minimumPrice.toLocaleString('en-IN')} is required to apply this coupon.` });
     }
 
     cart.appliedCoupon = coupon._id;
@@ -125,7 +126,7 @@ export const applyCoupon = async (req, res) => {
     res.json({ success: true, message: "Coupon applied successfully" });
   } catch (error) {
     console.error("Apply coupon error:", error);
-    res.status(500).json({ success: false, message: "An internal server error occurred while applying the coupon. Please try again later." });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "An internal server error occurred while applying the coupon. Please try again later." });
   }
 };
 
@@ -137,7 +138,7 @@ export const removeCoupon = async (req, res) => {
     res.json({ success: true, message: "Coupon removed successfully" });
   } catch (error) {
     console.error("Remove coupon error:", error);
-    res.status(500).json({ success: false, message: "An internal server error occurred while removing the coupon. Please try again later." });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "An internal server error occurred while removing the coupon. Please try again later." });
   }
 };
 
@@ -164,7 +165,7 @@ export const createRazorpayOrder = async (req, res) => {
       key: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 
@@ -195,10 +196,10 @@ export const verifyRazorpayPayment = async (req, res) => {
       
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
-      res.status(400).json({ success: false, message: "The payment verification signature is invalid. Please contact customer support if you were charged." });
+      res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "The payment verification signature is invalid. Please contact customer support if you were charged." });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "A server error occurred during payment verification. Please contact customer support if your transaction succeeded." });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "A server error occurred during payment verification. Please contact customer support if your transaction succeeded." });
   }
 };
 
@@ -262,15 +263,15 @@ export const retryRazorpayPayment = async (req, res) => {
     const order = await Order.findOne({ orderId: orderId, userId: userId });
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "The requested order could not be found." });
+      return res.status(STATUS_CODES.NOT_FOUND).json({ success: false, message: "The requested order could not be found." });
     }
 
     if (order.paymentStatus !== "Failed" && order.paymentStatus !== "Pending") {
-      return res.status(400).json({ success: false, message: "Payment retry is only available for orders with a failed or pending payment." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Payment retry is only available for orders with a failed or pending payment." });
     }
 
     if (order.status === "Cancelled") {
-      return res.status(400).json({ success: false, message: "This order has already been cancelled and payment cannot be processed." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "This order has already been cancelled and payment cannot be processed." });
     }
 
     // Re-reserve stock if the order was in 'Payment Failed' state and stock was restored
@@ -313,7 +314,7 @@ export const retryRazorpayPayment = async (req, res) => {
              await v.save(); 
            }
         }
-        return res.status(400).json({ success: false, message: error.message });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
       }
 
       // Reset to pending so if it fails again, it hits the /order-failed logic properly
@@ -334,6 +335,6 @@ export const retryRazorpayPayment = async (req, res) => {
     });
   } catch (error) {
     console.error("Retry Payment Error:", error);
-    res.status(500).json({ success: false, message: "A server error occurred while retrying the payment. Please try again." });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "A server error occurred while retrying the payment. Please try again." });
   }
 };

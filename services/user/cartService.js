@@ -199,6 +199,26 @@ export const incrementQtyService = async (userId, variantId) => {
 
   if (!item) throw new Error("Item not found");
 
+  const Product = await import("../../models/productSchema.js").then(m => m.default);
+  const product = await Product.findById(item.productId).populate("category").populate("brand");
+
+  if (
+    !product ||
+    product.isBlocked ||
+    product.status === "Discontinued" ||
+    !product.category ||
+    !product.category.isListed ||
+    product.category.isDeleted ||
+    product.category.status !== "Active" ||
+    !product.brand ||
+    product.brand.isBlocked ||
+    !item.variantId ||
+    item.variantId.isBlocked ||
+    item.variantId.quantity <= 0
+  ) {
+    throw new Error("This product is currently unavailable.");
+  }
+
   if (
     item.quantity >= MAX_QTY ||
     item.quantity >= item.variantId.quantity
@@ -285,12 +305,14 @@ export const revalidateCartCoupon = async (userId, cart = null) => {
     });
 
     const now = new Date();
+    const start = new Date(coupon.startDate);
+    start.setHours(0, 0, 0, 0);
     const expiry = new Date(coupon.expireOn);
     expiry.setHours(23, 59, 59, 999);
 
     const hasUsed = coupon.userId && coupon.userId.some(id => id.toString() === userId.toString());
 
-    if (now > expiry || subtotal < coupon.minimumPrice || hasUsed) {
+    if (now < start || now > expiry || subtotal < coupon.minimumPrice || hasUsed) {
       cartDoc.appliedCoupon = null;
       await cartDoc.save();
     }

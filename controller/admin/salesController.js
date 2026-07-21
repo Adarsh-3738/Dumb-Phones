@@ -1,4 +1,5 @@
 import * as salesService from "../../services/admin/salesService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // Sales Report Dashboard
 export const getSalesReport = async (req, res) => {
@@ -30,7 +31,7 @@ export const getSalesReport = async (req, res) => {
     });
   } catch (error) {
     console.error("Sales Report Error:", error);
-    res.status(500).render("admin/admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error");
   }
 };
 
@@ -48,7 +49,7 @@ export const downloadPdf = async (req, res) => {
     await salesService.generateSalesPdfStream(res, { range, startDate, endDate });
   } catch (error) {
     console.error("PDF Download Error:", error);
-    res.status(500).send("Error generating PDF");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send("Error generating PDF");
   }
 };
 
@@ -66,6 +67,6 @@ export const downloadExcel = async (req, res) => {
     await salesService.generateSalesExcelStream(res, { range, startDate, endDate });
   } catch (error) {
     console.error("Excel Download Error:", error);
-    res.status(500).send("Error Generating Excel");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send("Error Generating Excel");
   }
 };

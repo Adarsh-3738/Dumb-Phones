@@ -4,6 +4,7 @@ import {
   unblockCustomerById,
 } from "../../services/admin/customerService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // GET CUSTOMERS / SEARCH
 export const customerInfo = async (req, res) => {
@@ -76,7 +77,7 @@ export const customerunBlocked = async (req, res) => {
       body: req.body,
     });
     
-    res.status(500).json({ success: false, message: "Error unblocking customer" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error unblocking customer" });
   }
 };
 

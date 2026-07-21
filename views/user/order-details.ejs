@@ -30,6 +30,17 @@
         <p class="subtitle">Complete breakdown of order <strong>#<%= order.orderId %></strong></p>
       </div>
 
+      <% if (order.cancelReason) { %>
+        <div style="background: #fef2f2; border: 1px solid #fee2e2; color: #b91c1c; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500;">
+          <strong>Order Notice:</strong> <%= order.cancelReason %>
+        </div>
+      <% } %>
+      <% if (order.returnReason) { %>
+        <div style="background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500;">
+          <strong>Order Notice:</strong> <%= order.returnReason %>
+        </div>
+      <% } %>
+
       <div class="order-details-grid">
       <%
         const isOrderActive = order.orderedItems.some(i => i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned');

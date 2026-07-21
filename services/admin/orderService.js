@@ -28,7 +28,10 @@ const syncOrderStatusFromItems = (order) => {
     return;
   }
 
-  const activeFulfillmentStatuses = itemStatuses.filter((status) => FULFILLMENT_STATUSES.includes(status));
+  const activeFulfillmentStatuses = itemStatuses
+    .map((status) => status === "Return Rejected" ? "Delivered" : status)
+    .filter((status) => FULFILLMENT_STATUSES.includes(status));
+
   if (activeFulfillmentStatuses.length) {
     order.status = activeFulfillmentStatuses.reduce((lowestStatus, status) => {
       return FULFILLMENT_STATUSES.indexOf(status) < FULFILLMENT_STATUSES.indexOf(lowestStatus)
@@ -138,8 +141,9 @@ export const changeOrderStatus = async (orderId, status) => {
   if (status === "Returned" && order.status !== "Returned") {
     
     // Add amount back to user's wallet safely (excluding discounts applied) if paid
-    if (order.paymentMethod !== "COD" || order.paymentStatus === "Paid") {
+    if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
       await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Returned Order ${order.orderId}`);
+      order.refundedAmount = (order.refundedAmount || 0) + order.finalAmount;
       order.paymentStatus = "Refunded";
     }
 
@@ -163,8 +167,9 @@ export const changeOrderStatus = async (orderId, status) => {
   if (status === "Cancelled" && order.status !== "Cancelled" && order.status !== "Returned") {
     
     // Refund to Wallet only if the user actually paid 
-    if (order.paymentMethod !== "COD" || order.paymentStatus === "Paid") {
+    if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
       await addMoneyToWallet(order.userId, order.finalAmount, `Refund for Admin Cancelled Order ${order.orderId}`);
+      order.refundedAmount = (order.refundedAmount || 0) + order.finalAmount;
       order.paymentStatus = "Refunded";
     }
 
@@ -266,8 +271,7 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
     let previousSalePriceSubtotal = 0;
     let previousProductSavings = 0;
     for (const act of activeItemsBefore) {
-      const v = await Variant.findById(act.variant);
-      const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+      const regularPrice = (act.regularPrice !== undefined && act.regularPrice !== null && act.regularPrice > 0) ? act.regularPrice : act.price;
       previousSalePriceSubtotal += act.price * act.quantity;
       previousProductSavings += (regularPrice - act.price) * act.quantity;
     }
@@ -290,8 +294,7 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
     let newProductSavings = 0;
 
     for (const act of remainingActiveItems) {
-      const v = await Variant.findById(act.variant);
-      const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+      const regularPrice = (act.regularPrice !== undefined && act.regularPrice !== null && act.regularPrice > 0) ? act.regularPrice : act.price;
       newTotalPrice += regularPrice * act.quantity;
       newSalePriceSubtotal += act.price * act.quantity;
       newProductSavings += (regularPrice - act.price) * act.quantity;
@@ -312,11 +315,10 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
             newCouponDeduction = Math.min(coupon.offerPrice, newSalePriceSubtotal);
           }
         } else {
-          // Minimum order price requirement is no longer met. Revoke coupon and release it back to the user.
-          coupon.userId = coupon.userId.filter(id => id.toString() !== order.userId.toString());
-          await coupon.save();
+          // Minimum order price requirement is no longer met. Revoke coupon but do NOT release it back to the user since the order was already completed and delivered.
           order.couponApplied = false;
           order.couponId = null;
+          order.returnReason = (order.returnReason ? order.returnReason + " | " : "") + "Coupon revoked because order subtotal fell below minimum purchase limit of ₹" + coupon.minimumPrice;
         }
       }
     }
@@ -352,6 +354,7 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
     if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
       if (refundAmount > 0) {
         await addMoneyToWallet(order.userId, refundAmount, `Refund for Returned Item in Order ${order.orderId}`);
+        order.refundedAmount = (order.refundedAmount || 0) + refundAmount;
       }
     }
 

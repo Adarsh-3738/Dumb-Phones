@@ -4,6 +4,7 @@ import {
   updateBrand,
   toggleBrandStatus
 } from "../../services/admin/brandService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 //LIST PAGE 
 export const loadBrands = async (req, res) => {
@@ -25,7 +26,7 @@ export const loadBrands = async (req, res) => {
       totalPages
     });
   } catch (err) {
-    res.status(500).render("admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin-error");
   }
 };
 

@@ -124,6 +124,7 @@ export const cancelUserOrder = async (orderId, userId, reason) => {
   // AUTOMATED REFUND FOR PRE-PAID ORDERS
   if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
     await addMoneyToWallet(userId, order.finalAmount, `Refund for Cancelled Order ${order.orderId}`);
+    order.refundedAmount = (order.refundedAmount || 0) + order.finalAmount;
     order.paymentStatus = "Refunded";
   }
 
@@ -176,8 +177,7 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   let previousSalePriceSubtotal = 0;
   let previousProductSavings = 0;
   for (const act of activeItemsBefore) {
-    const v = await Variant.findById(act.variant);
-    const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+    const regularPrice = (act.regularPrice !== undefined && act.regularPrice !== null && act.regularPrice > 0) ? act.regularPrice : act.price;
     previousSalePriceSubtotal += act.price * act.quantity;
     previousProductSavings += (regularPrice - act.price) * act.quantity;
   }
@@ -203,13 +203,13 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   let newProductSavings = 0;
 
   for (const act of remainingActiveItems) {
-    const v = await Variant.findById(act.variant);
-    const regularPrice = (v && v.regularPrice > act.price) ? v.regularPrice : act.price;
+    const regularPrice = (act.regularPrice !== undefined && act.regularPrice !== null && act.regularPrice > 0) ? act.regularPrice : act.price;
     newTotalPrice += regularPrice * act.quantity;
     newSalePriceSubtotal += act.price * act.quantity;
     newProductSavings += (regularPrice - act.price) * act.quantity;
   }
 
+  let couponRevoked = false;
   let newCouponDeduction = 0;
   if (order.couponApplied && order.couponId) {
     const coupon = await Coupon.findById(order.couponId);
@@ -230,6 +230,8 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
         await coupon.save();
         order.couponApplied = false;
         order.couponId = null;
+        couponRevoked = true;
+        order.cancelReason = (order.cancelReason ? order.cancelReason + " | " : "") + "Coupon revoked because order subtotal fell below minimum purchase limit of ₹" + coupon.minimumPrice;
       }
     }
   }
@@ -284,6 +286,7 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   if (order.paymentStatus === "Paid" || order.paymentMethod === "Wallet") {
     if (refundAmount > 0) {
       await addMoneyToWallet(userId, refundAmount, `Refund for Cancelled Item in Order ${order.orderId}`);
+      order.refundedAmount = (order.refundedAmount || 0) + refundAmount;
     }
     if (allCancelled && order.finalAmount === 0) {
       order.paymentStatus = "Refunded";
@@ -292,7 +295,7 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
 
   await order.save();
 
-  return true;
+  return { success: true, couponRevoked };
 };
 
 

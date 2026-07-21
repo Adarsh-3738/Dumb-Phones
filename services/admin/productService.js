@@ -127,6 +127,7 @@ export const updateProduct = async ({ id, body, files }) => {
   for (let i = 0; i < variantsArray.length; i++) {
 
     const v = variantsArray[i];
+    const formIndex = v.formIndex !== undefined ? v.formIndex : i;
 
     let variantDoc;
 
@@ -140,12 +141,13 @@ export const updateProduct = async ({ id, body, files }) => {
     variantDoc.color = v.color;
     variantDoc.regularPrice = Number(v.regularPrice);
     variantDoc.salesPrice = Number(v.salesPrice);
+    variantDoc.baseSalesPrice = Number(v.salesPrice);
     variantDoc.quantity = Number(v.quantity);
 
     // Handle new images
     if (files && files.length > 0) {
       const images = files
-        .filter(f => f.fieldname.includes(`variants[${i}][images]`))
+        .filter(f => f.fieldname.includes(`variants[${formIndex}][images]`))
         .map(f => ({
           url: `/uploads/${f.filename}`,
           public_id: f.filename

@@ -1,5 +1,6 @@
 
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 import Order from "../../models/orderSchema.js";
 import User from "../../models/userSchema.js";
 import Product from "../../models/productSchema.js";
@@ -182,7 +183,7 @@ export const resendOtp = async (req, res) => {
   try {
 
     if (!req.session.userData) {
-      return res.status(400).json({
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         message: "Session expired. Please signup again."
       });
@@ -199,7 +200,7 @@ export const resendOtp = async (req, res) => {
     const emailSent = await sendOtpEmail(email, otp);
 
     if (!emailSent) {
-      return res.status(500).json({
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to send OTP"
       });
@@ -214,7 +215,7 @@ export const resendOtp = async (req, res) => {
       stack: error.stack
     });
 
-    res.status(500).json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error resending OTP"
     });
@@ -559,6 +560,6 @@ export const filterChartData = async (req, res) => {
 
   } catch (error) {
     logger.error("Chart filter error", { message: error.message, stack: error.stack });
-    res.status(500).json({ success: false, message: "Error fetching chart data" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error fetching chart data" });
   }
 };

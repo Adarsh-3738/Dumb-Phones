@@ -6,6 +6,7 @@ import {
 
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // Load wallet page
 export const loadWallet = async (req, res) => {
@@ -77,7 +78,7 @@ export const createRazorpayTopUp = async (req, res) => {
     });
   } catch (error) {
     console.error("Razorpay Add Money Error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 
@@ -98,14 +99,14 @@ export const verifyRazorpayTopUp = async (req, res) => {
     if (razorpay_signature === expectedSign) {
       // Authentic Payment
       const wallet = await addMoneyToWallet(userId, amount, "Top-up via Razorpay");
-      if (!wallet) return res.status(500).json({ success: false, message: "Failed to credit Wallet DB" });
+      if (!wallet) return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to credit Wallet DB" });
       
       res.json({ success: true, message: "Wallet recharged successfully!" });
     } else {
-      res.status(400).json({ success: false, message: "Invalid payment signature" });
+      res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Invalid payment signature" });
     }
   } catch (error) {
     console.error("Verification Error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };

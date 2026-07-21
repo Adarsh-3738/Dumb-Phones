@@ -25,6 +25,11 @@ const VariantSchema = new Schema(
       required: true
     },
 
+    baseSalesPrice: {
+      type: Number,
+      required: false
+    },
+
     productOffer: {
       type: Number,
       default: 0

@@ -3,6 +3,7 @@ import {
   addToWishlistService,
   removeFromWishlistService
 } from "../../services/user/wishlistService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // LOAD WISHLIST PAGE
 export const loadWishlist = async (req, res) => {
@@ -27,7 +28,7 @@ export const loadWishlist = async (req, res) => {
 export const addToWishlist = async (req, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({
         success: false,
         notLoggedIn: true,
         message: "Please login to add to wishlist"
@@ -45,7 +46,7 @@ export const addToWishlist = async (req, res) => {
 
   } catch (error) {
     console.error("Add to wishlist error:", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: error.message });
   }
 };
 
@@ -53,7 +54,7 @@ export const addToWishlist = async (req, res) => {
 export const removeFromWishlist = async (req, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ success: false, message: "Please login" });
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Please login" });
     }
 
     const { productId } = req.body;
@@ -62,6 +63,6 @@ export const removeFromWishlist = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error("Remove from wishlist error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };

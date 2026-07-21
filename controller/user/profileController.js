@@ -12,6 +12,7 @@ import {
   updateUserAddress,
   deleteUserAddress
 } from "../../services/user/profileService.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 import { generateOtp, sendOtpEmail } from "../../services/user/userService.js";
 import cloudinary from "../../config/cloudinary.js";
@@ -383,7 +384,7 @@ export const resendEmailOtp = async (req, res) => {
   try {
 
     if (!req.session.emailChange) {
-      return res.status(400).json({ success: false, message: 'No email to verify' });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: 'No email to verify' });
     }
 
     const { newEmail } = req.session.emailChange;
@@ -403,7 +404,7 @@ export const resendEmailOtp = async (req, res) => {
 
     console.error("Resend OTP Error:", error);
 
-    return res.status(500).json({ success: false, message: 'Failed to send OTP' });
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to send OTP' });
 
   }
 
@@ -429,28 +430,28 @@ export const changePassword = async (req, res) => {
     const user = await getUserById(req.user._id);
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "User not found. Please log in again." });
+      return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "User not found. Please log in again." });
     }
 
     const isMatch = await comparePassword(currentPassword, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Current password is incorrect." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Current password is incorrect." });
     }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ success: false, message: "New passwords do not match." });
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "New passwords do not match." });
     }
 
     await updatePassword(user, newPassword);
 
-    return res.status(200).json({ success: true, message: "Password changed successfully." });
+    return res.status(STATUS_CODES.OK).json({ success: true, message: "Password changed successfully." });
 
   } catch (error) {
 
     console.error(error);
 
-    return res.status(500).json({ success: false, message: "Something went wrong. Please try again." });
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Something went wrong. Please try again." });
 
   }
 };
@@ -500,7 +501,7 @@ export const addAddress = async (req, res) => {
 
     if (!isValid) {
       if (req.query.source === 'checkout') {
-        return res.status(400).json({ success: false, message: Object.values(errors).join(", ") });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: Object.values(errors).join(", ") });
       }
       return res.render("user/add-address", {
         message: Object.values(errors).join(", ")
@@ -513,7 +514,7 @@ export const addAddress = async (req, res) => {
     await addNewAddress(userId, newAddress);
 
     if (req.query.source === 'checkout') {
-      return res.status(200).json({ success: true, message: "Address added successfully" });
+      return res.status(STATUS_CODES.OK).json({ success: true, message: "Address added successfully" });
     }
     res.redirect("/address?success=added");
 
@@ -522,7 +523,7 @@ export const addAddress = async (req, res) => {
     console.error(error);
 
     if (req.query.source === 'checkout') {
-      return res.status(500).json({ success: false, message: "Failed to add address" });
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to add address" });
     }
     res.render("user/add-address", {
       message: "Failed to add address"
@@ -570,7 +571,7 @@ export const updateAddress = async (req, res) => {
 
     if (!isValid) {
       if (req.query.source === 'checkout') {
-        return res.status(400).json({ success: false, message: Object.values(errors).join(", ") });
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: Object.values(errors).join(", ") });
       }
       return res.render("user/edit-address", {
         address: updatedAddress,
@@ -584,7 +585,7 @@ export const updateAddress = async (req, res) => {
     await updateUserAddress(req.user._id, req.params.id, updatedAddress);
 
     if (req.query.source === 'checkout') {
-      return res.status(200).json({ success: true, message: "Address updated successfully" });
+      return res.status(STATUS_CODES.OK).json({ success: true, message: "Address updated successfully" });
     }
     res.redirect("/address?success=updated");
 
@@ -593,7 +594,7 @@ export const updateAddress = async (req, res) => {
     console.error(error);
 
     if (req.query.source === 'checkout') {
-      return res.status(500).json({ success: false, message: "Failed to update address" });
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to update address" });
     }
     res.render("user/edit-address", {
       address: req.body,

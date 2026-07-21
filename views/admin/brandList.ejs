@@ -137,13 +137,37 @@
 </div>
 
 <!-- EDIT MODAL -->
+ 
 <div class="modal-bg" id="editModal">
   <div class="modal-box">
     <h3>Edit Brand</h3>
 
-    <input type="text" id="editName">
-    <input type="text" id="editCountry">
-    <input type="number" id="editFounded">
+    <div class="form-group">
+      <label for="editName">Brand Name</label>
+      <input
+        type="text"
+        id="editName"
+        placeholder="Enter brand name"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="editCountry">Country of Origin</label>
+      <input
+        type="text"
+        id="editCountry"
+        placeholder="Enter country"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="editFounded">Founded Year</label>
+      <input
+        type="number"
+        id="editFounded"
+        placeholder="Enter founded year"
+      >
+    </div>
 
     <div class="modal-actions">
       <button class="btn-primary" onclick="submitEdit()">Update</button>

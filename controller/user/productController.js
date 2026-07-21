@@ -1,5 +1,6 @@
 import productService from "../../services/user/productService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // GET PRODUCTS
 export const getProducts = async (req, res) => {
@@ -26,7 +27,7 @@ export const getProducts = async (req, res) => {
       query: req.query,
     });
 
-    res.status(500).render("user/page-404", {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("user/page-404", {
       message: "Failed to load products",
     });
   }
@@ -69,9 +70,9 @@ export const loadProductDetails = async (req, res) => {
       logger.warn("Product not found", {
         productId: req.params.id
       });
-      return res.status(404).render("user/page-404");
+      return res.status(STATUS_CODES.NOT_FOUND).render("user/page-404");
     }
 
-    res.status(500).render("user/page-404");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("user/page-404");
   }
 };
