@@ -29,7 +29,7 @@ body {
 /* Main Content Area */
 .main {
   margin-left: 250px; /* Sidebar width from header.ejs */
-  padding: 2rem 3rem;
+  padding: 30px;
   min-height: 100vh;
   transition: var(--transition);
 }

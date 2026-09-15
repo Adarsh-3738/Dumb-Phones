@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Referrals Dashboard</title>
-  <link rel="stylesheet" href="/css/admin/category.css">
+  <title>Referrals & Referral Offers</title>
+  <link rel="stylesheet" href="/css/admin/offers.css">
+  <link rel="stylesheet" href="/css/admin/referrals.css">
   <style>
     th { background: #f8f9fa; font-weight: 600; color: #333; }
     td { vertical-align: top; color: #444; }
@@ -29,6 +30,16 @@
       border: 1px solid #e2e8f0;
       font-size: 13px;
     }
+    .section-title {
+      margin-top: 35px;
+      margin-bottom: 15px;
+      font-size: 18px;
+      color: #1e293b;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
@@ -36,11 +47,66 @@
 <%- include("../../views/partials/admin/header") %> 
 
 <div class="container">
-  <div class="title-box">
+  <div class="title-box" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
-      <h2>Referrals Dashboard</h2>
-      <p>Track your platform's most active referrers and their invited users.</p>
+      <h2>Referrals & Referral Offers</h2>
+      <p>Manage signup referral bonus offers and track user referral history.</p>
     </div>
+    <div>
+      <button class="btn-add" onclick="openAddModal()">+ Create Referral Offer</button>
+    </div>
+  </div>
+
+  <!-- SECTION 1: REFERRAL OFFERS TABLE -->
+  <div class="section-title">
+    <span>Active Referral Offers</span>
+  </div>
+
+  <table style="margin-bottom: 30px;">
+    <thead>
+      <tr>
+        <th>Offer Name</th>
+        <th>Bonus Amount</th>
+        <th>Validity</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (typeof referralOffers === 'undefined' || !referralOffers || referralOffers.length === 0) { %>
+        <tr><td colspan="5" style="text-align:center;padding:20px;">No referral offers found. Create one using the button above.</td></tr>
+      <% } else { %>
+        <% referralOffers.forEach(offer => { %>
+        <tr>
+          <td><strong><%= offer.name %></strong></td>
+          <td>₹<%= offer.discountValue %> (Wallet Credit)</td>
+          <td style="font-size: 13px;">
+            <div style="color: #64748b;">Starts: <%= offer.startDate ? new Date(offer.startDate).toDateString() : 'N/A' %></div>
+            <div>Ends: <%= offer.endDate ? new Date(offer.endDate).toDateString() : 'N/A' %></div>
+          </td>
+          <td>
+            <% const today = new Date(); today.setHours(0,0,0,0); %>
+            <% if (new Date(offer.endDate) < today) { %>
+              <span class="status-draft" style="cursor:not-allowed; background:#fee2e2; color:#ef4444; border-color:#fca5a5;">Expired</span>
+            <% } else if (offer.status === "Active") { %>
+              <span class="status-active" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Active</span>
+            <% } else { %>
+              <span class="status-draft" onclick="toggleStatus('<%= offer._id %>')" style="cursor:pointer">Inactive</span>
+            <% } %>
+          </td>
+          <td>
+            <button class="action-btn" style="background:#e0f2fe; color:#0369a1" onclick="openEditModal('<%= offer._id %>', '<%= offer.name %>', '<%= offer.discountValue %>', '<%= offer.startDate ? new Date(offer.startDate).toISOString().split('T')[0] : '' %>', '<%= offer.endDate ? new Date(offer.endDate).toISOString().split('T')[0] : '' %>')">Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+          </td>
+        </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+
+  <!-- SECTION 2: REFERRAL HISTORY TABLE -->
+  <div class="section-title">
+    <span>Referral History</span>
   </div>
 
   <!-- Search -->
@@ -71,51 +137,110 @@
       <% } %>
 
       <% referrers.forEach(referrer => { %>
+        <% const activeReferredUsers = (referrer.redeemedUsers || []).filter(u => u != null); %>
       <tr>
         <td>
           <strong><%= referrer.name %></strong><br>
           <small><%= referrer.email %></small>
         </td>
         <td><span class="ref-code"><%= referrer.referalCode || 'N/A' %></span></td>
-        <td><%= referrer.redeemedUsers ? referrer.redeemedUsers.length : 0 %></td>
+        <td><%= activeReferredUsers.length %></td>
         <td>
           <div class="user-list">
-            <% if (referrer.redeemedUsers && referrer.redeemedUsers.length > 0) { %>
-              <% referrer.redeemedUsers.forEach(u => { %>
+            <% if (activeReferredUsers.length > 0) { %>
+              <% activeReferredUsers.forEach(u => { %>
                 <div class="referred-user">
-                  <span><%= u.name %></span> - <small><%= u.email %></small><br>
-                  <span style="color:#94a3b8; font-size:10px;">Joined: <%= u.createdOn ? u.createdOn.toDateString() : 'N/A' %></span>
+                  <strong><%= u.name || 'User' %></strong> - <small><%= u.email || 'N/A' %></small><br>
+                  <span style="color:#94a3b8; font-size:10px;">Joined: <%= u.createdOn ? new Date(u.createdOn).toDateString() : 'N/A' %></span>
                 </div>
               <% }) %>
             <% } else { %>
-              -
+              <span style="color: #94a3b8;">-</span>
             <% } %>
           </div>
         </td>
-        <td><%= referrer.createdOn.toDateString() %></td>
+        <td><%= new Date(referrer.createdOn).toDateString() %></td>
       </tr>
       <% }) %>
     </tbody>
   </table>
 
   <!-- Pagination -->
-  <div class="pagination">
-    <% if (currentPage > 1) { %>
-      <a href="/admin/referrals?page=<%= currentPage - 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Prev</button></a>
-    <% } %>
+  <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+    <div class="pagination">
+      <% if (currentPage > 1) { %>
+        <a href="/admin/referrals?page=<%= currentPage - 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Prev</button></a>
+      <% } %>
 
-    <% for(let i = 1; i <= totalPages; i++) { %>
-      <a href="/admin/referrals?page=<%= i %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
-        <button class="page-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></button>
-      </a>
-    <% } %>
+      <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/referrals?page=<%= i %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+          <button class="page-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></button>
+        </a>
+      <% } %>
 
-    <% if (currentPage < totalPages) { %>
-      <a href="/admin/referrals?page=<%= currentPage + 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Next</button></a>
-    <% } %>
+      <% if (currentPage < totalPages) { %>
+        <a href="/admin/referrals?page=<%= currentPage + 1 %>&search=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><button class="page-btn">Next</button></a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<!-- ADD REFERRAL OFFER MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal-box">
+    <h3>Create Referral Offer</h3>
+
+    <label>Offer Name</label>
+    <input type="text" id="offerName" placeholder="e.g. Signup Referral Bonus ₹100">
+
+    <label>Referral Bonus Amount (₹)</label>
+    <input
+      type="number"
+      id="discountValue"
+      min="1"
+      placeholder="Amount in ₹ (e.g. 100)"
+      style="margin-bottom: 15px;"
+    >
+
+    <label>Start Date</label>
+    <input type="date" id="startDate">
+
+    <label>End Date</label>
+    <input type="date" id="endDate">
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitAdd()">Create Offer</button>
+      <button class="btn btn-gray" onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT REFERRAL OFFER MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <h3>Edit Referral Offer</h3>
+    <input type="hidden" id="editOfferId">
+
+    <label>Offer Name</label>
+    <input type="text" id="editOfferName" placeholder="e.g. Signup Referral Bonus ₹100">
+
+    <label>Referral Bonus Amount (₹)</label>
+    <input type="number" id="editDiscountValue" min="1" placeholder="Amount in ₹" style="margin-bottom: 15px;">
+
+    <label>Start Date</label>
+    <input type="date" id="editStartDate">
+
+    <label>End Date</label>
+    <input type="date" id="editEndDate">
+
+    <div class="modal-btns">
+      <button class="btn btn-blue" onclick="submitEdit()">Save Changes</button>
+      <button class="btn btn-gray" onclick="closeEditModal()">Cancel</button>
+    </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/admin/referrals.js"></script>
 </body>
 </html>

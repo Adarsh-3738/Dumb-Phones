@@ -74,9 +74,6 @@ export const getCheckoutData = async (userId) => {
     salePriceSubtotal += item.price * item.quantity;
   });
 
-  const settings = await Settings.findOne();
-  const taxRate = settings ? settings.taxRate / 100 : 0.05;
-
   let couponDeduction = 0;
   let appliedCouponCode = null;
 
@@ -113,13 +110,13 @@ export const getCheckoutData = async (userId) => {
     }
   }
 
-  // Tax is calculated on the actual amount paid for items after coupon deduction
-  const taxableAmount = Math.max(0, salePriceSubtotal - couponDeduction);
-  const tax = Math.round(taxableAmount * taxRate);
-  const discount = totalSavings + couponDeduction;
-  const shipping = SHIPPING_COST;
-  
-  let total = subtotal + tax + shipping - discount;
+
+const tax = 0;
+const discount = totalSavings + couponDeduction;
+const shipping = SHIPPING_COST;
+
+let total = subtotal + shipping - discount;
+
   if (total < 0) total = 0;
 
   const addressDoc = await Address.findOne({ userId }).lean();
@@ -223,9 +220,6 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
       salePriceSubtotal += item.price * item.quantity;
     });
 
-  const settings = await Settings.findOne();
-  const taxRate = settings ? settings.taxRate / 100 : 0.05;
-
   let couponDeduction = 0;
   let couponApplied = false;
 
@@ -269,11 +263,10 @@ export const placeOrderService = async (userId, addressId, paymentMethod = "COD"
     couponApplied = true;
   }
 
-  const taxableAmount = Math.max(0, salePriceSubtotal - couponDeduction);
-  const tax = Math.round(taxableAmount * taxRate);
-  const discount = totalSavings + couponDeduction;
-  const shipping = SHIPPING_COST;
-  let finalAmount = subtotal + tax + shipping - discount;
+  const tax = 0;
+const discount = totalSavings + couponDeduction;
+const shipping = SHIPPING_COST;
+let finalAmount = subtotal + shipping - discount;
   if (finalAmount < 0) finalAmount = 0;
 
   if (paymentMethod === "COD" && finalAmount > 15000) {
@@ -338,7 +331,7 @@ order = await Order.create({
   orderedItems: orderedItems,   
 
   totalPrice: subtotal,
-  tax: tax,
+  tax: 0,
   shipping: shipping,
   discount: discount,
   finalAmount: finalAmount,

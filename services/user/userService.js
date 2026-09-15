@@ -321,7 +321,8 @@ export const generateResetToken = async (user) => {
 
   await user.save();
 
-  const resetUrl = `http://localhost:3001/reset-password/${resetToken}`;
+  const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3001}`;
+  const resetUrl = `${baseUrl}/reset-password/${resetToken}`;
 
   await sendResetEmail(user.email, resetUrl);
 

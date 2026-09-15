@@ -70,42 +70,6 @@
 
 <script src="/js/user/address.js"></script>
 
-<script>
-  // Check for success query params
-  const urlParams = new URLSearchParams(window.location.search);
-  const successParam = urlParams.get('success');
 
-  if (successParam === 'added') {
-    Swal.fire({
-      icon: 'success',
-      title: 'Address Added!',
-      text: 'Your new address was successfully saved.',
-      confirmButtonColor: '#2563eb',
-      timer: 3000
-    });
-    // Clean URL
-    window.history.replaceState(null, '', window.location.pathname);
-  } else if (successParam === 'updated') {
-    Swal.fire({
-      icon: 'success',
-      title: 'Address Updated!',
-      text: 'Your address was successfully updated.',
-      confirmButtonColor: '#2563eb',
-      timer: 3000
-    });
-    // Clean URL
-    window.history.replaceState(null, '', window.location.pathname);
-  } else if (successParam === 'deleted') {
-    Swal.fire({
-      icon: 'success',
-      title: 'Address Deleted!',
-      text: 'Your address was successfully removed.',
-      confirmButtonColor: '#2563eb',
-      timer: 3000
-    });
-    // Clean URL
-    window.history.replaceState(null, '', window.location.pathname);
-  }
-</script>
 
 </html>

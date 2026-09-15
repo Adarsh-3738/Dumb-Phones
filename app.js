@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import passport from "./config/passport.js";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
@@ -65,9 +66,13 @@ app.use((req, res, next) => {
 // Session
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "default_session_secret",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/dumbphones",
+      ttl: 72 * 60 * 60
+    }),
     cookie: {
       secure: false,
       httpOnly: true,
@@ -192,12 +197,60 @@ app.use("/admin", adminRouter);
 // Serve static files from uploads folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+// 404 Not Found Handler
+app.use((req, res) => {
+  if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+    return res.status(STATUS_CODES.NOT_FOUND).json({
+      success: false,
+      message: "Resource not found"
+    });
+  }
 
+  if (req.originalUrl.startsWith("/admin")) {
+    return res.status(STATUS_CODES.NOT_FOUND).render("admin/admin-error", {
+      statusCode: 404,
+      title: "404 - Page Not Found",
+      message: "The admin page or resource you requested does not exist."
+    });
+  }
 
+  return res.status(STATUS_CODES.NOT_FOUND).render("user/page-404", {
+    statusCode: 404,
+    title: "404 - Page Not Found",
+    message: "Oops! The page you're looking for doesn't exist."
+  });
+});
+
+// 500 Internal Server Error Handler
+app.use((err, req, res, next) => {
+  console.error("Global Error Handler:", err);
+
+  if (req.xhr || (req.headers.accept && req.headers.accept.includes("json"))) {
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: err.message || "An internal server error occurred"
+    });
+  }
+
+  if (req.originalUrl && req.originalUrl.startsWith("/admin")) {
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error", {
+      statusCode: 500,
+      title: "500 - Server Error",
+      message: err.message || "An unexpected error occurred. Please try again."
+    });
+  }
+
+  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("user/page-404", {
+    statusCode: 500,
+    title: "500 - Server Error",
+    message: "Something went wrong on our end. Please try again later."
+  });
+});
 
 // Server
-app.listen(process.env.PORT, () => {
-  console.log("Server running on port", process.env.PORT);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
   initCronJobs();
 });
 

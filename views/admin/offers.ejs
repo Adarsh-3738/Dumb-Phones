@@ -16,7 +16,6 @@
       <p>Create and manage product and category offers.</p>
     </div>
     <div style="display: flex; gap: 15px;">
-      <button class="btn-add" style="background:#368d07;" onclick="syncAllOffers()">Sync All Prices</button>
       <button class="btn-add" onclick="openAddModal()">+ Add Offer</button>
     </div>
   </div>
@@ -128,7 +127,6 @@
       <option value="" selected disabled>Select Offer Type</option>
       <option value="Product">Product Offer</option>
       <option value="Category">Category Offer</option>
-      <option value="Referral">Referral Offer</option>
     </select>
 
     <label id="targetLabel">Select Target</label>
@@ -191,7 +189,6 @@
     <select id="editOfferType" onchange="toggleEditTargetDropdown()">
       <option value="Product">Product Offer</option>
       <option value="Category">Category Offer</option>
-      <option value="Referral">Referral Offer</option>
     </select>
 
     <label id="editTargetLabel">Select Target</label>

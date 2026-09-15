@@ -5,6 +5,7 @@ import {
   softDeleteCategory,
 } from "../../services/admin/categoryService.js";
 import logger from "../../utils/logger.js";
+import STATUS_CODES from "../../utils/statusCodes.js";
 
 // LIST / SEARCH CATEGORIES
 export const categoryInfo = async (req, res) => {
@@ -33,7 +34,11 @@ export const categoryInfo = async (req, res) => {
       stack: error.stack,
       query: req.query,
     });
-    res.redirect("/admin/page-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error", {
+      statusCode: 500,
+      title: "500 - Server Error",
+      message: error.message
+    });
   }
 };
 
@@ -57,7 +62,7 @@ export const addCategory = async (req, res) => {
       message: error.message,
       body: req.body,
     });
-    return res.json({ success: false, msg: error.message });
+    return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, msg: error.message });
   }
 };
 
@@ -82,7 +87,7 @@ export const editCategory = async (req, res) => {
       message: error.message,
       body: req.body,
     });
-    return res.json({ success: false, msg: error.message });
+    return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, msg: error.message });
   }
 };
 
@@ -104,6 +109,6 @@ export const deleteCategory = async (req, res) => {
       stack: error.stack,
       body: req.body,
     });
-    return res.json({ success: false });
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };

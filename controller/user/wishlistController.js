@@ -41,7 +41,7 @@ export const addToWishlist = async (req, res) => {
     if (result.added) {
       res.json({ success: true, message: "Added to wishlist" });
     } else {
-      res.json({ success: false, message: result.message });
+      res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: result.message });
     }
 
   } catch (error) {

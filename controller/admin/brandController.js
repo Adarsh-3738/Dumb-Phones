@@ -26,7 +26,11 @@ export const loadBrands = async (req, res) => {
       totalPages
     });
   } catch (err) {
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin-error");
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).render("admin/admin-error", {
+      statusCode: 500,
+      title: "500 - Server Error",
+      message: err.message
+    });
   }
 };
 
@@ -40,7 +44,7 @@ export const addBrand = async (req, res) => {
       message: "Brand created successfully"
     });
   } catch (err) {
-    res.json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       success: false,
       message: err.message
     });
@@ -57,7 +61,7 @@ export const editBrand = async (req, res) => {
       brand: updated
     });
   } catch (err) {
-    res.json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       success: false,
       message: err.message
     });
@@ -77,7 +81,7 @@ export const changeBrandStatus = async (req, res) => {
         : "Brand unblocked successfully"
     });
   } catch (err) {
-    res.json({
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: err.message
     });

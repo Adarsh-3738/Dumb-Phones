@@ -161,6 +161,15 @@ export const changeOrderStatus = async (orderId, status) => {
         item.itemStatus = "Returned";
       }
     }
+
+    // Release coupon if applied
+    if (order.couponApplied && order.couponId) {
+      const coupon = await Coupon.findById(order.couponId);
+      if (coupon) {
+        coupon.userId = coupon.userId.filter(id => id.toString() !== order.userId.toString());
+        await coupon.save();
+      }
+    }
   }
 
   // If admin is cancelling the entire order that hasn't been cancelled/returned yet
@@ -278,10 +287,10 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
     const previousCouponDeduction = Math.max(0, order.discount - previousProductSavings);
     const previousTaxableAmount = Math.max(0, previousSalePriceSubtotal - previousCouponDeduction);
 
-    let taxRate = 0.05;
-    if (previousTaxableAmount > 0) {
-      taxRate = order.tax / previousTaxableAmount;
-    }
+    let taxRate = 0;
+if (order.tax && previousTaxableAmount > 0) {
+  taxRate = order.tax / previousTaxableAmount;
+}
 
     const remainingActiveItems = order.orderedItems.filter(i => 
       i._id.toString() !== itemId && 
@@ -355,6 +364,9 @@ export const changeOrderItemStatus = async (orderId, itemId, status) => {
       if (refundAmount > 0) {
         await addMoneyToWallet(order.userId, refundAmount, `Refund for Returned Item in Order ${order.orderId}`);
         order.refundedAmount = (order.refundedAmount || 0) + refundAmount;
+      }
+      if (remainingActiveItems.length === 0 && order.finalAmount === 0) {
+        order.paymentStatus = "Refunded";
       }
     }
 

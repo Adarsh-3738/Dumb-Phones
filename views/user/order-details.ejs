@@ -49,6 +49,18 @@
         const shippingVal = isOrderActive ? (order.shipping || 0) : 0;
         const discountVal = isOrderActive ? (order.discount || 0) : 0;
         const finalAmountVal = isOrderActive ? (order.finalAmount || 0) : 0;
+
+        let activeProductSavings = 0;
+        if (isOrderActive) {
+          order.orderedItems.forEach(item => {
+            if (item.itemStatus !== "Cancelled" && item.itemStatus !== "Returned") {
+              const regularPrice = (item.regularPrice !== undefined && item.regularPrice !== null) ? item.regularPrice : item.price;
+              activeProductSavings += (regularPrice - item.price) * item.quantity;
+            }
+          });
+        }
+        const offerDiscountVal = Math.min(discountVal, activeProductSavings);
+        const couponDiscountVal = Math.max(0, discountVal - offerDiscountVal);
       %>
         
         <!-- Left Column Items List -->
@@ -137,17 +149,20 @@
 
             <div class="summary-details">
               <div class="summary-line">
-                <span class="label">Subtotal</span>
+                <span class="label">Gross Subtotal</span>
                 <span class="value">₹<%= parseInt(subtotalVal).toLocaleString('en-IN') %></span>
               </div>
               <div class="summary-line">
                 <span class="label">Order Date</span>
                 <span class="value"><%= order.createdOn.toDateString() %></span>
               </div>
-              <div class="summary-line">
-                <span class="label">Tax</span>
-                <span class="value">₹<%= parseInt(taxVal).toLocaleString('en-IN') %></span>
-              </div>
+              <% if (taxVal > 0) { %>
+                <div class="summary-line">
+                  <span class="label">Tax</span>
+                  <span class="value">₹<%= parseInt(taxVal).toLocaleString('en-IN') %></span>
+                </div>
+              <% } %>
+
               <div class="summary-line">
                 <span class="label">Shipping</span>
                 <% if (shippingVal === 0) { %>
@@ -156,10 +171,25 @@
                   <span class="value">₹<%= parseInt(shippingVal).toLocaleString('en-IN') %></span>
                 <% } %>
               </div>
-              <div class="summary-line discount-line">
-                <span class="label">Discount Applied</span>
-                <span class="value">- ₹<%= parseInt(discountVal).toLocaleString('en-IN') %></span>
-              </div>
+
+              <% if (offerDiscountVal > 0) { %>
+                <div class="summary-line discount-line">
+                  <span class="label" style="color: #10b981; font-weight: 600;">Product Offer Savings</span>
+                  <span class="value" style="color: #10b981; font-weight: 600;">- ₹<%= parseInt(offerDiscountVal).toLocaleString('en-IN') %></span>
+                </div>
+              <% } %>
+              <% if (couponDiscountVal > 0) { %>
+                <div class="summary-line discount-line">
+                  <span class="label" style="color: #6366f1; font-weight: 600;">Coupon Discount</span>
+                  <span class="value" style="color: #6366f1; font-weight: 600;">- ₹<%= parseInt(couponDiscountVal).toLocaleString('en-IN') %></span>
+                </div>
+              <% } %>
+              <% if (order.refundedAmount && order.refundedAmount > 0) { %>
+                <div class="summary-line discount-line">
+                  <span class="label" style="color: #ef4444; font-weight: 600;">Amount Refunded</span>
+                  <span class="value" style="color: #ef4444; font-weight: 600;">₹<%= parseInt(order.refundedAmount).toLocaleString('en-IN') %></span>
+                </div>
+              <% } %>
               <div class="summary-line" style="margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px;">
                 <span class="label">Payment Method</span>
                 <span class="value" style="font-weight: 600;"><%= order.paymentMethod || 'Unknown' %></span>

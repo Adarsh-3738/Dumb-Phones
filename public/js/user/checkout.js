@@ -34,20 +34,142 @@ function openAddressModal(btnRef = null) {
   }
 
   modal.classList.add("active");
-  document.body.style.overflow = "hidden"; // Prevent background scrolling
+  document.body.style.overflow = "hidden";
 }
 
 function closeAddressModal() {
   const modal = document.getElementById("addressModal");
-  modal.classList.remove("active");
-  document.body.style.overflow = "";
+  if (modal) {
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+}
+
+async function applyCoupon() {
+  const code = document.getElementById("couponCodeInput").value.trim();
+  if (!code) return Swal.fire("Code Required", "Please enter a valid coupon code first.", "warning");
+
+  try {
+    const res = await fetch("/checkout/apply-coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (data.success) {
+      await Swal.fire("Coupon Applied!", data.message, "success");
+      location.reload();
+    } else {
+      Swal.fire("Offer Ineligible", data.message, "error");
+    }
+  } catch (e) { 
+    console.error(e);
+    Swal.fire("Error", "Could not apply coupon securely.", "error");
+  }
+}
+
+async function removeCoupon() {
+  try {
+    const res = await fetch("/checkout/remove-coupon", { method: "POST" });
+    const data = await res.json();
+    if (data.success) {
+      location.reload();
+    } else {
+      Swal.fire("Failed to Remove", data.message, "error");
+    }
+  } catch (e) { console.error(e) }
+}
+
+async function handleCheckout() {
+  const form = document.getElementById("addressForm");
+  const addressChecked = document.querySelector('input[name="addressId"]:checked');
+  const paymentMethodInput = document.querySelector('input[name="paymentMethod"]:checked');
+
+  if (!addressChecked) {
+    return Swal.fire("Address Required", "Please select a delivery address", "warning");
+  }
+
+  const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "COD";
+
+  // COD or Wallet: submit form normally
+  if (paymentMethod === "COD" || paymentMethod === "Wallet") {
+    form.submit();
+    return;
+  }
+
+  // RAZORPAY PAYMENT
+  try {
+    const res = await fetch("/checkout/razorpay-create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ addressId: addressChecked.value })
+    });
+    
+    const data = await res.json();
+    
+    if (!data.success) {
+      return Swal.fire("Checkout Failed", data.message, "error");
+    }
+
+    const options = {
+      key: data.key, 
+      amount: Math.round(data.amount * 100),
+      currency: "INR",
+      name: "DumbPhones",
+      description: "Order Payment",
+      order_id: data.razorpayOrderId,
+      
+      handler: async function (response) {
+        const verifyRes = await fetch("/checkout/razorpay-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            systemOrderId: data.systemOrderId
+          })
+        });
+
+        const verifyData = await verifyRes.json();
+        
+        if (verifyData.success) {
+           window.location.href = `/order-success?orderId=${data.systemOrderId}`;
+        } else {
+           Swal.fire("Verification Failed", "Payment was tampered with.", "error");
+           window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+        }
+      },
+      prefill: {
+        name: "User",
+        email: "user@example.com" 
+      },
+      theme: { color: "#0f172a" },
+      modal: {
+        ondismiss: function() {
+           window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+        }
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    
+    rzp.on('payment.failed', function (response){
+      window.location.href = `/order-failed?orderId=${data.systemOrderId}`;
+    });
+
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire("System Error", "Could not initialize payment module.", "error");
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const modalForm = document.getElementById("modalAddressForm");
   const modalSubmitBtn = document.getElementById("modalSubmitBtn");
 
-  // Realtime input restriction to numbers
   const restrictToNumbers = (e) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   };
@@ -64,13 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
       
       let hasErrors = false;
 
-      // Helper to clear errors
       const clearErrors = () => {
         document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
         document.querySelectorAll("#modalAddressForm input").forEach(el => el.classList.remove("error-border"));
       };
 
-      // Helper to show errors
       const showError = (fieldId, message) => {
         const errorEl = document.getElementById(`error-${fieldId}`);
         const inputEl = document.getElementById(`modal${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
@@ -84,12 +204,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       clearErrors();
 
-      // Address Type Validation
       let addressTypeInput = document.getElementById("modalAddressType");
       let addressType = addressTypeInput.value.trim();
       if (addressType) {
         addressType = addressType.charAt(0).toUpperCase() + addressType.slice(1).toLowerCase();
-        addressTypeInput.value = addressType; // Update the actual input value
+        addressTypeInput.value = addressType;
       }
       if (!addressType) {
         showError("addressType", "Address type is required");
@@ -97,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("addressType", "Must be strictly 'Home' or 'Office'");
       }
 
-      // Name Validation
       const name = document.getElementById("modalName").value.trim();
       if (!name) {
         showError("name", "Full name is required");
@@ -107,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("name", "Name can only contain letters and spaces");
       }
 
-      // Phone Validation
       const phone = document.getElementById("modalPhone").value.trim();
       if (!phone) {
         showError("phone", "Phone number is required");
@@ -115,13 +232,11 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("phone", "Phone number must be exactly 10 digits");
       }
 
-      // Alternate Phone
       const altPhone = document.getElementById("modalAltPhone").value.trim();
       if (altPhone && !/^\d{10}$/.test(altPhone)) {
         showError("altPhone", "Alternate phone must be exactly 10 digits");
       }
 
-      // Landmark
       const landmark = document.getElementById("modalLandmark").value.trim();
       if (!landmark) {
         showError("landmark", "Landmark is required");
@@ -129,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("landmark", "Landmark must be at least 3 characters");
       }
 
-      // City
       const city = document.getElementById("modalCity").value.trim();
       if (!city) {
         showError("city", "City is required");
@@ -139,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("city", "City can only contain letters and spaces");
       }
 
-      // State
       const state = document.getElementById("modalState").value.trim();
       if (!state) {
         showError("state", "State is required");
@@ -149,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("state", "State can only contain letters and spaces");
       }
 
-      // Pincode
       const pincode = document.getElementById("modalPincode").value.trim();
       if (!pincode) {
         showError("pincode", "Pincode is required");
@@ -158,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (hasErrors) {
-        return; // Stop form submission
+        return;
       }
 
       modalSubmitBtn.disabled = true;
@@ -166,8 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const formData = new FormData(modalForm);
       const data = Object.fromEntries(formData.entries());
-      
-      // Checkbox is not in FormData if unchecked
       data.isDefault = false;
       
       try {
@@ -197,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
             timer: 1500,
             showConfirmButton: false
           });
-          location.reload(); // Refresh to show new address
+          location.reload();
         } else {
           Swal.fire({
             icon: 'error',
@@ -215,7 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Close modal when clicking outside
   const modalOverlay = document.getElementById("addressModal");
   if (modalOverlay) {
     modalOverlay.addEventListener("mousedown", (e) => {
@@ -224,25 +333,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const addressForm = document.getElementById("addressForm");
-    
-    if (addressForm) {
-      addressForm.addEventListener("submit", (e) => {
-        const selectedAddress = document.querySelector('input[name="addressId"]:checked');
+  const addressForm = document.getElementById("addressForm");
+  if (addressForm) {
+    addressForm.addEventListener("submit", (e) => {
+      const selectedAddress = document.querySelector('input[name="addressId"]:checked');
+      
+      if (!selectedAddress) {
+        e.preventDefault();
         
-        if (!selectedAddress) {
-          e.preventDefault(); // Stop standard form submission
-          
-          Swal.fire({
-            icon: 'warning',
-            title: 'Action Required',
-            text: 'Please select a delivery address to place your order. If you haven\'t added one, please add a new address.',
-            confirmButtonColor: '#1d4ed8'
-          });
-        }
-      });
-    }
-  });
+        Swal.fire({
+          icon: 'warning',
+          title: 'Action Required',
+          text: 'Please select a delivery address to place your order. If you haven\'t added one, please add a new address.',
+          confirmButtonColor: '#1d4ed8'
+        });
+      }
+    });
+  }
+});

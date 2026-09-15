@@ -42,46 +42,66 @@ function toggleEditTargetDropdown(selectedTargetId = "") {
         targetSelect.appendChild(option);
       }
     });
-  } else if (type === "Referral") {
-    targetSelect.disabled = true;
-    targetSelect.innerHTML = "<option value=''>Global (No Target Issued)</option>";
-    document.getElementById("editDiscountType").value = "Fixed Amount";
-    document.getElementById("editDiscountType").disabled = true;
-    toggleDiscountType(true);
   }
 }
 
 function toggleTargetDropdown() {
   const type = document.getElementById("offerType").value;
   const targetSelect = document.getElementById("offerTarget");
-  
+  const targetLabel = document.getElementById("targetLabel");
+
+  // Clear existing options
   targetSelect.innerHTML = "";
-  document.getElementById("discountType").disabled = false;
-  
+
+  // Reset target dropdown
+  targetSelect.disabled = false;
+
+  // Add default option
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Select Target";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+
+  targetSelect.appendChild(defaultOption);
+
+  // Product Offer
   if (type === "Product") {
+
+    targetLabel.textContent = "Select Product";
+
     products.forEach(p => {
       if (!p.isBlocked) {
         const option = document.createElement("option");
+
         option.value = p._id;
         option.textContent = p.productName;
+
         targetSelect.appendChild(option);
       }
     });
+
+  // Category Offer
   } else if (type === "Category") {
+
+    targetLabel.textContent = "Select Category";
+
     categories.forEach(c => {
       if (!c.isDeleted) {
         const option = document.createElement("option");
+
         option.value = c._id;
         option.textContent = c.name;
+
         targetSelect.appendChild(option);
       }
     });
-  } else if (type === "Referral") {
+
+  } else {
+
+    // No offer type selected
+    targetLabel.textContent = "Select Target";
     targetSelect.disabled = true;
-    targetSelect.innerHTML = "<option value=''>Global (No Target Issued)</option>";
-    document.getElementById("discountType").value = "Fixed Amount";
-    document.getElementById("discountType").disabled = true;
-    toggleDiscountType(false);
   }
 }
 
@@ -244,19 +264,5 @@ async function deleteOffer(id) {
     } catch (error) {
       Swal.fire("Error", "Something went wrong", "error");
     }
-  }
-}
-
-async function syncAllOffers() {
-  try {
-    const res = await fetch("/admin/offers/sync", { method: "POST" });
-    const data = await res.json();
-    if (data.success) {
-      Swal.fire("Synced!", data.message, "success").then(() => location.reload());
-    } else {
-      Swal.fire("Error", data.message, "error");
-    }
-  } catch (error) {
-    Swal.fire("Error", "Failed to sync offers", "error");
   }
 }

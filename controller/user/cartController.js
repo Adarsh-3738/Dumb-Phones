@@ -75,12 +75,29 @@ export const incrementQty = async (req, res) => {
     const { variantId } = req.body;
 
     await incrementQtyService(userId, variantId);
+    
+    // Fetch updated cart data
+    const cart = await getCartData(userId);
+    const updatedItem = cart ? cart.items.find(i => {
+      const itemVarId = i.variantId?._id ? i.variantId._id.toString() : i.variantId?.toString();
+      return itemVarId === variantId;
+    }) : null;
+    
+    let subtotal = 0;
+    if (cart && cart.items) {
+      cart.items.forEach(i => { subtotal += i.price * i.quantity; });
+    }
 
-    res.json({ success: true });
+    res.json({ 
+      success: true,
+      newQuantity: updatedItem ? updatedItem.quantity : 0,
+      cartSubtotal: subtotal,
+      cartTotal: subtotal
+    });
 
   } catch (error) {
 
-    res.json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       success: false,
       message: error.message
     });
@@ -102,11 +119,28 @@ export const decrementQty = async (req, res) => {
 
     await decrementQtyService(userId, variantId);
 
-    res.json({ success: true });
+    // Fetch updated cart data
+    const cart = await getCartData(userId);
+    const updatedItem = cart ? cart.items.find(i => {
+      const itemVarId = i.variantId?._id ? i.variantId._id.toString() : i.variantId?.toString();
+      return itemVarId === variantId;
+    }) : null;
+    
+    let subtotal = 0;
+    if (cart && cart.items) {
+      cart.items.forEach(i => { subtotal += i.price * i.quantity; });
+    }
+
+    res.json({ 
+      success: true,
+      newQuantity: updatedItem ? updatedItem.quantity : 0,
+      cartSubtotal: subtotal,
+      cartTotal: subtotal
+    });
 
   } catch (error) {
 
-    res.json({
+    res.status(STATUS_CODES.BAD_REQUEST).json({
       success: false,
       message: error.message
     });

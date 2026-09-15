@@ -37,7 +37,8 @@ export const fetchSalesReportData = async ({ range, startDate, endDate, searchQu
     createdOn: { $gte: start, $lte: end },
     $or: [
       { status: { $in: ["Delivered", "Returned"] } },
-      { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      { paymentMethod: { $ne: "COD" }, paymentStatus: { $in: ["Paid", "Refunded"] } },
+      { refundedAmount: { $gt: 0 } }
     ]
   };
 
@@ -63,7 +64,15 @@ export const fetchSalesReportData = async ({ range, startDate, endDate, searchQu
         deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
         returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
         netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
-        totalRefunded: { $sum: { $ifNull: ["$refundedAmount", 0] } },
+        totalRefunded: {
+          $sum: {
+            $cond: [
+              { $gt: ["$refundedAmount", 0] },
+              "$refundedAmount",
+              { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] }
+            ]
+          }
+        },
         totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
       }
     }
@@ -85,7 +94,8 @@ export const generateSalesPdfStream = async (res, { range, startDate, endDate })
     createdOn: { $gte: start, $lte: end },
     $or: [
       { status: { $in: ["Delivered", "Returned"] } },
-      { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      { paymentMethod: { $ne: "COD" }, paymentStatus: { $in: ["Paid", "Refunded"] } },
+      { refundedAmount: { $gt: 0 } }
     ]
   };
   
@@ -102,7 +112,15 @@ export const generateSalesPdfStream = async (res, { range, startDate, endDate })
         deliveredCount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, 1, 0] } },
         returnedCount: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
         netRevenue: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$finalAmount", 0] } },
-        totalRefunded: { $sum: { $ifNull: ["$refundedAmount", 0] } },
+        totalRefunded: {
+          $sum: {
+            $cond: [
+              { $gt: ["$refundedAmount", 0] },
+              "$refundedAmount",
+              { $cond: [{ $eq: ["$status", "Returned"] }, "$finalAmount", 0] }
+            ]
+          }
+        },
         totalDiscount: { $sum: { $cond: [{ $ne: ["$status", "Returned"] }, "$discount", 0] } }
       }
     }
@@ -257,7 +275,8 @@ export const generateSalesExcelStream = async (res, { range, startDate, endDate 
     createdOn: { $gte: start, $lte: end },
     $or: [
       { status: { $in: ["Delivered", "Returned"] } },
-      { paymentMethod: { $ne: "COD" }, paymentStatus: "Paid" }
+      { paymentMethod: { $ne: "COD" }, paymentStatus: { $in: ["Paid", "Refunded"] } },
+      { refundedAmount: { $gt: 0 } }
     ]
   };
   

@@ -21,16 +21,7 @@
   <h2>Change Email</h2>
 
   <% if (message) { %>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Wait a moment',
-          text: '<%= message %>',
-          confirmButtonColor: '#1d4ed8'
-        });
-      });
-    </script>
+    <div id="serverMessage" data-message="<%= message %>" style="display:none;"></div>
   <% } %>
 
   <form id="changeEmailForm" action="/email/change" method="POST">

@@ -11,9 +11,8 @@ body {
 
 .container {
   max-width: 1200px;
-  margin: 30px auto;
-  margin-left: 260px;
-  padding: 20px;
+  margin: 30px 30px 30px 250px;
+  padding: 30px;
 }
 
 /* Page Heading */

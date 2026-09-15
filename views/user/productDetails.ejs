@@ -50,16 +50,7 @@
           </button>
         </div>
         
-        <div class="rating-mini">
-          <div class="stars-mini">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          </div>
-          <a href="#reviews" class="review-link-mini">124 Reviews</a>
-        </div>
+        
       </div>
 <% if (isProductUnavailable) { %>
   <div class="unavailable-banner" style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fca5a5; font-weight: bold; display: flex; align-items: center; gap: 8px;">
@@ -176,7 +167,6 @@
   <div class="product-tabs-container">
     <div class="tabs-header">
       <button class="tab-btn active" onclick="switchTab('description')">Description</button>
-      <button class="tab-btn" onclick="switchTab('reviews')" id="reviews">Reviews (124)</button>
     </div>
     
     <div class="tabs-content">
@@ -188,28 +178,8 @@
         </div>
       </div>
 
-      <!-- REVIEWS TAB -->
-      <div id="tab-reviews" class="tab-pane">
-        <div class="reviews-section">
-          <div class="rating-overview">
-            <div class="rating-score-box">
-              <span class="score-number">4.5</span>
-              <div class="stars-large">
-                <span>★★★★★</span>
-              </div>
-              <span class="review-count">Based on 124 reviews</span>
-            </div>
-            <div class="rating-bars">
-              <!-- Placeholder for visual bars -->
-              <div class="bar-row"><span class="star-label">5 star</span><div class="bar-bg"><div class="bar-fill" style="width: 70%"></div></div><span class="pct">70%</span></div>
-              <div class="bar-row"><span class="star-label">4 star</span><div class="bar-bg"><div class="bar-fill" style="width: 20%"></div></div><span class="pct">20%</span></div>
-              <div class="bar-row"><span class="star-label">3 star</span><div class="bar-bg"><div class="bar-fill" style="width: 5%"></div></div><span class="pct">5%</span></div>
-              <div class="bar-row"><span class="star-label">2 star</span><div class="bar-bg"><div class="bar-fill" style="width: 3%"></div></div><span class="pct">3%</span></div>
-              <div class="bar-row"><span class="star-label">1 star</span><div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div><span class="pct">2%</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
+    
+      
     </div>
   </div>
 

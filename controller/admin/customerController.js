@@ -53,7 +53,7 @@ export const customerBlocked = async (req, res) => {
       stack: error.stack,
       body: req.body,
     });
-    res.json({ success: false });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error toggling customer block status" });
   }
 };
 

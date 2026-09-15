@@ -183,11 +183,10 @@ export const cancelUserOrderItem = async (orderId, userId, itemId, reason) => {
   }
   const previousCouponDeduction = Math.max(0, order.discount - previousProductSavings);
   const previousTaxableAmount = Math.max(0, previousSalePriceSubtotal - previousCouponDeduction);
-
-  let taxRate = 0.05;
-  if (previousTaxableAmount > 0) {
-    taxRate = order.tax / previousTaxableAmount;
-  }
+let taxRate = 0;
+if (order.tax && previousTaxableAmount > 0) {
+  taxRate = order.tax / previousTaxableAmount;
+}
 
   // Mark item as cancelled
   item.itemStatus = "Cancelled";

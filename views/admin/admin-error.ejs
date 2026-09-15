@@ -3,16 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found</title>
-  <link rel="stylesheet" href="/css/admin/admin-error.css">
+  <title>Admin - Error</title>
+  <link rel="stylesheet" href="/css/admin/category.css">
+  <style>
+    .error-card {
+      background: white;
+      border-radius: 12px;
+      padding: 50px 30px;
+      max-width: 600px;
+      margin: 60px auto;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    .error-code {
+      font-size: 72px;
+      font-weight: 800;
+      color: #ef4444;
+      line-height: 1;
+      margin-bottom: 15px;
+    }
+    .error-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+    .error-msg {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .btn-dash {
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .btn-dash:hover { background: #1d4ed8; }
+    .btn-back {
+      background: #f1f5f9;
+      color: #334155;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-back:hover { background: #e2e8f0; }
+  </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>404</h1>
-    <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/">Go Home</a>
+<%- include("../../views/partials/admin/header") %>
+
+<div class="container">
+  <div class="error-card">
+    <div class="error-code"><%= typeof statusCode !== 'undefined' ? statusCode : '404' %></div>
+    <div class="error-title"><%= typeof title !== 'undefined' ? title : 'Page or Action Error' %></div>
+    <p class="error-msg">
+      <%= typeof message !== 'undefined' ? message : "The requested admin page or action could not be completed. Please check your URL or return to the dashboard." %>
+    </p>
+    <div class="btn-group">
+      <a href="/admin/dashboard" class="btn-dash">← Back to Dashboard</a>
+      <button onclick="history.back()" class="btn-back">Go Back</button>
+    </div>
   </div>
+</div>
 
 </body>
 </html>

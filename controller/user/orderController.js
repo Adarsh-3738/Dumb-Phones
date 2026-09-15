@@ -152,10 +152,6 @@ export const downloadInvoice = async (req, res) => {
 
     doc.pipe(res);
 
-    // Fetch Settings
-    const settings = await Settings.findOne();
-    const taxRate = settings ? settings.taxRate / 100 : 0.05;
-    const taxRateLabel = settings ? settings.taxRate : 5;
 
     // Helper functions
     const generateHr = (y) => {
@@ -247,7 +243,7 @@ export const downloadInvoice = async (req, res) => {
       const unitPrice = regularPrice;
       const itemDiscount = (regularPrice - item.price) * item.quantity;
       
-      if (!isCancelled) {
+      if (!isCancelled && !isReturned) {
         activeSubtotal += (unitPrice * item.quantity);
         totalDiscount += itemDiscount;
       }
@@ -323,9 +319,11 @@ export const downloadInvoice = async (req, res) => {
     doc.text("Gross Amount:", totalsStartX, totalsY, { width: 100, align: "right" });
     doc.text(formatCurrency(grossAmount), totalsValueX, totalsY, { width: 80, align: "right" });
     
-    doc.text(`Tax (${taxRateLabel}%):`, totalsStartX, totalsY + 20, { width: 100, align: "right" });
-    doc.text(formatCurrency(tax), totalsValueX, totalsY + 20, { width: 80, align: "right" });
-    
+    if (tax > 0) {
+  doc.text(`Tax:`, totalsStartX, totalsY + 20, { width: 100, align: "right" });
+  doc.text(formatCurrency(tax), totalsValueX, totalsY + 20, { width: 80, align: "right" });
+}
+
     doc.text("Shipping Charge:", totalsStartX, totalsY + 40, { width: 100, align: "right" });
     doc.text(shipping === 0 ? "Free" : formatCurrency(shipping), totalsValueX, totalsY + 40, { width: 80, align: "right" });
 

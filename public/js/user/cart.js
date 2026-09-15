@@ -23,7 +23,15 @@ async function updateQty(variantId, action) {
       return;
     }
 
-    location.reload();
+    // UPDATE DOM ELEMENTS WITHOUT RELOADING
+    const qtySpan = document.getElementById(`qty-${variantId}`);
+    if (qtySpan) qtySpan.textContent = data.newQuantity;
+
+    const subtotalSpan = document.getElementById("cart-subtotal");
+    if (subtotalSpan) subtotalSpan.textContent = `₹${data.cartSubtotal.toLocaleString('en-IN')}`;
+
+    const totalSpan = document.getElementById("cart-total");
+    if (totalSpan) totalSpan.textContent = `₹${data.cartTotal.toLocaleString('en-IN')}`;
 
   } catch (error) {
     Swal.fire({

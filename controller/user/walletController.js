@@ -52,10 +52,10 @@ export const loadWallet = async (req, res) => {
 export const createRazorpayTopUp = async (req, res) => {
   try {
     const userId = req.session.user?._id || req.user?._id;
-    if (!userId) return res.json({ success: false, message: "Unauthorized" });
+    if (!userId) return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Unauthorized" });
 
     const { amount } = req.body;
-    if (!amount || amount < 100) return res.json({ success: false, message: "Minimum top-up is ₹100" });
+    if (!amount || amount < 100) return res.status(STATUS_CODES.BAD_REQUEST).json({ success: false, message: "Minimum top-up is ₹100" });
 
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
@@ -86,7 +86,7 @@ export const createRazorpayTopUp = async (req, res) => {
 export const verifyRazorpayTopUp = async (req, res) => {
   try {
     const userId = req.session.user?._id || req.user?._id;
-    if (!userId) return res.json({ success: false, message: "Unauthorized" });
+    if (!userId) return res.status(STATUS_CODES.UNAUTHORIZED).json({ success: false, message: "Unauthorized" });
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = req.body;
 

@@ -6,10 +6,10 @@ body {
 
 /* Modal Layout */
 .product-modal {
-  margin-left: 260px;
+  margin-left: 250px;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 30px 20px;
 }
 
 .modal-content {

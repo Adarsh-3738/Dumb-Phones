@@ -1,4 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Handle server message if present
+  const serverMessageEl = document.getElementById("serverMessage");
+  if (serverMessageEl && serverMessageEl.dataset.message) {
+    const msg = serverMessageEl.dataset.message;
+    if (msg.trim() !== "") {
+      Swal.fire({
+        icon: 'error',
+        title: 'Wait a moment',
+        text: msg,
+        confirmButtonColor: '#1d4ed8'
+      });
+    }
+  }
+
   const form = document.getElementById("changeEmailForm");
 
   if (form) {
@@ -13,18 +27,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (errorMsg) errorMsg.textContent = "";
       if (emailInput) emailInput.classList.remove("error-border");
 
-      const emailVal = emailInput.value.trim();
+      const emailVal = emailInput ? emailInput.value.trim() : "";
 
       // Simple email regex
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!emailVal) {
-        errorMsg.textContent = "Email address is required";
-        emailInput.classList.add("error-border");
+        if (errorMsg) errorMsg.textContent = "Email address is required";
+        if (emailInput) emailInput.classList.add("error-border");
         hasErrors = true;
       } else if (!emailRegex.test(emailVal)) {
-        errorMsg.textContent = "Please enter a valid email format";
-        emailInput.classList.add("error-border");
+        if (errorMsg) errorMsg.textContent = "Please enter a valid email format";
+        if (emailInput) emailInput.classList.add("error-border");
         hasErrors = true;
       }
 

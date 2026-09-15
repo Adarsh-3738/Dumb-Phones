@@ -85,7 +85,8 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
 
-                    <span class="qty-display"><%= item.quantity %></span>
+                   <span class="qty-display" id="qty-<%= variant._id %>"><%= item.quantity %></span>
+
 
                     <button
                       class="qty-btn plus"
@@ -119,23 +120,38 @@
           
           <% 
             let subtotal = 0;
+            let regularSubtotal = 0;
+            let offerSavings = 0;
             cartItems.forEach(item => {
               const product = item.productId;
               const variant = item.variantId;
               const disabled = !product || !variant || product.isBlocked || variant.isBlocked || (variant && variant.quantity <= 0) || !product.category || !product.category.isListed || product.category.isDeleted || product.status === "Discontinued";
               if (!disabled) {
+                const regPrice = (variant && variant.regularPrice && variant.regularPrice > item.price) ? variant.regularPrice : item.price;
+                regularSubtotal += regPrice * item.quantity;
+                offerSavings += (regPrice - item.price) * item.quantity;
                 subtotal += item.price * item.quantity;
               }
             });
             const isCartValid = subtotal > 0 && !hasUnavailableItems;
-            const shipping = isCartValid ? 0 : 0; 
+            const shipping = 0; 
             const total = subtotal + shipping;
           %>
 
           <div class="summary-details">
+            <% if (offerSavings > 0) { %>
+              <div class="summary-row">
+                <span class="label">Base Price Total</span>
+                <span class="value">₹<%= parseInt(regularSubtotal).toLocaleString('en-IN') %></span>
+              </div>
+              <div class="summary-row" style="color: #10b981;">
+                <span class="label" style="color: #10b981;">Offer Savings</span>
+                <span class="value" style="color: #10b981; font-weight: 600;">- ₹<%= parseInt(offerSavings).toLocaleString('en-IN') %></span>
+              </div>
+            <% } %>
             <div class="summary-row">
               <span class="label">Subtotal</span>
-              <span class="value">₹<%= parseInt(subtotal).toLocaleString('en-IN') %></span>
+              <span class="value" id="cart-subtotal">₹<%= parseInt(subtotal).toLocaleString('en-IN') %></span>
             </div>
             <div class="summary-row">
               <span class="label">Shipping Estimate</span>
@@ -145,7 +161,7 @@
 
           <div class="summary-total-row">
             <span class="label">Total</span>
-            <span class="value">₹<%= parseInt(total).toLocaleString('en-IN') %></span>
+            <span class="value" id="cart-total">₹<%= parseInt(total).toLocaleString('en-IN') %></span>
           </div>
 
           <% if (isCartValid) { %>

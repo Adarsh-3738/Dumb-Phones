@@ -3,7 +3,7 @@ import Settings from "../../models/settingsSchema.js";
 export const getOrInitSettings = async () => {
   let settings = await Settings.findOne();
   if (!settings) {
-    settings = await Settings.create({ taxRate: 5 });
+    settings = await Settings.create({ taxRate: 0 });
   }
   return settings;
 };

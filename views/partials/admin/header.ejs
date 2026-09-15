@@ -179,15 +179,13 @@
     <i data-lucide="folder"></i> Category
   </a>
 
-  <a href="/admin/settings" class="menu-item nav-link">
-    <i data-lucide="settings"></i> Tax settings
-  </a>
+  
 
 
   <div class="menu-title" style="margin-top: 40px;">Admin</div>
 
   <div class="menu-item">
-    <i data-lucide="user"></i> Admin Name
+    <i data-lucide="user"></i> Admin
   </div>
 
   <button class="menu-item logout-btn" onclick="openLogoutModal()">
@@ -195,39 +193,5 @@
   </button>
 </div>
 
-<!-- JS SCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>//for icons
-  lucide.createIcons();
-</script>
-
-<script>
-  
-  // Highlight current active link
-  const currentPath = window.location.pathname;
-  const navLinks = document.querySelectorAll(".nav-link");
-
-  navLinks.forEach(link => {
-    if (currentPath.startsWith(link.getAttribute("href"))) {
-      link.classList.add("active");
-    }
-  });
-
-  // Logout SweetAlert
-  function openLogoutModal() {
-    Swal.fire({
-      title: "Confirm Logout",
-      text: "Are you sure you want to end your session?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#2563eb",
-      cancelButtonColor: "#94a3b8",
-      confirmButtonText: "Yes, Logout"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = "/admin/logout";
-      }
-    });
-  }
-</script>
+<script src="/js/admin/header.js"></script>
 

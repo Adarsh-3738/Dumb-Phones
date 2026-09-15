@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-  //  for success params
+  // Populate referral link dynamically
+  const refInput = document.getElementById("refLinkInput");
+  if (refInput && refInput.dataset.code) {
+    refInput.value = window.location.origin + "/signup?ref=" + refInput.dataset.code;
+  }
+
+  // Handle URL success params
   const urlParams = new URLSearchParams(window.location.search);
   const emailChanged = urlParams.get('emailChanged');
   const successParam = urlParams.get('success');
@@ -24,4 +30,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 });
-  
+
+function copyReferralLink() {
+  const input = document.getElementById("refLinkInput");
+  if (input && input.value) {
+    input.select();
+    input.setSelectionRange(0, 99999); 
+    navigator.clipboard.writeText(input.value).then(() => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Copied to clipboard!',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    });
+  }
+}

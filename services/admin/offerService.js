@@ -132,7 +132,7 @@ export const syncAllOffers = async () => {
 };
 
 export const getOffersData = async ({ searchQuery, page = 1, limit = 10 }) => {
-  let filter = {};
+  let filter = { type: { $ne: "Referral" } };
 
   if (searchQuery) {
     filter.name = { $regex: searchQuery, $options: "i" };
