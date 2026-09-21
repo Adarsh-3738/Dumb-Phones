@@ -25,6 +25,8 @@ import STATUS_CODES from "./utils/statusCodes.js";
 
 
 
+import { globalLimiter, authLimiter } from "./middlewares/rateLimiter.js";
+
 dotenv.config();
 
 
@@ -33,6 +35,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.set("trust proxy", 1);
+app.use(globalLimiter);
+app.use("/login", authLimiter);
+app.use("/signup", authLimiter);
+app.use("/verify-otp", authLimiter);
+app.use("/forgot-password", authLimiter);
 app.use(cookieParser());
 // DB
 db();
