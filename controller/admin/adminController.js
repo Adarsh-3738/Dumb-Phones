@@ -16,7 +16,7 @@ import {
 // PAGE ERROR
 export const pageerror = async (req, res) => {
   logger.warn("Admin error page accessed");
-  res.render("admin-error");
+  res.render("admin/admin-error");
 };
 
 export const loadLogin = (req, res) => {

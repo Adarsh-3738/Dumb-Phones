@@ -12,8 +12,6 @@ import { fileURLToPath } from "url";
 import Cart from "./models/cartSchema.js";
 import User from "./models/userSchema.js";
 import Wishlist from "./models/wishlistSchema.js";
-import Product from "./models/productSchema.js";
-import Category from "./models/categorySchema.js";
 
 // user profile
 import cookieParser from "cookie-parser";
@@ -34,6 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(cookieParser());
 // DB
 db();

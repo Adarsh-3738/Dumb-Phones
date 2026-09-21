@@ -1,6 +1,6 @@
 import express from "express";
 import * as cartController from "../../controller/user/cartController.js";
-import * as checkoutController from "../../controller/user/checkoutContoller.js";
+import * as checkoutController from "../../controller/user/checkoutController.js";
 import protect from "../../middlewares/protect.js";
 
 const router = express.Router();

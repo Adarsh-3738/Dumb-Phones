@@ -19,32 +19,9 @@ const errorMiddleware = (err, req, res, next) => {
   }
 
   // Render error page (for views)
-  return res.status(statusCode).render("admin-error", {
+  return res.status(statusCode).render("admin/admin-error", {
     message: err.message || "Something went wrong",
   });
 };
 
 export default errorMiddleware;
-
-//example 
-//export const logout = asyncHandler(async (req, res) => {
-//   const adminId = req.session?.admin?.id;
-
-//   req.session.destroy((err) => {
-//     if (err) {
-//       throw new AppError("Logout failed", STATUS_CODES.INTERNAL_SERVER_ERROR);
-//     }
-
-//     logger.info("Admin logged out", { adminId });
-//     res.redirect("/admin/login");
-//   });
-// });
-
-
-
-
-
-// in the app.js 
-// import errorMiddleware from "./middlewares/errorMiddleware.js";
-
-// app.use(errorMiddleware);
