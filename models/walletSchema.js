@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { WALLET_TRANSACTION_TYPE, WALLET_TRANSACTION_STATUS } from "../utils/enums.js";
 
 const { Schema } = mongoose;
 
@@ -6,7 +7,7 @@ const transactionSchema = new Schema(
   {
     type: {
       type: String,
-      enum: ["credit", "debit"],
+      enum: Object.values(WALLET_TRANSACTION_TYPE),
       required: true
     },
 
@@ -28,8 +29,8 @@ const transactionSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["success", "pending", "failed"],
-      default: "success"
+      enum: Object.values(WALLET_TRANSACTION_STATUS),
+      default: WALLET_TRANSACTION_STATUS.SUCCESS
     }
   },
   { timestamps: true }

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { ORDER_STATUS, ITEM_STATUS, PAYMENT_STATUS, PAYMENT_METHOD } from "../utils/enums.js";
 
 const { Schema } = mongoose;
 
@@ -42,19 +43,8 @@ userId: {
     },
     itemStatus: {
       type: String,
-      enum: [
-        "Active",
-        "Pending",
-        "Processing",
-        "Shipped",
-        "Out for Delivery",
-        "Delivered",
-        "Cancelled",
-        "Return Request",
-        "Returned",
-        "Return Rejected"
-      ],
-      default: "Pending"
+      enum: Object.values(ITEM_STATUS),
+      default: ITEM_STATUS.PENDING
     },
     cancelReason: {
       type: String,
@@ -110,18 +100,7 @@ userId: {
   status: {
     type: String,
     required: true,
-    enum: [
-      "Pending",
-      "Processing",
-      "Shipped",
-       "Out for Delivery",
-      "Delivered",
-      "Cancelled",
-      "Return Request",
-      "Returned",
-      "Return Rejected",
-      "Payment Failed"
-    ]
+    enum: Object.values(ORDER_STATUS)
   },
   cancelReason: {
     type: String,
@@ -147,14 +126,14 @@ userId: {
   },
   paymentMethod: {
     type: String,
-    enum: ["COD", "Wallet", "Razorpay"],
-    default: "COD",
+    enum: Object.values(PAYMENT_METHOD),
+    default: PAYMENT_METHOD.COD,
     required: true
   },
   paymentStatus: {
     type: String,
-    enum: ["Pending", "Paid", "Refunded", "Failed"],
-    default: "Pending",
+    enum: Object.values(PAYMENT_STATUS),
+    default: PAYMENT_STATUS.PENDING,
     required: true
   }
 });

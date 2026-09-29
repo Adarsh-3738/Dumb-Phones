@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { CATEGORY_STATUS } from "../utils/enums.js";
 
 const categorySchema = new mongoose.Schema(
   {
@@ -14,8 +15,8 @@ const categorySchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Draft"],
-      default: "Active"
+      enum: Object.values(CATEGORY_STATUS),
+      default: CATEGORY_STATUS.ACTIVE
     },
     isDeleted: {
       type: Boolean,

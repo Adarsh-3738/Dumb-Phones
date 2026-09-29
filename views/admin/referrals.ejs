@@ -3,50 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <title>Referrals & Referral Offers</title>
-  <link rel="stylesheet" href="/css/admin/offers.css">
-  <link rel="stylesheet" href="/css/admin/referrals.css">
-  <style>
-    th { background: #f8f9fa; font-weight: 600; color: #333; }
-    td { vertical-align: top; color: #444; }
-    small { color: #888; }
-    .ref-code {
-      background: #eef2ff;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-family: monospace;
-      color: #2a55ff;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .referred-user {
-      background: #f8fafc;
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      font-size: 13px;
-    }
-    .section-title {
-      margin-top: 35px;
-      margin-bottom: 15px;
-      font-size: 18px;
-      color: #1e293b;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-  </style>
-</head>
-<body>
-
 <%- include("../../views/partials/admin/header") %> 
+<link rel="stylesheet" href="/css/admin/offers.css">
+<link rel="stylesheet" href="/css/admin/referrals.css">
+<style>
+  th { background: #f8f9fa; font-weight: 600; color: #333; }
+  td { vertical-align: top; color: #444; }
+  small { color: #888; }
+  .ref-code {
+    background: #eef2ff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    color: #2a55ff;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .referred-user {
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+  }
+  .section-title {
+    margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+</style>
 
 <div class="container">
+
   <div class="title-box" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
       <h2>Referrals & Referral Offers</h2>
@@ -242,5 +240,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/admin/referrals.js"></script>
+<%- include("../partials/admin/footer") %>
 </body>
 </html>
+

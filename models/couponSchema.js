@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { DISCOUNT_TYPE } from "../utils/enums.js";
 
 const { Schema } = mongoose;
 
@@ -28,8 +29,8 @@ const couponSchema = new Schema({
   },
   discountType: {
     type: String,
-    enum: ["Percentage", "Fixed Amount"],
-    default: "Fixed Amount"
+    enum: Object.values(DISCOUNT_TYPE),
+    default: DISCOUNT_TYPE.FIXED_AMOUNT
   },
   maxDiscountAmount: {
     type: Number,

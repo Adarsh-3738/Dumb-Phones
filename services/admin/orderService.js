@@ -1,4 +1,5 @@
 import Order from "../../models/orderSchema.js";
+import User from "../../models/userSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Coupon from "../../models/couponSchema.js";
 import { addMoneyToWallet } from "../../services/user/walletService.js";
@@ -47,7 +48,11 @@ export const getOrders = async ({ page, limit, search, status, sort }) => {
   const query = {};
 
   if (search) {
-    query.orderId = { $regex: search, $options: "i" };
+    query.$or = [
+      { orderId: { $regex: search, $options: "i" } },
+      { "address.name": { $regex: search, $options: "i" } },
+      { "address.phone": { $regex: search, $options: "i" } }
+    ];
   }
 
   if (status) {

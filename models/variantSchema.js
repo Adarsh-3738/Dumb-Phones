@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { VARIANT_STATUS } from "../utils/enums.js";
 
 const { Schema } = mongoose;
 
@@ -49,8 +50,8 @@ const VariantSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["Available", "out of stock", "Discontinued"],
-      default: "Available"
+      enum: Object.values(VARIANT_STATUS),
+      default: VARIANT_STATUS.AVAILABLE
     },
 
     isBlocked: {

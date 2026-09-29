@@ -6,6 +6,7 @@ export const getCustomers = async (search = "", page = 1, limit = 3) => {
     $or: [
       { name: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
+      { phone: { $regex: search, $options: "i" } },
     ],
   };
 

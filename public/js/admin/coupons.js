@@ -43,7 +43,10 @@ async function submitCoupon() {
     expireOn: document.getElementById('expireDate').value
   };
 
-  if (!payload.name || !payload.offerPrice || !payload.minimumPrice || !payload.startDate || !payload.expireOn) {
+  if (!payload.name || !payload.discountType || !payload.offerPrice || !payload.minimumPrice || !payload.startDate || !payload.expireOn) {
+    if (!payload.discountType) {
+      return Swal.fire("Error", "Please select a discount type", "error");
+    }
     return Swal.fire("Error", "All fields are required", "error");
   }
 
@@ -77,7 +80,10 @@ async function submitEdit() {
     expireOn: document.getElementById('editExpireDate').value
   };
 
-  if (!payload.name || !payload.offerPrice || !payload.minimumPrice || !payload.startDate || !payload.expireOn) {
+  if (!payload.name || !payload.discountType || !payload.offerPrice || !payload.minimumPrice || !payload.startDate || !payload.expireOn) {
+    if (!payload.discountType) {
+      return Swal.fire("Error", "Please select a discount type", "error");
+    }
     return Swal.fire("Error", "All fields are required", "error");
   }
 

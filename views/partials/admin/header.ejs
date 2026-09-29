@@ -1,4 +1,7 @@
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/preload.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
   * {
@@ -19,6 +22,7 @@
     left: 0;
     top: 0;
     overflow-y: auto;
+    z-index: 100;
   }
 
   /* LOGO */
@@ -126,12 +130,38 @@
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
   }
+
+  /* Top progress bar for instant feedback */
+  #admin-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #2563eb;
+    z-index: 9999;
+    transition: width 0.2s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  /* Skeleton Loading Shimmer */
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 </style>
 
-  
-<!-- SIDEBAR -->
+<div id="admin-top-bar"></div>
 
-<div class="sidebar">
+<!-- SIDEBAR -->
+<div class="sidebar" hx-ext="preload">
   <div class="logo">
     <i data-lucide="smartphone"></i>
     Dumb Phones
@@ -139,47 +169,45 @@
 
   <div class="menu-title">Menu</div>
 
-  <a href="/admin/dashboard" class="menu-item nav-link">
+  <a href="/admin/dashboard" hx-get="/admin/dashboard" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="layout-dashboard"></i> Dashboard
   </a>
 
-  <a href="/admin/products" class="menu-item nav-link">
+  <a href="/admin/products" hx-get="/admin/products" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="package"></i> Products
   </a>
 
-  <a href="/admin/orders" class="menu-item nav-link">
+  <a href="/admin/orders" hx-get="/admin/orders" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="file-text"></i> Orders
   </a>
 
-  <a href="/admin/users" class="menu-item nav-link">
+  <a href="/admin/users" hx-get="/admin/users" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="users"></i> Users
   </a>
 
-  <a href="/admin/brands" class="menu-item nav-link">
+  <a href="/admin/brands" hx-get="/admin/brands" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="tag"></i> Brand
   </a>
 
-  <a href="/admin/offers" class="menu-item nav-link">
+  <a href="/admin/offers" hx-get="/admin/offers" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="gift"></i> Offers
   </a>
 
-  <a href="/admin/referrals" class="menu-item nav-link">
+  <a href="/admin/referrals" hx-get="/admin/referrals" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="link"></i> Referrals
   </a>
 
-  <a href="/admin/coupons" class="menu-item nav-link">
+  <a href="/admin/coupons" hx-get="/admin/coupons" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="ticket"></i> Coupons
   </a>
 
-  <a href="/admin/sales-report" class="menu-item nav-link">
+  <a href="/admin/sales-report" hx-get="/admin/sales-report" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="trending-up"></i> Sales
   </a>
 
-  <a href="/admin/category" class="menu-item nav-link">
+  <a href="/admin/category" hx-get="/admin/category" hx-target="#admin-main-container" hx-select="#admin-main-container" hx-swap="outerHTML" hx-push-url="true" preload="hover" class="menu-item nav-link">
     <i data-lucide="folder"></i> Category
   </a>
-
-  
 
 
   <div class="menu-title" style="margin-top: 40px;">Admin</div>
@@ -195,3 +223,5 @@
 
 <script src="/js/admin/header.js"></script>
 
+<!-- Main content wrapper for HTMX content swapping -->
+<div id="admin-main-container">

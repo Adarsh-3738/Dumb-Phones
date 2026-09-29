@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OFFER_TYPE, DISCOUNT_TYPE } from "../utils/enums.js";
 
 const offerSchema = new mongoose.Schema(
   {
@@ -9,13 +10,13 @@ const offerSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["Product", "Category", "Referral"],
+      enum: Object.values(OFFER_TYPE),
       required: true
     },
     discountType: {
       type: String,
-      enum: ["Percentage", "Fixed Amount"],
-      default: "Percentage"
+      enum: Object.values(DISCOUNT_TYPE),
+      default: DISCOUNT_TYPE.PERCENTAGE
     },
     discountValue: {
       type: Number,
@@ -33,7 +34,7 @@ const offerSchema = new mongoose.Schema(
     },
     targetModel: {
       type: String,
-      enum: ['Product', 'Category', 'Referral']
+      enum: Object.values(OFFER_TYPE)
     },
     status: {
       type: String,

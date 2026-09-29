@@ -6,6 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function openAddModal() {
+  document.getElementById("offerName").value = "";
+  document.getElementById("offerType").value = "";
+  document.getElementById("discountType").value = "";
+  document.getElementById("discountValue").value = "";
+  document.getElementById("maxDiscountAmount").value = "";
+  document.getElementById("startDate").value = "";
+  document.getElementById("endDate").value = "";
   document.getElementById("addModal").style.display = "flex";
   toggleTargetDropdown();
   toggleDiscountType(false);
@@ -18,11 +25,20 @@ function closeAddModal() {
 function toggleEditTargetDropdown(selectedTargetId = "") {
   const type = document.getElementById("editOfferType").value;
   const targetSelect = document.getElementById("editOfferTarget");
+  const targetLabel = document.getElementById("editTargetLabel");
   
   targetSelect.innerHTML = "";
   document.getElementById("editDiscountType").disabled = false;
   
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Select Target";
+  defaultOption.disabled = true;
+  if (!selectedTargetId) defaultOption.selected = true;
+  targetSelect.appendChild(defaultOption);
+  
   if (type === "Product") {
+    if (targetLabel) targetLabel.textContent = "Select Product";
     products.forEach(p => {
       if (!p.isBlocked) {
         const option = document.createElement("option");
@@ -33,6 +49,7 @@ function toggleEditTargetDropdown(selectedTargetId = "") {
       }
     });
   } else if (type === "Category") {
+    if (targetLabel) targetLabel.textContent = "Select Category";
     categories.forEach(c => {
       if (!c.isDeleted) {
         const option = document.createElement("option");
@@ -156,7 +173,10 @@ async function submitAdd() {
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
 
-  if (!name || !discountValue || !startDate || !endDate) {
+  if (!name || !type || !target || !discountType || !discountValue || !startDate || !endDate) {
+    if (!type) return Swal.fire("Error", "Please select an offer type", "error");
+    if (!target) return Swal.fire("Error", "Please select a target", "error");
+    if (!discountType) return Swal.fire("Error", "Please select a discount type", "error");
     return Swal.fire("Error", "Please fill all fields", "error");
   }
 
@@ -197,7 +217,10 @@ async function submitEdit() {
   const startDate = document.getElementById("editStartDate").value;
   const endDate = document.getElementById("editEndDate").value;
 
-  if (!name || !discountValue || !startDate || !endDate) {
+  if (!name || !type || !target || !discountType || !discountValue || !startDate || !endDate) {
+    if (!type) return Swal.fire("Error", "Please select an offer type", "error");
+    if (!target) return Swal.fire("Error", "Please select a target", "error");
+    if (!discountType) return Swal.fire("Error", "Please select a discount type", "error");
     return Swal.fire("Error", "Please fill all fields", "error");
   }
 

@@ -5,11 +5,11 @@
   <title>Coupon Management</title>
   <link rel="stylesheet" href="/css/admin/category.css">
 </head>
-<body>
-
 <%- include("../../views/partials/admin/header") %> 
+<link rel="stylesheet" href="/css/admin/category.css">
 
 <div class="container">
+
   <div class="title-box">
     <div>
       <h2>Coupon Management</h2>
@@ -99,16 +99,26 @@
 <div class="modal-bg" id="addModal" style="display:none; align-items:center;">
   <div class="modal-box">
     <h3>Create Coupon</h3>
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Coupon Code</label>
     <input type="text" id="couponName" placeholder="Coupon Code (e.g. SUMMER50)">
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Discount Type</label>
     <select id="discountType" onchange="toggleMaxDiscount(this.value, 'maxDiscountContainer')" style="margin-bottom:10px; width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:6px;">
+      <option value="" disabled selected>Select Discount Type</option>
       <option value="Fixed Amount">Fixed Amount (₹)</option>
       <option value="Percentage">Percentage (%)</option>
     </select>
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Discount Value</label>
     <input type="number" id="offerPrice" placeholder="Discount Value (₹ or %)">
+
     <div id="maxDiscountContainer" style="display:none; margin-bottom:10px;">
+      <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Maximum Discount Amount (₹)</label>
       <input type="number" id="maxDiscountAmount" placeholder="Maximum Discount Amount (₹)">
       <small style="color:#64748b; font-size:12px; display:block;">Leave blank for no limit</small>
     </div>
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Minimum Purchase Required (₹)</label>
     <input type="number" id="minPrice" placeholder="Minimum Purchase Required (₹)">
     
     <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Start Date</label>
@@ -129,16 +139,27 @@
   <div class="modal-box">
     <h3>Edit Coupon</h3>
     <input type="hidden" id="editCouponId">
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Coupon Code</label>
     <input type="text" id="editCouponName" placeholder="Coupon Code (e.g. SUMMER50)">
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Discount Type</label>
     <select id="editDiscountType" onchange="toggleMaxDiscount(this.value, 'editMaxDiscountContainer')" style="margin-bottom:10px; width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:6px;">
+      <option value="" disabled>Select Discount Type</option>
       <option value="Fixed Amount">Fixed Amount (₹)</option>
       <option value="Percentage">Percentage (%)</option>
     </select>
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Discount Value</label>
     <input type="number" id="editOfferPrice" placeholder="Discount Value (₹ or %)">
+
     <div id="editMaxDiscountContainer" style="display:none; margin-bottom:10px;">
+      <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Maximum Discount Amount (₹)</label>
       <input type="number" id="editMaxDiscountAmount" placeholder="Maximum Discount Amount (₹)">
       <small style="color:#64748b; font-size:12px; display:block;">Leave blank for no limit</small>
     </div>
+
+    <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Minimum Purchase Required (₹)</label>
     <input type="number" id="editMinPrice" placeholder="Minimum Purchase Required (₹)">
     
     <label style="font-size:12px; color:#64748b; text-align:left; display:block; margin-top:10px;">Start Date</label>
@@ -155,5 +176,7 @@
 </div>
 
 <script src="/js/admin/coupons.js"></script>
+<%- include("../partials/admin/footer") %>
 </body>
 </html>
+

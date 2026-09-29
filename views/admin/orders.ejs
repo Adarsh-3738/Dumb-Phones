@@ -5,10 +5,12 @@
   <link rel="stylesheet" href="/css/admin/orders.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
   <%- include("../partials/admin/header") %>
+  <link rel="stylesheet" href="/css/admin/orders.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <div class="container">
+
     <h2>Order Management</h2>
 
     <!-- Search, Filter, and Sort -->
@@ -44,8 +46,9 @@
       <thead>
         <tr>
           <th>Order ID</th>
-          <th>User</th>
+          <th>Customer</th>
           <th>Email</th>
+          <th>Phone</th>
           <th>Date</th>
           <th>Status</th>
           <th>Payment</th>
@@ -57,8 +60,15 @@
         <% orders.forEach(order => { %>
           <tr>
             <td><%= order.orderId %></td>
-            <td><%= order.userId ? order.userId.name : 'N/A' %></td>
-            <td><%= order.userId ? order.userId.email : 'N/A' %></td>
+            <td><%= (order.userId && order.userId.name) ? order.userId.name : (order.address && order.address.name ? order.address.name : 'N/A') %></td>
+            <td>
+              <% if (order.userId && order.userId.email) { %>
+                <%= order.userId.email %>
+              <% } else { %>
+                <span style="color: #94a3b8; font-size: 12px;">N/A (Deleted User)</span>
+              <% } %>
+            </td>
+            <td><%= (order.userId && order.userId.phone) ? order.userId.phone : (order.address && order.address.phone ? order.address.phone : 'N/A') %></td>
             <td><%= order.createdOn ? new Date(order.createdOn).toDateString() : 'N/A' %></td>
             <td>
               <select onchange="updateStatus('<%= order._id %>', this.value, '<%= order.status %>', this)">
@@ -99,6 +109,7 @@
   </div>
 
 <script src="/js/admin/orders.js"></script>
-   
+<%- include("../partials/admin/footer") %>
 </body>
 </html>
+
