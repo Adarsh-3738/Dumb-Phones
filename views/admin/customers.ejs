@@ -30,6 +30,7 @@
                     <th><b>Name</b></th>
                     <th><b>Email</b></th>
                     <th><b>Phone No</b></th>
+                    <th><b>cancelled order</b></th>
                     <th><b>Status</b></th>
                     <th><b>Action</b></th>
                 </tr>
@@ -44,7 +45,7 @@
       <td data-label="Email"><%= user.email %></td>
 
       <td data-label="Phone"><%= user.phone || 'N/A' %></td>
-
+<td data-label="cancelledOrders"><%= user.cancelledCount || 'N/A' %></td>
       <td data-label="Status">
         <% if (user.isBlocked) { %>
           <span class="status blocked">Blocked</span>

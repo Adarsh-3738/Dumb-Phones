@@ -16641,3 +16641,18 @@
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 05:12:17"}
 {"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 05:12:17"}
 {"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/orders","timestamp":"2026-09-29 05:12:24"}
+{"level":"info","message":"Loading homepage","query":{},"timestamp":"2026-09-29 09:17:07"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/dashboard","timestamp":"2026-09-29 09:17:15"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin dashboard loaded","timestamp":"2026-09-29 09:17:15"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:17:42"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:17:42"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:36:16"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:36:16"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:39:39"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:39:39"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:40:37"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:40:37"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:41:55"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:41:55"}
+{"adminId":"6923ed5618113778bba998a8","level":"info","message":"Admin authenticated","path":"/admin/users","timestamp":"2026-09-29 09:42:21"}
+{"level":"info","message":"Loading customers list","page":1,"search":"","timestamp":"2026-09-29 09:42:21"}

@@ -1,5 +1,5 @@
 import User from "../../models/userSchema.js";
-
+import order from "../../models/orderSchema.js";
 export const getCustomers = async (search = "", page = 1, limit = 3) => {
   const query = {
     isAdmin: false,
@@ -20,6 +20,18 @@ export const getCustomers = async (search = "", page = 1, limit = 3) => {
 
   return { users, totalPages };
 };
+export const userWithCancelledOrder = async (user) =>{
+
+const cancelledCount = await order.countDocuments({
+  userId:user._id,status:"cancelled"});
+  return{
+    ...user.toObject(),cancelledCount
+  }
+
+}
+
+
+
 
 export const toggleBlockCustomer = async (userId) => {
   const user = await User.findById(userId);
